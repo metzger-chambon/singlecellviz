@@ -1,0 +1,13 @@
+Package: singlecellviz
+Title: SingleCellViz
+Version: 0.00
+Authors@R: person('Valentine', 'Gilbart', email = 'gilbartv@igbmc.fr', role = c('cre', 'aut'))
+Description: Visualize singlecell datasets.
+License: MIT + file LICENSE
+Imports: 
+    config (>= 0.3.2),
+    golem (>= 0.4.1),
+    shiny (>= 1.8.0)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1

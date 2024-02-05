@@ -1,0 +1,8 @@
+default:
+  golem_name: singlecellviz
+  golem_version: '0.00'
+  app_prod: no
+production:
+  app_prod: yes
+dev:
+  golem_wd: !expr golem::pkg_path()
