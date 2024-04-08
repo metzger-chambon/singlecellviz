@@ -1,0 +1,344 @@
+#' explore UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#' @noRd
+
+mod_explore_ui <- function(id){
+  ns <- NS(id)
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        selectInput(ns("cell_annotation"), "Select an annotation:", choices = NULL)
+      ),
+      column(
+        width = 5,
+        selectizeInput(ns("gene_annotation"), "Select genes:", multiple = TRUE,
+                       choices =  NULL, options = list(maxItems = 40,
+                                                       placeholder = "Type gene name"
+                       ))
+        #options = list(maxItems = 12))
+      ),
+      column(
+        width = 3,
+        actionButton(ns("validate_gene_annotation"), "Validate selection",
+                     style = 'margin-top:26px')
+        #options = list(maxItems = 12))
+      ),
+
+      tabBox(
+        title = "Plots",
+        width = 12, # The overall width of a region is 12
+        tabPanel(
+          "DimPlot",
+          selectInput(ns("dimtype"), "Select a plot type:", choices = NULL),
+          fluidRow(
+            column(
+              width = 6,
+              plotOutput(ns("plotDim1"))
+            ),
+            column(
+              width = 6,
+              plotOutput(ns("plotDim2"))
+            )
+          )
+        ),
+        tabPanel(
+          "VlnPlot",
+          # x = annotations ; y = genes expression (if several, uses all genes to compute?)
+          # inspo : singlecell portal
+          plotOutput(ns("violin"))
+        ),
+        tabPanel(
+          # Typical dotplot for one or more features
+          # inspo : singlecell portal
+          "DotPlot",
+          plotOutput(ns("dotplot"))
+          # ),
+          # tabPanel(
+          #   # each row is a gene, each col is a cell
+          #   # inspo : singlecell portal
+          #   "Heatmap",
+          #   plotOutput(ns("heatmap"))
+          # ),
+          # tabPanel(
+          #   # gene correlations (line plot or heatmap?)
+          #   # inspo : singlecell portal
+          #   "Correlation",
+          #   plotOutput(ns("correlation"))
+        )
+      )
+    )
+  )
+}
+
+
+#' explore Server Functions
+#' @noRd
+mod_explore_server <- function(id, COMMON_DATA, r){
+  moduleServer(id, function(input, output, session){
+
+    # TODO: add loading inforamtion for the user
+    restoreState <- reactiveVal(F)
+
+    # Calculate genes_choices options
+    genes_choices <- reactive(
+      {
+        req(r$selected_study)
+        #cat("genes: ", print(r$selected_study, collapse = " "), "\n")
+        experiment <- COMMON_DATA$experiment
+        group <- COMMON_DATA$groups[1] # usually RNA
+        res <- experiment$ms$get(group)$get("var")$read(column_names = c("var_id"))$concat()$var_id$as_vector()
+        # Adding a study-specific extension to invalidate the fact that
+        # annotation_choices is the same when changing a study
+        # This helps in reactivity and cache of annotation_choices dependent outputs
+        genes_choices <- add_suffix(res, isolate(r$selected_study))
+
+        return(genes_choices)
+      }) %>% bindCache(r$selected_study, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+
+    # Calculate annotation_choices options
+    annotation_choices <- reactive(
+      {
+        req(r$selected_study)
+        #r$selected_study() # need to be explicitly used to get reactivity
+        experiment <- COMMON_DATA$experiment
+        # Adding a study-specific extension to invalidate the fact that
+        # annotation_choices is the same when changing a study
+        # This helps in reactivity and cache of annotation_choices dependent outputs
+        annotation_choices <- experiment$obs$attrnames()
+        annotation_choices <- add_suffix(annotation_choices, isolate(r$selected_study))
+        annotation_choices <- annotation_choices[which(names(annotation_choices) != "obs_id")]
+        return(annotation_choices)
+      }) # %>% bindCache(r$selected_study, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+
+
+    # # Calculate dimtype_choices options
+    dimtype_choices <- reactive(
+      {
+        req(r$selected_study)
+        experiment <- COMMON_DATA$experiment
+        group <- COMMON_DATA$groups[1]
+        dimtype_choices <- experiment$ms$get(group)$get("obsm")$names()
+        order <- c("UMAP" = "X_umap", "TSNE" = "X_tsne", "PCA" = "X_pca")
+        dimtype_choices <- order[which(order %in% dimtype_choices)]
+        # Adding a study-specific extension to invalidate the fact that
+        # dimtype_choices is the same when changing a study
+        # This helps in reactivity and cache of dimtype_choices dependent outputs
+        dimtype_choices <- add_suffix(dimtype_choices, isolate(r$selected_study))
+        return(dimtype_choices)
+      }) #%>% bindCache(r$selected_study, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+
+    # This reactiveVal is a work-around of the fact that I need a virtual
+    # "click" on validate_gene_annotation each time a selected study is used
+    validate_gene_annotation <- reactiveVal(0)
+    observeEvent(input$validate_gene_annotation,
+                 {
+                 newValue <- validate_gene_annotation() + 1
+                 validate_gene_annotation(newValue)
+                 }
+    )
+
+    # Update the tab with saved options in bookmark
+    # (and sets COMMON_DATA$tabs_updated['explore'] to not update
+    # a second time in the observer later on,
+    # which would cause the selected = ... to be set to NULL)
+    # https://stackoverflow.com/questions/67708041/shiny-bookmark-cannot-restore-the-selectizeinput
+    onRestore(function(state) {
+      updateSelectizeInput(
+        session,
+        inputId = "gene_annotation",
+        choices =  genes_choices(),
+        selected = state$input$gene_annotation,
+        options = list(clear = FALSE),
+        server = TRUE
+      )
+      updateSelectInput(
+        session,
+        inputId = "cell_annotation",
+        selected = state$input$cell_annotation,
+        choices =  annotation_choices(),
+      )
+      updateSelectInput(
+        session,
+        inputId = "dimtype",
+        selected = state$input$dimtype,
+        choices = dimtype_choices())
+      if (!is.null(state$input$gene_annotation)){
+        restoreState(T)
+      }
+      COMMON_DATA$tabs_updated['explore'] <- r$selected_study
+
+    })
+
+    setBookmarkExclude(names = c("validate_gene_annotation"))
+
+    # onRestored(function(state) {
+    #   cat('RESTORED IN\n')
+    #   req(input$gene_annotation)
+    #   cat(state$input$gene_annotation, '\n')
+    #   validate_gene_annotation(1)
+    #
+    #   cat('RESTORED OUT\n')
+    #   #cat(input$gene_annotation)
+    #
+    # })
+
+    # TO DO : find another way ?
+    observe({
+      if(restoreState() & !is.null(input$gene_annotation)){
+        newValue <- validate_gene_annotation() + 1     # newValue <- rv$value + 1
+        validate_gene_annotation(newValue)
+        restoreState(F)
+      }
+    }) %>% bindEvent(c(restoreState(), input$gene_annotation))
+
+    # Changes genes and cell annotations options in UI
+    observeEvent(c(r$tabs(), r$selected_study), {
+      # Recalculate annotation_choices and genes_choices everytime:
+      #   the current tab is explore AND the selected study has changed
+      if (r$tabs() == "explore" &
+        COMMON_DATA$tabs_updated['explore'] != r$selected_study ){
+        # freeze prevents the gene annotation to be used when it does not match the study (when changing study)
+        # https://github.com/rstudio/shiny/pull/3055
+        freezeReactiveValue(input, "gene_annotation")
+        # Do necessary changes
+        updateSelectizeInput(
+          session,
+          inputId = "gene_annotation",
+          choices =  genes_choices(),
+          selected = NULL,
+          options = list(clear = FALSE), # Needed to remove previously selected choices (with the server side option)
+          server = TRUE
+        )
+
+        updateSelectInput(
+          session,
+          inputId = "cell_annotation",
+          choices =  annotation_choices(),
+        )
+        updateSelectInput(
+          session,
+          inputId = "dimtype",
+          choices = dimtype_choices())
+        #cat('observeEvent: ', print(r$dimtype_choices(), collapse = " "), "\n")
+        newValue <- validate_gene_annotation() + 1     # newValue <- rv$value + 1
+        validate_gene_annotation(newValue)
+
+
+        # Recalls that the explore page has been update accordingly to the new study
+        COMMON_DATA$tabs_updated['explore'] <- r$selected_study
+      }
+    })
+
+    # Retrieve table for dimension plot
+    dimtable <- reactive(
+      {
+        req(input$dimtype)
+        # Removes the study specific extension (which is useful for reactivity and cache purposes)
+        dimtype <- remove_suffix(input$dimtype, isolate(r$selected_study))
+        #cat("dimtype : ", dimtype, "\n")
+        experiment <- COMMON_DATA$experiment
+        group <- COMMON_DATA$groups[1]
+        #array <- COMMON_DATA$arrays[1]
+        # Retrieve the first 2 columns of the matrix
+        dimtable <- experiment$ms$get(group)$get("obsm")$get(dimtype)$read(coords = list(soma_dim_1 = 0:1))$sparse_matrix()$concat()[, 1:2] # e.g. RNA
+        dimtable <- as.matrix(dimtable)
+        dimtable <- as.data.frame(dimtable) %>% select(c(.data$V1, .data$V2)) #%>% head()# %>% sample_n(size = 3, replace = TRUE)
+        return(dimtable)
+      }) %>% bindCache(input$dimtype, cache = "session")
+
+    cell_annotation <- reactive({
+      req(input$cell_annotation)
+      experiment <- COMMON_DATA$experiment
+      annotation <- remove_suffix(input$cell_annotation, isolate(r$selected_study))
+
+      cell_annotation <- experiment$obs$read(column_names = annotation)$concat()$to_data_frame() %>%
+        as.data.frame()
+      return(cell_annotation)
+    }) %>% bindCache(input$cell_annotation, cache = "session")
+
+    gene_annotation <- reactive({
+      req(input$gene_annotation)
+      experiment <- COMMON_DATA$experiment
+      group <- COMMON_DATA$groups[1]
+      array <- ifelse("data" %in% COMMON_DATA$arrays, "data", "count") #COMMON_DATA$arrays[1]
+      annotation <- remove_suffix(input$gene_annotation, isolate(r$selected_study))
+      annotation <- paste(annotation,  collapse = "', '", sep = '')
+
+      var_query <- tiledbsoma::SOMAAxisQuery$new(
+        value_filter = paste("var_id %in% c('", annotation,"')", sep = '')
+        #value_filter = "var_id %in% c('NOCL2','AGRN', 'SDF4')"
+        #value_filter = "var_id %in% c('Epcam', 'Cd75', 'Cd45')"
+      )
+
+      expt_query <- tiledbsoma::SOMAExperimentAxisQuery$new(
+        experiment, group,
+        var_query = var_query
+      )
+
+      expt_query <- expt_query$to_sparse_matrix(
+        collection = "X",
+        layer_name = array,
+        obs_index =  "obs_id",
+        var_index = "var_id"
+      )
+
+      gene_annotation <- expt_query %>% as.matrix() %>%
+        as.data.frame()
+      #gene_annotation$mean <- rowMeans(gene_annotation)
+
+      return(gene_annotation)
+    }) %>% bindCache(input$gene_annotation, cache = "session") %>%
+      bindEvent(validate_gene_annotation(), ignoreInit = TRUE)
+
+
+    # Changes genes and cell annotations options in UI
+    #observeEvent(c(input$dimtype), {
+    # Recalculate annotation_choices and genes_choices everytime:
+    #   the current tab is explore AND the selected study has changed
+
+    output$plotDim1 <- renderPlot({
+      annotation <- cell_annotation()
+      table <- cbind(dimtable(), annotation)
+      DimPlot(table = table, features = colnames(annotation))
+    })#,
+    # cacheKeyExpr = list(input$dimtype),
+    # cache = "session") # %>% bindCache(input$dimtype, cache = "session")
+
+    output$plotDim2 <- renderPlot({
+      #req(isolate(input$gene_annotation))
+      #cat(isolate(input$gene_annotation), '\n')
+      annotation <- gene_annotation()
+      table <- cbind(dimtable(), annotation)
+      plot <- DimPlot(table = table, features = colnames(annotation))
+      return(plot)
+    })
+
+    output$violin <- renderPlot({
+      gene <- gene_annotation()
+      cell <- cell_annotation() %>% numeric_to_factor()
+      table <- cbind(gene, cell)
+      plot <- VlnPlot(table = table, features = colnames(gene), group = colnames(cell))
+      return(plot)
+    })
+
+    output$dotplot <- renderPlot({
+      gene <- gene_annotation()
+      cell <- cell_annotation() %>% numeric_to_factor()
+      table <- cbind(gene, cell)
+      plot <- DotPlot(table = table, features = colnames(gene), group = colnames(cell))
+      return(plot)
+    })
+
+
+  })
+}
+
+## To be copied in the UI
+# mod_explore_ui("explore_1")
+
+## To be copied in the server
+# mod_explore_server("explore_1")

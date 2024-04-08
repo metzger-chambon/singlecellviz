@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
@@ -8,3 +10,11 @@ $run_dev.*
 ^LICENSE\.md$
 ^README\.Rmd$
 ^CODE_OF_CONDUCT\.md$
+^performances$
+^Dockerfile$
+^\.dockerignore$
+^Dockerfile2$
+^tests/testthat/testdata/experiment-pbmc10/*
+^app\.R$
+^rsconnect$
+^shiny_bookmarks$

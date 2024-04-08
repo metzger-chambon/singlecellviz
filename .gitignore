@@ -4,3 +4,6 @@
 .httr-oauth
 .DS_Store
 .quarto
+DESCRIPTION
+NAMESPACE
+man/run_app.Rd

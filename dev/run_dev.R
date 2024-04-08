@@ -1,15 +1,28 @@
-# Set options here
-options(golem.app.prod = FALSE) # TRUE = production mode, FALSE = development mode
+run_dev <- function(port = NULL){
+  # Sass code compilation
+  sass::sass(input = sass::sass_file("inst/app/www/custom.sass"), output = "inst/app/www/custom.css", cache = NULL)
 
-# Comment this if you don't want the app to be served on a random port
-options(shiny.port = httpuv::randomPort())
+  # Set options here
+  options(golem.app.prod = FALSE) # TRUE = production mode, FALSE = development mode
 
-# Detach all loaded packages and clean your environment
-golem::detach_all_attached()
-# rm(list=ls(all.names = TRUE))
+  # Comment this if you don't want the app to be served on a random port
+  if (is.null(port)){port = httpuv::randomPort()}
+  options(shiny.port = port)
 
-# Document and reload your package
-golem::document_and_reload()
+  # Detach all loaded packages and clean your environment
+  golem::detach_all_attached()
+  # rm(list=ls(all.names = TRUE))
 
-# Run the application
-run_app()
+  # Document and reload your package
+  golem::document_and_reload()
+
+  # Run the application
+  run_app()
+}
+
+port = 9560
+run_dev(port)
+
+source('R/fct_dataset.R')
+source('R/R6.R')
+

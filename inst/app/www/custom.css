@@ -1,0 +1,31 @@
+.box-body {
+  overflow-y: auto;
+}
+
+.study-title {
+  background-color: #F2F2F2;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.study-description {
+  font-size: 16px;
+  color: #666666;
+  margin-bottom: 10px;
+}
+
+.study-date {
+  font-size: 14px;
+  color: #999999;
+}
+
+a {
+  text-decoration: none;
+}
+
+a :hover {
+  text-decoration: underline;
+}

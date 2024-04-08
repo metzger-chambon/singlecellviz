@@ -1,13 +1,32 @@
 Package: singlecellviz
 Title: SingleCellViz
 Version: 0.00
-Authors@R: person('Valentine', 'Gilbart', email = 'gilbartv@igbmc.fr', role = c('cre', 'aut'))
+Authors@R: 
+    person("Valentine", "Gilbart", , "gilbartv@igbmc.fr", role = c("cre", "aut"))
 Description: Visualize singlecell datasets.
 License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.2),
+    dplyr,
+    DT,
+    ggplot2,
     golem (>= 0.4.1),
-    shiny (>= 1.8.0)
+    patchwork,
+    plotly,
+    R6,
+    shiny (>= 1.8.0),
+    shinydashboard,
+    stats,
+    tidyr,
+    tiledbsoma,
+    waiter
+Suggests: 
+    covr,
+    spelling,
+    pkgload,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.1
