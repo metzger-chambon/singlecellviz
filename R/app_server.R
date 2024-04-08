@@ -33,7 +33,21 @@ app_server <- function(input, output, session) {
 
   mod_differential_server("differential", COMMON_DATA, r)
 
-  mod_bookmark_server("bookmark")
+  # Cannot be put into a module
+  # without creating a reactive value for names(input),
+  # or passing the input to the function
+  # observeEvent(input[['bookmark-bookmark1']], {
+  #   names <- names(input)
+  #   whitelist <- c("tabs", "common-study",
+  #                  "explore-cell_annotation", "explore-gene_annotation", "explore-dimtype",
+  #                  "markers-cell_annotation", "markers-split", "markers-top",
+  #                  "differential-comparison", "differential-split", "differential-top",
+  #                  "markers-markers_table_search", "markers-markers_table_search_columns",
+  #                  "differential-comparison_table_search", "differential-comparison_table_search_columns")
+  #   #cat(setdiff(names, whitelist), '\n')
+  #   setBookmarkExclude(setdiff(names, whitelist))
+  #   session$doBookmark()
+  # })
 
 
 }

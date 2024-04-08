@@ -138,6 +138,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
                  {
                  newValue <- validate_gene_annotation() + 1
                  validate_gene_annotation(newValue)
+
                  }
     )
 
@@ -158,13 +159,13 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       updateSelectInput(
         session,
         inputId = "cell_annotation",
-        selected = state$input$cell_annotation,
+        selected = ifelse(is.null(state$input$cell_annotation), 1, state$input$cell_annotation),
         choices =  annotation_choices(),
       )
       updateSelectInput(
         session,
         inputId = "dimtype",
-        selected = state$input$dimtype,
+        selected = ifelse(is.null(state$input$dimtype), 1, state$input$dimtype),
         choices = dimtype_choices())
       if (!is.null(state$input$gene_annotation)){
         restoreState(T)
@@ -173,7 +174,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
 
     })
 
-    setBookmarkExclude(names = c("validate_gene_annotation"))
+    #setBookmarkExclude(names = c("validate_gene_annotation"))
 
     # onRestored(function(state) {
     #   cat('RESTORED IN\n')
@@ -188,12 +189,16 @@ mod_explore_server <- function(id, COMMON_DATA, r){
 
     # TO DO : find another way ?
     observe({
-      if(restoreState() & !is.null(input$gene_annotation)){
+
+      if(restoreState() &
+         !is.null(input$gene_annotation) &
+         r$tabs() == "explore"){
         newValue <- validate_gene_annotation() + 1     # newValue <- rv$value + 1
         validate_gene_annotation(newValue)
         restoreState(F)
       }
-    }) %>% bindEvent(c(restoreState(), input$gene_annotation))
+
+    }) %>% bindEvent(c(restoreState(), input$gene_annotation, r$tabs()))
 
     # Changes genes and cell annotations options in UI
     observeEvent(c(r$tabs(), r$selected_study), {
@@ -201,6 +206,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       #   the current tab is explore AND the selected study has changed
       if (r$tabs() == "explore" &
         COMMON_DATA$tabs_updated['explore'] != r$selected_study ){
+
         # freeze prevents the gene annotation to be used when it does not match the study (when changing study)
         # https://github.com/rstudio/shiny/pull/3055
         freezeReactiveValue(input, "gene_annotation")
@@ -217,7 +223,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         updateSelectInput(
           session,
           inputId = "cell_annotation",
-          choices =  annotation_choices(),
+          choices =  annotation_choices()
         )
         updateSelectInput(
           session,
@@ -292,7 +298,8 @@ mod_explore_server <- function(id, COMMON_DATA, r){
 
       return(gene_annotation)
     }) %>% bindCache(input$gene_annotation, cache = "session") %>%
-      bindEvent(validate_gene_annotation(), ignoreInit = TRUE)
+
+      bindEvent(validate_gene_annotation())
 
 
     # Changes genes and cell annotations options in UI

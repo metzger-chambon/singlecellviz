@@ -10,10 +10,14 @@
 run_app <- function(
   onStart = NULL,
   options = list(),
-  enableBookmarking = "server",
+  enableBookmarking = "url",
   uiPattern = "/",
   ...
 ) {
+
+  shinyOptions(cache = cachem::cache_mem(max_size = 100e6))
+  shinyOptions(cache = cachem::cache_disk(file.path(dirname("tmp/"))))
+
   with_golem_options(
     app = shinyApp(
       ui = app_ui,

@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList
 mod_bookmark_ui <- function(id){
   ns <- NS(id)
-  bookmarkButton(label = "Create sharing link")
+  bookmarkButton(label = "Create sharing link", id = ns("bookmark1"))
 }
 
 #' bookmark Server Functions

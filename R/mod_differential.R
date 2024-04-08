@@ -121,7 +121,7 @@ mod_differential_server <- function(id, COMMON_DATA, r){
     onRestore(function(state) {
       updateSelectizeInput(session,
                            inputId = "comparison",
-                           selected = state$input$comparison,
+                           selected = ifelse(is.null(state$input$comparison), 1, state$input$comparison),
                            choices = comparison_choices())
       COMMON_DATA$tabs_updated['differential'] <- r$selected_study
     })
@@ -129,11 +129,11 @@ mod_differential_server <- function(id, COMMON_DATA, r){
     # Deal with DT table and Bookmark
     # https://stackoverflow.com/questions/41900515/shiny-dt-bookmarking-state
     # TODO remove also the plotly inputs
-    setBookmarkExclude(names = c("comparison_table_rows_all", "comparison_table_rows_selected",
-                                 "comparison_table_columns_selected", "comparison_table_cells_selected",
-                                 "comparison_table_rows_current", "comparison_table_state",
-                                 "comparison_table_cell_clicked"
-    ))
+    # setBookmarkExclude(names = c("comparison_table_rows_all", "comparison_table_rows_selected",
+    #                              "comparison_table_columns_selected", "comparison_table_cells_selected",
+    #                              "comparison_table_rows_current", "comparison_table_state",
+    #                              "comparison_table_cell_clicked"
+    # ))
 
     comparison_table_proxy <- dataTableProxy("comparison_table")
 

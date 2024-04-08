@@ -85,18 +85,18 @@ mod_markers_server <- function(id, COMMON_DATA, r){
     onRestore(function(state) {
       updateSelectizeInput(session,
                            inputId = "cell_annotation",
-                           selected = state$input$cell_annotation,
+                           selected = ifelse(is.null(state$input$cell_annotation), 1, state$input$cell_annotation),
                            choices = cell_annotation_choices())
       COMMON_DATA$tabs_updated['markers'] <- r$selected_study
     })
 
     # Deal with DT table and Bookmark
     # https://stackoverflow.com/questions/41900515/shiny-dt-bookmarking-state
-    setBookmarkExclude(names = c("markers_table_rows_all", "markers_table_rows_selected",
-                                 "markers_table_columns_selected", "markers_table_cells_selected",
-                                 "markers_table_rows_current", "markers_table_state",
-                                 "markers_table_cell_clicked"
-                                 ))
+    # setBookmarkExclude(names = c("markers_table_rows_all", "markers_table_rows_selected",
+    #                              "markers_table_columns_selected", "markers_table_cells_selected",
+    #                              "markers_table_rows_current", "markers_table_state",
+    #                              "markers_table_cell_clicked"
+    #                              ))
 
     markers_table_proxy <- dataTableProxy("markers_table")
 

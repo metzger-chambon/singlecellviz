@@ -9,21 +9,21 @@
 #'
 #'
 app_ui <- function(request) {
-  js <- HTML(paste("$(function() {",
-                   "$('body').on('shown.bs.modal', function() {",
-                   # TODO modify X months
-                   "$('.modal-dialog .modal-body > span:first').text('This link stores the current state of this application. The validity of the link is not guaranteed for more than X months.')",
-                   "})",
-                   "})",
-                   sep = "\n"))
+  # js <- HTML(paste("$(function() {",
+  #                  "$('body').on('shown.bs.modal', function() {",
+  #                  # TODO modify X months
+  #                  "$('.modal-dialog .modal-body > span:first').text('This link stores the current state of this application. The validity of the link is not guaranteed for more than X months.')",
+  #                  "})",
+  #                  "})",
+  #                  sep = "\n"))
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     dashboardPage(
       skin = "black",
-      dashboardHeader(title = "SingleCellViz",
-                      mod_dropdownmenu_ui("message")
+      dashboardHeader(title = "SingleCellViz"#,
+                      #mod_dropdownmenu_ui("message")
                       ),
       dashboardSidebar(
         sidebarMenu(
@@ -33,10 +33,10 @@ app_ui <- function(request) {
           menuItem("General information", tabName = "information", icon = icon("list")),
           menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass")),
           menuItem("Markers", tabName = "markers", icon = icon("tags")),
-          menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus")),
+          menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus"))#,
 
-          tags$head(tags$script(js, type = "text/javascript")),
-          mod_bookmark_ui("bookmark")
+          #tags$head(tags$script(js, type = "text/javascript"))
+          #mod_bookmark_ui("bookmark")
 
         )
         # https://stackoverflow.com/questions/68452272/how-to-prevent-user-from-doing-anything-on-shiny-app-when-app-is-busy
@@ -48,7 +48,10 @@ app_ui <- function(request) {
       ),
       dashboardBody(
         #shinyjs::useShinyjs(),
-        waiter::autoWaiter(#id = c("explore-plotDim2"),
+        waiter::autoWaiter(id = c("explore-plotDim1", "explore-plotDim2",
+                                  "explore-violin", "explore-dotplot",
+                                  "markers-heatmap", "differential-heatmap"
+                                  ),
                            color = waiter::transparent(0),
                            html = waiter::spin_throbber()),
         #waiter::waiterShowOnLoad(waiter::spin_fading_circles()), # shows before anything else
