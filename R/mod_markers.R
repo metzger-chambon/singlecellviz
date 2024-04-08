@@ -60,7 +60,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       markers_table <- COMMON_DATA$experiment$get('markers')$get(cell_annotation)$get("result")$read()$concat()$to_data_frame()
       markers_table <- clean_result(markers_table)
       return(markers_table)
-    }) %>% bindCache(c(input$cell_annotation), cache = "session")
+    }) %>% bindCache(c(input$cell_annotation))#, cache = "session")
 
     aggrexpression_table <- reactive({
       req(input$cell_annotation)
@@ -68,7 +68,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       aggrexpression_table <- COMMON_DATA$experiment$get("markers")$get(cell_annotation)$get('aggrexpression')$read()$concat()$to_data_frame()
       aggrexpression_table <- clean_aggrexpression(aggrexpression_table)
       return(aggrexpression_table)
-    }) %>% bindCache(c(input$cell_annotation), cache = "session")
+    }) %>% bindCache(c(input$cell_annotation))#, cache = "session")
 
     cell_annotation_choices <- reactive(
       {

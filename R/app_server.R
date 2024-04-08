@@ -20,6 +20,15 @@ app_server <- function(input, output, session) {
     {input$tabs}
   )
 
+  #https://github.com/rstudio/shiny-server/issues/480
+  # cat(file=stderr(), paste0("\nStarting application: ", Sys.time(), "\n"))
+  # cat(file=stderr(), paste0("\nRandom message\n"))
+  # cat(file=stderr(), paste0("\nTemp dir: ", tempdir(), "\n"))
+  # cat(file=stderr(), paste0("\nSys TMPDIR dir: ", Sys.getenv("TMPDIR"), "\n"))
+  # cat(file=stderr(), paste0("\nSys TMP dir: ", Sys.getenv("TMP"), "\n"))
+  # cat(file=stderr(), paste0("\nSys TEMP dir: ", Sys.getenv("TEMP"), "\n"))
+  # cat(file=stderr(), paste0("\nWorking dir: ", getwd(), "\n"))
+  
   # A series of callModule() created with golem:add_module()
   mod_dropdownmenu_server("message")
 
@@ -49,5 +58,6 @@ app_server <- function(input, output, session) {
   #   session$doBookmark()
   # })
 
+  #session$onSessionEnded(function() { stopApp() })
 
 }

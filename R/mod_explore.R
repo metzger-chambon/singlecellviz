@@ -97,7 +97,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         genes_choices <- add_suffix(res, isolate(r$selected_study))
 
         return(genes_choices)
-      }) %>% bindCache(r$selected_study, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+      }) %>% bindCache(r$selected_study)#, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
 
     # Calculate annotation_choices options
     annotation_choices <- reactive(
@@ -254,7 +254,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         dimtable <- as.matrix(dimtable)
         dimtable <- as.data.frame(dimtable) %>% select(c(.data$V1, .data$V2)) #%>% head()# %>% sample_n(size = 3, replace = TRUE)
         return(dimtable)
-      }) %>% bindCache(input$dimtype, cache = "session")
+      }) %>% bindCache(input$dimtype) #, cache = "session")
 
     cell_annotation <- reactive({
       req(input$cell_annotation)
@@ -264,9 +264,10 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       cell_annotation <- experiment$obs$read(column_names = annotation)$concat()$to_data_frame() %>%
         as.data.frame()
       return(cell_annotation)
-    }) %>% bindCache(input$cell_annotation, cache = "session")
+    }) %>% bindCache(input$cell_annotation) #, cache = "session")
 
     gene_annotation <- reactive({
+      #cat(file=stderr(), paste0("\nGene_annotation begin: ", Sys.time(), "\n"))
       req(input$gene_annotation)
       experiment <- COMMON_DATA$experiment
       group <- COMMON_DATA$groups[1]
@@ -295,10 +296,13 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       gene_annotation <- expt_query %>% as.matrix() %>%
         as.data.frame()
       #gene_annotation$mean <- rowMeans(gene_annotation)
+      #cat(file=stderr(), paste0("\nGene_annotation ends: ", Sys.time(), "\n"))
+      #cat(file=stderr(), paste0(input$gene_annotation, "\n"))
+      #cat(file=stderr(), paste0(rlang::hash(input$gene_annotation), "\n"))
+      
 
       return(gene_annotation)
-    }) %>% bindCache(input$gene_annotation, cache = "session") %>%
-
+    }) %>% bindCache(input$gene_annotation) %>%#, cache = "session") %>%
       bindEvent(validate_gene_annotation())
 
 
@@ -318,25 +322,36 @@ mod_explore_server <- function(id, COMMON_DATA, r){
     output$plotDim2 <- renderPlot({
       #req(isolate(input$gene_annotation))
       #cat(isolate(input$gene_annotation), '\n')
+      #cat(file=stderr(), paste0("\nplotDim2 begins: ", Sys.time(), "\n"))
+
       annotation <- gene_annotation()
       table <- cbind(dimtable(), annotation)
       plot <- DimPlot(table = table, features = colnames(annotation))
+      #cat(file=stderr(), paste0("\nplotDim2 ends: ", Sys.time(), "\n"))
+
       return(plot)
     })
 
     output$violin <- renderPlot({
+      #cat(file=stderr(), paste0("\nviolin begins: ", Sys.time(), "\n"))
+
       gene <- gene_annotation()
       cell <- cell_annotation() %>% numeric_to_factor()
       table <- cbind(gene, cell)
       plot <- VlnPlot(table = table, features = colnames(gene), group = colnames(cell))
+      #cat(file=stderr(), paste0("\nviolin ends: ", Sys.time(), "\n"))
+
       return(plot)
     })
 
     output$dotplot <- renderPlot({
+      #cat(file=stderr(), paste0("\ndotplot begins: ", Sys.time(), "\n"))
       gene <- gene_annotation()
       cell <- cell_annotation() %>% numeric_to_factor()
       table <- cbind(gene, cell)
       plot <- DotPlot(table = table, features = colnames(gene), group = colnames(cell))
+      #cat(file=stderr(), paste0("\ndotplot ends: ", Sys.time(), "\n"))
+
       return(plot)
     })
 

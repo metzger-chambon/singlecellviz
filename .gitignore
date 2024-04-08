@@ -10,3 +10,5 @@ NAMESPACE
 man/run_app.Rd
 log/
 data/
+tmp/
+myapp-cache/

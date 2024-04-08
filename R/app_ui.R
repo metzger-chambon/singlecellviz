@@ -48,12 +48,12 @@ app_ui <- function(request) {
       ),
       dashboardBody(
         #shinyjs::useShinyjs(),
-        waiter::autoWaiter(id = c("explore-plotDim1", "explore-plotDim2",
-                                  "explore-violin", "explore-dotplot",
-                                  "markers-heatmap", "differential-heatmap"
-                                  ),
-                           color = waiter::transparent(0),
-                           html = waiter::spin_throbber()),
+        # waiter::autoWaiter(id = c("explore-plotDim1", "explore-plotDim2",
+        #                           "explore-violin", "explore-dotplot",
+        #                           "markers-heatmap", "differential-heatmap"
+        #                           ),
+        #                    color = waiter::transparent(0),
+        #                    html = waiter::spin_throbber()),
         #waiter::waiterShowOnLoad(waiter::spin_fading_circles()), # shows before anything else
 
         tabItems(
