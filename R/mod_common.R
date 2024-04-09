@@ -24,8 +24,6 @@ mod_common_server <- function(id, COMMON_DATA, r){
   moduleServer( id, function(input, output, session){
     #ns <- session$ns
 
-    # TO DO: understand why this is needed but not updating the homepage ?
-    # Is it just bc other modules depend on COMMON_DATA and r$selected_study?
     onRestore(function(state) {
       r$selected_study <- state$input$study
       study <- studies[input$study,, drop = F]

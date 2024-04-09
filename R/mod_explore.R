@@ -80,7 +80,6 @@ mod_explore_ui <- function(id){
 mod_explore_server <- function(id, COMMON_DATA, r){
   moduleServer(id, function(input, output, session){
 
-    # TODO: add loading inforamtion for the user
     restoreState <- reactiveVal(F)
 
     # Calculate genes_choices options
@@ -97,7 +96,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         genes_choices <- add_suffix(res, isolate(r$selected_study))
 
         return(genes_choices)
-      }) %>% bindCache(r$selected_study)#, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+      }) %>% bindCache(r$selected_study)
 
     # Calculate annotation_choices options
     annotation_choices <- reactive(
@@ -112,7 +111,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         annotation_choices <- add_suffix(annotation_choices, isolate(r$selected_study))
         annotation_choices <- annotation_choices[which(names(annotation_choices) != "obs_id")]
         return(annotation_choices)
-      }) # %>% bindCache(r$selected_study, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+      }) # %>% bindCache(r$selected_study)
 
 
     # # Calculate dimtype_choices options
@@ -129,7 +128,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         # This helps in reactivity and cache of dimtype_choices dependent outputs
         dimtype_choices <- add_suffix(dimtype_choices, isolate(r$selected_study))
         return(dimtype_choices)
-      }) #%>% bindCache(r$selected_study, cache = "session") # TODO change accordingly (add Sys.date()), change for "app"?
+      }) #%>% bindCache(r$selected_study)
 
     # This reactiveVal is a work-around of the fact that I need a virtual
     # "click" on validate_gene_annotation each time a selected study is used
@@ -187,7 +186,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
     #
     # })
 
-    # TO DO : find another way ?
+    # TODO : find another way ?
     observe({
 
       if(restoreState() &
@@ -299,7 +298,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       #cat(file=stderr(), paste0("\nGene_annotation ends: ", Sys.time(), "\n"))
       #cat(file=stderr(), paste0(input$gene_annotation, "\n"))
       #cat(file=stderr(), paste0(rlang::hash(input$gene_annotation), "\n"))
-      
+
 
       return(gene_annotation)
     }) %>% bindCache(input$gene_annotation) %>%#, cache = "session") %>%

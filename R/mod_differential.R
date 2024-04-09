@@ -23,7 +23,7 @@ mod_differential_ui <- function(id){
         column(
           width = 6,
           numericInput(ns("top"), "Top genes to show in heatmap:", 15, min = 1, max = 1000),
-          # TO DO: add tool tips change for a solution not using shinyBS
+          # TODO: add tool tips change for a solution not using shinyBS
           # shinyBS::bsTooltip(ns("top"), paste("Only the top X genes are shown. Selection is based on p_val_adj",
           #                            "(and avg_log2FC in case of equality),",
           #                            "of each group in a selected annotation."),
@@ -77,7 +77,7 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       req(input$comparison)
       comparison <- remove_suffix(input$comparison, isolate(r$selected_study))
       comparison_table <- COMMON_DATA$experiment$get('comparison')$get(comparison)$get("result")$read()$concat()$to_data_frame()
-      comparison_table <- clean_result(comparison_table)
+      comparison_table <- clean_findmarkers_result(comparison_table)
       return(comparison_table)
     }) %>% bindCache(c(input$comparison))#, cache = "session")
 
@@ -99,11 +99,9 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       })
 
     # Changes genes and cell annotations options in UI
-    # TODO : is this necessary of is calling r$tabs() and comparison_choices (that depends on r$selected study) is enough?
     observeEvent(c(r$tabs(), r$selected_study), {
       # Recalculate annotation_choices and genes_choices everytime:
       #   the current tab is explore AND the selected study has changed
-      # TODO : homogénéise differential et comparison names
       if (r$tabs() == "differential" &
           COMMON_DATA$tabs_updated['differential'] != r$selected_study){
 
@@ -128,7 +126,6 @@ mod_differential_server <- function(id, COMMON_DATA, r){
 
     # Deal with DT table and Bookmark
     # https://stackoverflow.com/questions/41900515/shiny-dt-bookmarking-state
-    # TODO remove also the plotly inputs
     # setBookmarkExclude(names = c("comparison_table_rows_all", "comparison_table_rows_selected",
     #                              "comparison_table_columns_selected", "comparison_table_cells_selected",
     #                              "comparison_table_rows_current", "comparison_table_state",
@@ -138,7 +135,6 @@ mod_differential_server <- function(id, COMMON_DATA, r){
     comparison_table_proxy <- dataTableProxy("comparison_table")
 
     # Restore table selection and search
-    # TODO: can I put that in onRestore? instead of onRestored?
     onRestored(function(state) {
       DT::updateSearch(comparison_table_proxy,
                        keywords = list(global = state$input$comparison_table_search,
@@ -149,15 +145,8 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       # freeze prevents the heatmap to update twice (first when study changes, then when rows_all changes)
       # https://github.com/rstudio/shiny/pull/3055
       freezeReactiveValue(input, "comparison_table_rows_all")
-      data <- comparison_table()
-      DT::datatable(data,
-                    rownames = FALSE,
-                    filter = list(position = 'top', clear = TRUE),
-                    selection = 'none'#,
-                    #options = list(autoWidth = TRUE, bAutoWidth = FALSE)
-                    #options = list(columnDefs = list(list(width = '20px', targets = "_all")))
-      ) %>%
-        DT::formatSignif(1:5, digits=4)
+      data <- comparison_table() %>%
+        show_findmarkers_result()
 
     })
 
@@ -182,7 +171,7 @@ mod_differential_server <- function(id, COMMON_DATA, r){
 
       # Split group column
       # Check if data can be split
-      # TO DO: keep in mind in the db the fact that you can split or not
+      # TODO: keep in mind in the db the fact that you can split or not
       aggregation_labels <- colnames(aggrexpression_table())[-1]
       # TRUE = you can split ; FALSE = you cannot split
       condition <- all(sapply(c(aggregation_labels), FUN= function(x){grepl("_", x)}))
@@ -201,7 +190,6 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       data <- data %>% mutate(text = paste0('Gene: ', .data$gene, '\n',
                                             'Expression: ', .data$expression, ''))
       # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
-      # TODO: highlight selected row?
       #cat("plot: ", input$data_table_rows_selected, "\n")
 
       return(list(data = data, split = split))

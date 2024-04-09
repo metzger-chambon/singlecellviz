@@ -10,7 +10,6 @@
 #'
 #
 
-# TODO: set maximum cache
 app_server <- function(input, output, session) {
   # La stratégie du petit r et du grand R
   # https://engineering-shiny.org/structuring-project.html?q=strat%C3%A9#communication-between-modules
@@ -20,6 +19,8 @@ app_server <- function(input, output, session) {
     {input$tabs}
   )
 
+  singlecellplot_theme()
+
   #https://github.com/rstudio/shiny-server/issues/480
   # cat(file=stderr(), paste0("\nStarting application: ", Sys.time(), "\n"))
   # cat(file=stderr(), paste0("\nRandom message\n"))
@@ -28,7 +29,7 @@ app_server <- function(input, output, session) {
   # cat(file=stderr(), paste0("\nSys TMP dir: ", Sys.getenv("TMP"), "\n"))
   # cat(file=stderr(), paste0("\nSys TEMP dir: ", Sys.getenv("TEMP"), "\n"))
   # cat(file=stderr(), paste0("\nWorking dir: ", getwd(), "\n"))
-  
+
   # A series of callModule() created with golem:add_module()
   mod_dropdownmenu_server("message")
 

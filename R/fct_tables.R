@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-clean_result <- function(table){
+clean_findmarkers_result <- function(table){
   # If FindMarkers was run, the column gene does not exist (it is the rownames i.e. obs_id)
   if (!"gene" %in% colnames(table)){
     table <- table %>% rename("gene" = "obs_id")
@@ -60,5 +60,33 @@ numeric_to_factor <- function(table, n = 10){
   #     as.factor(x)
   #   })
   # }
+  return(table)
+}
+
+
+#' @description A fct function
+#'
+#' @return The return value, if any, from executing the function.
+#'
+#' @noRd
+#' @importFrom DT datatable formatSignif
+
+show_findmarkers_result <- function(table){
+  order_num <- c("avg_log2FC", "p_val", "p_val_adj", "pct.1", "pct.2")
+  col_num <- order_num[order_num %in% colnames(table)]
+
+  order <- c("cluster", "gene", col_num)
+  col <- order[order %in% colnames(table)]
+
+  table <- table %>%
+    select(col)
+  table <- DT::datatable(table,
+                rownames = FALSE,
+                filter = list(position = 'top', clear = TRUE),
+                selection = 'none'#,
+                #options = list(autoWidth = TRUE, bAutoWidth = FALSE)
+                #options = list(columnDefs = list(list(width = '20px', targets = "_all")))
+  ) %>%
+    DT::formatSignif(col_num, digits=4)
   return(table)
 }

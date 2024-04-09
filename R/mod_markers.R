@@ -23,7 +23,7 @@ mod_markers_ui <- function(id){
         column(
           width = 6,
           numericInput(ns("top"), "Top genes to show in heatmap:", 5, min = 1, max = 1000),
-          # TO DO: add tool tips change for a solution not using shinyBS
+          # TODO: add tool tips change for a solution not using shinyBS
           # shinyBS::bsTooltip(ns("top"), paste("Only the top X genes are shown. Selection is based on p_val_adj",
           #                            "(and avg_log2FC in case of equality),",
           #                            "of each group in a selected annotation."),
@@ -58,7 +58,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       req(input$cell_annotation)
       cell_annotation <- remove_suffix(input$cell_annotation, isolate(r$selected_study))
       markers_table <- COMMON_DATA$experiment$get('markers')$get(cell_annotation)$get("result")$read()$concat()$to_data_frame()
-      markers_table <- clean_result(markers_table)
+      markers_table <- clean_findmarkers_result(markers_table)
       return(markers_table)
     }) %>% bindCache(c(input$cell_annotation))#, cache = "session")
 
@@ -101,7 +101,6 @@ mod_markers_server <- function(id, COMMON_DATA, r){
     markers_table_proxy <- dataTableProxy("markers_table")
 
     # Restore table selection and search
-    # TODO: can I put that in onRestore? instead of onRestored?
     onRestored(function(state) {
       DT::updateSearch(markers_table_proxy,
                        keywords = list(global = state$input$markers_table_search,
@@ -125,21 +124,12 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       # freeze prevents the heatmap to update twice (first when study changes, then when rows_all changes)
       # https://github.com/rstudio/shiny/pull/3055
       freezeReactiveValue(input, "markers_table_rows_all")
-      data <- markers_table()
-      DT::datatable(data,
-                    rownames = FALSE,
-                    filter = list(position = 'top', clear = TRUE),
-                    selection = 'none'#,
-                    #options = list(autoWidth = TRUE, bAutoWidth = FALSE)
-                    #options = list(columnDefs = list(list(width = '20px', targets = "_all")))
-      ) %>%
-        DT::formatSignif(1:5, digits=4)
+      data <- markers_table() %>%
+        show_findmarkers_result()
 
     })
 
     # Heatmap creation
-    # TODO not make it a genereal observe but at least give some values to check otherwise it comes here
-    # even when nothing in this tab is happening
     heatmap_table <- reactive({
       req(length(input$markers_table_rows_all) > 0, input$top, markers_table(), aggrexpression_table())
       #cat(length(input$markers_table_rows_all), '\n')
@@ -159,7 +149,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
         mutate(gene = factor(.data$gene, levels=unique(markers$gene))) %>%
         pivot_longer(!.data$gene, names_to = 'group', values_to = "expression") %>%
         mutate(group = as.character(.data$group))
-      # TO DO find a better way to do this ?
+      # TODO find a better way to do this ?
       data$marker_of <- marker_of[match(data$gene, names(marker_of))]
 
       # Split group column
@@ -184,7 +174,6 @@ mod_markers_server <- function(id, COMMON_DATA, r){
                                             'Expression: ', expression, '\n',
                                             'Marker of group: ', marker_of, '' ))
       # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
-      # TODO: highlight selected row?
       return(list(data = data, split = split))
     }) #%>% bindCache(c(input$comparison), cache = "session")
 
