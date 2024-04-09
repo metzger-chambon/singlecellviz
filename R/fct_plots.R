@@ -1,5 +1,18 @@
 #' plots
 #'
+#'
+
+#'
+#' @description Creates theme of plot(s).
+singlecellplot_theme <- function(){
+  theme_set(theme(panel.background = element_rect(fill = "white", color = NA),
+                  panel.grid.major = element_line(color = 'lightgrey'),#element_blank(), #
+                  panel.grid.minor = element_blank(),
+                  legend.key = element_blank()
+  ))
+}
+
+#'
 #' @description Creates dimension plot(s).
 #'
 #' @param table a data.frame where each row corresponds to a cell, and each column to a characteristic.
@@ -7,8 +20,8 @@
 #' @param features a vector of features name to be used as color
 #'
 #' @return a patchwork of dimension plots
-#' #' @examples
-#' # Table
+#' @examples
+#' Table
 #' table <- structure(list(V1 = c(10.5895051956177, 15.6335277557373, 13.046275138855,
 #' 26.6680164337158, 13.3903284072876, 10.344783782959), V2 = c(14.850136756897,
 #' 26.4807929992676, 17.4865455627441, 14.7715759277344, 9.01217460632324,
@@ -21,13 +34,22 @@
 #' @noRd
 #' @importFrom patchwork wrap_plots
 
-DimPlot <- function(table, features){
+DimPlot <- function(table, features,
+                    gradient_cols = c("lightgrey", "blue")){
   # TODO: verify order of the barcodes to make sure we are aggregating data correctly?
   # .data is used to handle R CMD check
   # https://stackoverflow.com/questions/9439256/how-can-i-handle-r-cmd-check-no-visible-binding-for-global-variable-notes-when
   plots <- lapply(features, function(x){
-    ggplot(table) + geom_point(aes(x = .data$V1, y = .data$V2, col = .data[[x]])) +
-      labs(color = x)
+    gg <- ggplot(table) +
+      geom_point(aes(x = .data$V1, y = .data$V2, col = .data[[x]])) +
+      labs(x = "Dim1", y = "Dim2", color = x) +
+      theme(panel.grid.major = element_blank())
+    if (is.numeric(table[[x]])) {
+      gg <- gg + scale_color_gradient(low = gradient_cols[1], high = gradient_cols[2])
+    } else {
+      #gg <- gg + scale_color_manual(values = cols)
+    }
+    return(gg)
   })
   plot <- wrap_plots(plots)
   return(plot)
@@ -92,7 +114,7 @@ DotPlot <- function(table, features, group,
 
 
   # data.features$id = table$group
-  # TO DO checks that results are the same as the ones in seurat
+  # TODO checks that results are the same as the ones in seurat
 
   ordered_groups <- if(is.factor(table[,group])) {levels(table[,group])} else {unique(x = table[,group])}
   data.plot <- lapply(
@@ -170,7 +192,7 @@ DotPlot <- function(table, features, group,
     guides(size = guide_legend(title = 'Percent Expressed')) +
     labs(
       x = '',
-      y = 'Annotation',
+      y = 'Annotation'
     ) + scale_color_gradient(low = cols[1], high = cols[2]) +
     scale_y_discrete(limits=rev) +
     theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
@@ -187,18 +209,57 @@ DotPlot <- function(table, features, group,
 #' gene x group of the cells combination, associated with an expression value.
 #' @param split a boolean indicating whether there is group2 variable to split the plot
 #' @return a ggplot representing a heatmap
+#' @examples
 #'
+#' table <- structure(list(gene = structure(c(27L, 27L, 27L, 27L, 27L, 27L
+#' ), levels = c("RPS12", "RPS27", "RPS6", "RPL32", "RPS14", "IL32",
+#'               "LTB", "CD3D", "IL7R", "LDHB", "FCN1", "LGALS2", "S100A8", "S100A9",
+#'               "CD14", "MS4A1", "CD79A", "CD79B", "LINC00926", "TCL1A", "CCL5",
+#'               "NKG7", "GZMA", "CST7", "GZMK", "CDKN1C", "HES4", "RP11-290F20.3",
+#'               "MS4A7", "FCGR3A", "GZMB", "FGFBP2", "SPON2", "PRF1", "GNLY",
+#'               "FCER1A", "SERPINF1", "CLEC10A", "ENHO", "CLIC2", "LY6G6F", "AP001189.4",
+#'               "TMEM40", "ITGA2B", "GP9"), class = "factor"), group = c("0",
+#'               "1", "2", "3", "4", "5"), expression = c(12.6, 14.4, 147, 23.99,
+#'               0, 435.6), marker_of = c(HES4 = "5", HES4 = "5", HES4 = "5",
+#'               HES4 = "5", HES4 = "5", HES4 = "5"), text = c("Gene: HES4\nExpression: 12.6\nMarker of group: 5",
+#'                                                              "Gene: HES4\nExpression: 14.4\nMarker of group: 5", "Gene: HES4\nExpression: 147\nMarker of group: 5",
+#'                                                              "Gene: HES4\nExpression: 23.99\nMarker of group: 5", "Gene: HES4\nExpression: 0\nMarker of group: 5",
+#'                                                              "Gene: HES4\nExpression: 435.6\nMarker of group: 5")), row.names = c(NA,
+#'                                                                  -6L), class = c("tbl_df", "tbl", "data.frame"))
+#' HeatmapPlot(table)
 #' @noRd
 
-HeatmapPlot <- function(table, split = FALSE){
-
+HeatmapPlot <- function(table, split = FALSE, threshold_value = 50){
+  n_x <- length(unique(table$group))
+  n_y <- length(unique(table$gene))
+  fct_size <- function(x){
+    val <- 15-3*log(0.239876*x+8)
+    min <- 1
+    # data <- data.frame(x = seq(1:1000)) %>% mutate(y = fct_size(x))
+    # ggplot(data, aes(x = x, y = y)) + geom_point()
+    return(ifelse(val > min, val, min))
+  }
   p <- ggplot(table, aes(x=.data$group, y=.data$gene,
                          fill = .data$expression,
                          text = .data$text)) +
     geom_tile() +
     scale_y_discrete(limits = rev) +
     scale_fill_viridis_c() +
-    theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1))
+    theme(axis.text.x = element_text(angle = 45, vjust = 0.5,
+                                     hjust=1, size = fct_size(n_x)),
+          #axis.title.x = element_text(vjust = -2), # does not work with ggplotly
+          axis.text.y = element_text(size = fct_size(n_y)) ) +
+    labs(x = 'Group',
+         y = 'Gene',
+         fill = "Expression")
+  # Check the number of y-axis values
+  # if( n_y > threshold_value){
+  #   p <- p + theme(#axis.title.y=element_blank(),
+  #     axis.text.y=element_blank(),
+  #     axis.ticks.y=element_blank()
+  #   )
+  # }
+
   # Split heatmap
   if (split){
     p <- p + facet_grid(. ~ group2)

@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit README.Rmd and run devtools::build_readme() to update README.md -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -15,41 +15,22 @@ knitr::opts_chunk$set(
 
 # singlecellviz
 
-<!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-<!-- badges: end -->
-
-The goal of singlecellviz is to ...
+Singlecellviz is a RShiny app allowing an easy exploration of single cell datasets. 
 
 ## Installation
 
 You can install the development version of singlecellviz like so:
 
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+```bash
+git clone git@github.com:metzger-chambon/si nglecellviz.git
 ```
 
-## Example
+You will need to install the required packages and their dependencies. They are listed in the renv.lock file. 
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(singlecellviz)
-## basic example code
+```r
+renv::init() # Answer 3: Activate the project without snapshotting or installing any packages.
+renv::restore()
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+You can also find the necessary and suggested packages in the DESCRIPTION file. 
 
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

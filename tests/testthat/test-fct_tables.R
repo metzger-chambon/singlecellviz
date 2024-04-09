@@ -25,8 +25,8 @@ test_that("clean_result works", {
                                     "RPS27", "RPS6", "RPL32", "RPS14", "RPS25")), row.names = c(NA,
                                     -6L), class = c("tbl_df", "tbl", "data.frame"))
 
-  clean_FindMarkers <- clean_result(table_FindMarkers)
-  clean_FindAllMarkers <- clean_result(table_FindAllMarkers)
+  clean_FindMarkers <- clean_findmarkers_result(table_FindMarkers)
+  clean_FindAllMarkers <- clean_findmarkers_result(table_FindAllMarkers)
 
   # Check if the returned object is of expected class
   expect_s3_class(clean_FindMarkers, "tbl_df")

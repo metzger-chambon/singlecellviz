@@ -5,7 +5,7 @@
 #' @return The return value, if any, from executing the function.
 #' @noRd
 
-# TO DO deal with studies summary better
+# TODO deal with studies summary better
 # Maybe a good way to deal with that would be to have a package for singlecelldatabase
 # That has a function that output "studies"
 # And then this can be easily used both in the UI (for the notification and choice of studies)

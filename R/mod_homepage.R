@@ -8,11 +8,10 @@
 #'
 mod_homepage_ui <- function(){
   HTML(paste0("
-  <p> In ",
+  <p> This application will help you explore some single cell datasets of the ",
   enurl(url = "https://www.igbmc.fr/equipes/roles-physiopathologiques-des-voies-de-signalisation-des-recepteurs-nucleaires",
         text = "Metzger Lab"),
-  ", we are particularly interested in ... </p>
-  <p> This tool will help you explore some of our single cell datasets. </p>
+  ". </p>
   <p> Start by selecting a study on the left panel, and move to the other tabs to explore.</p>
   "))
 

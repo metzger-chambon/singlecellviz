@@ -11,7 +11,6 @@
 app_ui <- function(request) {
   # js <- HTML(paste("$(function() {",
   #                  "$('body').on('shown.bs.modal', function() {",
-  #                  # TODO modify X months
   #                  "$('.modal-dialog .modal-body > span:first').text('This link stores the current state of this application. The validity of the link is not guaranteed for more than X months.')",
   #                  "})",
   #                  "})",
@@ -58,7 +57,7 @@ app_ui <- function(request) {
 
         tabItems(
           tabItem(tabName = "homepage", # must match the menuItem(tabName = "") in dashboardSidebar()
-                  h2("Welcome to the homepage!"),
+                  h2("Homepage"),
                   mod_homepage_ui()
              ),
           tabItem(tabName = "information",
