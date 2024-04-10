@@ -175,16 +175,16 @@ DotPlot <- function(table, features, group,
   )
 
   avg.exp.scaled <- as.vector(x = t(x = avg.exp.scaled))
-  data.plot$avg.exp.scaled <- avg.exp.scaled
+  avg.exp.scaled <- data.frame(avg.exp.scaled = avg.exp.scaled, id = ordered_groups)
+
+  data.plot <- merge(data.plot, avg.exp.scaled, by = "id")
 
   data.plot$features.plot <- factor(
     x = data.plot$features.plot,
     levels = features
   )
   data.plot$pct.exp <- data.plot$pct.exp * 100
-  data.plot$id <- as.factor(data.plot$id)
-  # reorder if group are factors
-  if (is.factor(table[,group])) {levels(data.plot$id) <- ordered_groups}
+  data.plot$id <- factor(data.plot$id, levels = ordered_groups)
 
   plot <- ggplot(data.plot, aes(x = .data$features.plot, y = .data$id)) +
     geom_point(aes(size = .data$pct.exp, color = .data$avg.exp.scaled)) +

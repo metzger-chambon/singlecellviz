@@ -135,7 +135,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       #cat(length(input$markers_table_rows_all), '\n')
       markers_table <- markers_table()[input$markers_table_rows_all,]
       markers <- markers_table %>% group_by(.data$cluster) %>%
-        arrange(.data$p_val_adj, .data$avg_log2FC) %>%
+        arrange(.data$p_val_adj, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top) %>%
         select(.data$gene, .data$cluster)
       # If a marker is marker of several clusters, collapse the information
@@ -160,7 +160,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       condition <- !all(cluster_labels %in% aggregation_labels)
       split <- input$split & condition
       if (condition){
-        data <- data %>% separate(.data$group, c('group', 'group2'))
+        data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_')
         if (!input$split) {
           data <- data %>%
             group_by(.data$gene, .data$group, marker_of) %>%
