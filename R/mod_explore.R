@@ -272,10 +272,11 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       group <- COMMON_DATA$groups[1]
       array <- ifelse("data" %in% COMMON_DATA$arrays, "data", "count") #COMMON_DATA$arrays[1]
       annotation <- remove_suffix(input$gene_annotation, isolate(r$selected_study))
-      annotation <- paste(annotation,  collapse = "', '", sep = '')
 
       var_query <- tiledbsoma::SOMAAxisQuery$new(
-        value_filter = paste("var_id %in% c('", annotation,"')", sep = '')
+        value_filter = paste("var_id %in% c('",
+                             paste(annotation,  collapse = "', '", sep = '')
+                             ,"')", sep = '')
         #value_filter = "var_id %in% c('NOCL2','AGRN', 'SDF4')"
         #value_filter = "var_id %in% c('Epcam', 'Cd75', 'Cd45')"
       )
@@ -293,7 +294,12 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       )
 
       gene_annotation <- expt_query %>% as.matrix() %>%
-        as.data.frame()
+        as.data.frame() %>%
+        # reorder columns to the input selection
+        select(annotation)
+
+      #gene_annotation <- gene_annotation[,annotation, drop=F]
+
       #gene_annotation$mean <- rowMeans(gene_annotation)
       #cat(file=stderr(), paste0("\nGene_annotation ends: ", Sys.time(), "\n"))
       #cat(file=stderr(), paste0(input$gene_annotation, "\n"))

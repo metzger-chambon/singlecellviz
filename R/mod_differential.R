@@ -158,14 +158,14 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       #cat(length(input$markers_table_rows_all), '\n')
       comparison_table <- comparison_table()[input$comparison_table_rows_all,]
       comparison_table <- comparison_table %>%
-        arrange(.data$p_val_adj, -abs(.data$avg_log2FC)) %>%
+        arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top)
 
       #slice_max(order_by = p_val_adj, n = input$top, with_ties = FALSE)
       data <- aggrexpression_table() %>%
         filter(.data$gene %in% comparison_table$gene) %>%
         # order genes by the cluster they correspond to
-        mutate(gene = factor(.data$gene, levels=unique(comparison_table$gene))) %>%
+        mutate(gene = factor(.data$gene, levels = unique(comparison_table$gene))) %>%
         pivot_longer(!.data$gene, names_to = 'group', values_to = "expression") %>%
         mutate(group = as.character(.data$group))
 
@@ -177,20 +177,24 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       condition <- all(sapply(c(aggregation_labels), FUN= function(x){grepl("_", x)}))
       split <- input$split & condition
       if (condition){
-        data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_')
+        data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_')%>%
+          # To keep the same order of labels
+          mutate(group = factor(group, levels = unique(group)),
+                 group2 = factor(group2, levels = unique(group2)))
         if (!input$split) {
           data <- data %>%
             group_by(.data$gene, .data$group) %>%
             summarise(expression = mean(expression), .groups = "keep")
         }
+      } else {
+        data <- data %>% mutate(group = factor(group, levels = unique(group)))
       }
 
       # order genes by the cluster they correspond to
-      #data$gene <- factor(data$gene, levels = unique(levels(markers$gene)))
       data <- data %>% mutate(text = paste0('Gene: ', .data$gene, '\n',
                                             'Expression: ', .data$expression, ''))
-      # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
-      #cat("plot: ", input$data_table_rows_selected, "\n")
+
+      # exemple of a marker for two groups : CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
 
       return(list(data = data, split = split))
     }) #%>% bindCache(c(input$comparison), cache = "session")

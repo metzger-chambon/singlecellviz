@@ -135,9 +135,10 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       #cat(length(input$markers_table_rows_all), '\n')
       markers_table <- markers_table()[input$markers_table_rows_all,]
       markers <- markers_table %>% group_by(.data$cluster) %>%
-        arrange(.data$p_val_adj, -abs(.data$avg_log2FC)) %>%
+        arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top) %>%
         select(.data$gene, .data$cluster)
+      # TODO : changer marker of to take into account all and not just top X ?
       # If a marker is marker of several clusters, collapse the information
       marker_of <- markers %>% group_by(.data$gene) %>%
         summarize(groups = paste(.data$cluster, collapse = ', ')) %>%
@@ -160,19 +161,25 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       condition <- !all(cluster_labels %in% aggregation_labels)
       split <- input$split & condition
       if (condition){
-        data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_')
+        data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_') %>%
+          # To keep the same order of labels
+          mutate(group = factor(group, levels = unique(group)),
+                 group2 = factor(group2, levels = unique(group2)))
         if (!input$split) {
           data <- data %>%
             group_by(.data$gene, .data$group, marker_of) %>%
             summarise(expression = mean(expression), .groups = "keep")
         }
+       } else {
+        data <- data %>% mutate(group = factor(group, levels = unique(group)))
       }
 
       # order genes by the cluster they correspond to
       #data$gene <- factor(data$gene, levels = unique(levels(markers$gene)))
       data <- data %>% mutate(text = paste0('Gene: ', .data$gene, '\n',
                                             'Expression: ', expression, '\n',
-                                            'Marker of group: ', marker_of, '' ))
+                                            'Marker of group: ', marker_of, '' ),
+                              group = factor(group, levels = levels(markers$cluster)))
       # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
       return(list(data = data, split = split))
     }) #%>% bindCache(c(input$comparison), cache = "session")

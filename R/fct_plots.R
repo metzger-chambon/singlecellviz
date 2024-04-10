@@ -8,8 +8,8 @@ singlecellplot_theme <- function(){
   theme_set(theme(panel.background = element_rect(fill = "white", color = NA),
                   panel.grid.major = element_line(color = 'lightgrey'),#element_blank(), #
                   panel.grid.minor = element_blank(),
-                  legend.key = element_blank()
-  ))
+                  legend.key = element_blank())
+  )
 }
 
 #'
@@ -68,15 +68,17 @@ DimPlot <- function(table, features,
 #' @importFrom patchwork wrap_plots
 
 VlnPlot <- function(table, features, group){
+  # TODO: check that the results are exactly the same as Seurat
   plots <- lapply(features, function(x){
-    ggplot(table) + geom_violin(aes(x = .data[[group]], y = .data[[x]], fill = .data[[group]])) +
+    ggplot(table) + geom_violin(aes(x = .data[[group]], y = .data[[x]], fill = .data[[group]]),
+                                scale = 'width', adjust = 1, trim = TRUE) +
       labs(title = x,
            x = group,
            fill = group,
            y = "Expression Level") +
       theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
   })
-  plot <- wrap_plots(plots)
+  plot <- wrap_plots(plots, guides = "collect")
   return(plot)
 }
 
@@ -111,8 +113,6 @@ DotPlot <- function(table, features, group,
     data2[data2 < min] <- min
     return(data2)
   }
-
-
   # data.features$id = table$group
   # TODO checks that results are the same as the ones in seurat
 
@@ -175,9 +175,9 @@ DotPlot <- function(table, features, group,
   )
 
   avg.exp.scaled <- as.vector(x = t(x = avg.exp.scaled))
-  avg.exp.scaled <- data.frame(avg.exp.scaled = avg.exp.scaled, id = ordered_groups)
+  #avg.exp.scaled <- data.frame(avg.exp.scaled = avg.exp.scaled, id = ordered_groups)
 
-  data.plot <- merge(data.plot, avg.exp.scaled, by = "id")
+  data.plot <- cbind(data.plot, avg.exp.scaled)#, by = "id")
 
   data.plot$features.plot <- factor(
     x = data.plot$features.plot,
