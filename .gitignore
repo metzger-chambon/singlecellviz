@@ -9,6 +9,8 @@ DESCRIPTION
 NAMESPACE
 man/run_app.Rd
 log/
-data/
+data/db/*/*.rds
+data/db/*/*.R
+data/db/*/tiledb/
 tmp/
 myapp-cache/

@@ -1,0 +1,44 @@
+title: PTEN vs WT
+rds: data/db/WT_PTEN/WT_PTEN.rds
+output_folder: data/db/WT_PTEN/tiledb
+description: 'Hypoxia-mediated stabilization of HIF1A in prostatic intraepithelial
+neoplasia promotes cell plasticity and malignant progression.'
+doi: 10.1126/sciadv.abo2295
+date: 22/07/2022
+force: true
+markers:
+- name: CellType markers
+  Ident: CellType
+  FindAllMarkers:
+    only.pos: yes
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - CellType
+    - orig.ident
+- name: orig.ident markers
+  Ident: orig.ident
+  FindAllMarkers:
+    only.pos: yes
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - orig.ident
+    - CellType
+
+comparison:
+- name: orig.ident in Luminal cells
+  subset:
+    subset: !expr substitute(CellType %in% c("Luminal A", "Luminal B", "Luminal C"))
+  Ident: orig.ident
+  FindMarkers:
+    ident.1: PTEN
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - orig.ident
+    - CellType
+
