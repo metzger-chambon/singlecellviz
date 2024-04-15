@@ -1,0 +1,67 @@
+title: Gem72
+rds: data/db/Gem72/Gem72.rds
+output_folder: data/db/Gem72/tiledb
+description: 'Single-cell analyses unravel cell type–specific responses to a vitamin D analog in prostatic precancerous lesions.'
+doi: 10.1126/sciadv.abg5982
+date: 30/07/2021
+force: true
+markers:
+- name: CellType markers
+  Ident: CellType
+  FindAllMarkers:
+    only.pos: yes
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - CellType
+    - orig.ident
+- name: orig.ident markers
+  Ident: orig.ident
+  FindAllMarkers:
+    only.pos: yes
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - orig.ident
+    - CellType
+
+comparison:
+- name: orig.ident in Luminal C cells
+  subset:
+    subset: !expr substitute(CellType %in% c("Luminal-C1", "Luminal-C2"))
+  Ident: orig.ident
+  FindMarkers:
+    ident.1: Gem72
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - orig.ident
+    - CellType
+- name: orig.ident in Luminal A and B cells
+  subset:
+    subset: !expr substitute(CellType %in% c("Luminal-A", "Luminal-B/SV"))
+  Ident: orig.ident
+  FindMarkers:
+    ident.1: Gem72
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - orig.ident
+    - CellType
+- name: orig.ident in MDSCs cells
+  subset:
+    subset: !expr substitute(CellType %in% c("MDSC-A", "MDSC-B"))
+  Ident: orig.ident
+  FindMarkers:
+    ident.1: Gem72
+  AggregateExpression:
+    assays: RNA
+    slot: scale.data
+    group.by:
+    - orig.ident
+    - CellType
+    
