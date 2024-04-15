@@ -1,4 +1,5 @@
-title	output	description	doi	date	output.1	nsamples	nfeatures	ncells	new
-Massively parallel digital transcriptional profiling of single cells	data/db/pbmc3k/tiledb	Dataset of Peripheral Blood Mononuclear Cells (PBMC) freely available from 10X Genomics.	10.1038/ncomms14049	16/01/2017	data/db/pbmc3k/tiledb	1	13714	2638	FALSE
-PTEN HIF vs PTEN	data/db/PTEN_PTENHIF/tiledb	Hypoxia-mediated stabilization of HIF1A in prostatic intraepithelial neoplasia promotes cell plasticity and malignant progression.	10.1126/sciadv.abo2295	22/07/2022	data/db/PTEN_PTENHIF/tiledb	2	16889	14527	TRUE
-PTEN vs WT	data/db/WT_PTEN/tiledb	Hypoxia-mediated stabilization of HIF1A in prostatic intraepithelial neoplasia promotes cell plasticity and malignant progression.	10.1126/sciadv.abo2295	22/07/2022	data/db/WT_PTEN/tiledb	2	17010	16555	TRUE
+title	output	rds	description	doi	date	nsamples	nfeatures	ncells	new
+PTEN HIF vs PTEN	data/db/PTEN_PTENHIF/tiledb	data/db/PTEN_PTENHIF/PTEN_PTENHIF.rds	Hypoxia-mediated stabilization of HIF1A in prostatic intraepithelial neoplasia promotes cell plasticity and malignant progression.	10.1126/sciadv.abo2295	22/07/2022	2	16889	14527	TRUE
+PTEN vs WT	data/db/WT_PTEN/tiledb	data/db/WT_PTEN/WT_PTEN.rds	Hypoxia-mediated stabilization of HIF1A in prostatic intraepithelial neoplasia promotes cell plasticity and malignant progression.	10.1126/sciadv.abo2295	22/07/2022	2	17010	16555	TRUE
+Gem72	data/db/Gem72/tiledb	data/db/Gem72/Gem72.rds	Single-cell analyses unravel cell type–specific responses to a vitamin D analog in prostatic precancerous lesions.	10.1126/sciadv.abg5982	30/07/2021	2	16011	14515	TRUE
+Massively parallel digital transcriptional profiling of single cells	data/db/pbmc3k/tiledb	data/db/pbmc3k/pbmc3k_final.rds	Dataset of Peripheral Blood Mononuclear Cells (PBMC) freely available from 10X Genomics.	10.1038/ncomms14049	16/01/2017	1	13714	2638	FALSE

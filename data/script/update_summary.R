@@ -1,6 +1,6 @@
 library(yaml)
 library(tiledbsoma)
-#library(tiledb)
+library(dplyr)
 
 # Read current values in yaml config files
 get_studies <- function(){
@@ -25,10 +25,10 @@ get_studies <- function(){
 
   studies <- data.frame(title = sapply(studies, '[[', "title"),
                         output = sapply(studies, '[[', "output_folder"),
+                        rds = sapply(studies, '[[', "rds"),
                         description = sapply(studies, '[[', "description"),
                         doi = sapply(studies, '[[', "doi"),
                         date = sapply(studies, '[[', "date"),
-                        output = sapply(studies, '[[', "output_folder"),
                         nsamples = sapply(studies, '[[', "nsamples"),
                         nfeatures = sapply(studies, '[[', "nfeatures"),
                         ncells = sapply(studies, '[[', "ncells"))
@@ -43,9 +43,12 @@ get_studies <- function(){
 }
 
 studies <- get_studies()
+# If you want to change the order of the datasets (default is alphabetical)
+studies <- studies %>% slice(3, 4, 1, 2)
 
 file_summary = "data/dataset_summary.txt"
 
 write.table(studies, file = file_summary, sep = '\t', quote = FALSE,
             row.names = FALSE, col.names = TRUE)
 
+# DO NOT FORGET TO REMOVE THE APP CACHE WHEN UPDATING DATASETS!!!
