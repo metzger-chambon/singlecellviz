@@ -58,7 +58,15 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       req(input$cell_annotation)
       cell_annotation <- remove_suffix(input$cell_annotation, isolate(r$selected_study))
       markers_table <- COMMON_DATA$experiment$get('markers')$get(cell_annotation)$get("result")$read()$concat()$to_data_frame()
-      markers_table <- clean_findmarkers_result(markers_table)
+      markers_table <- clean_findmarkers_result(markers_table) %>%
+        # This filter is useful to define "what is a marker"
+        filter(p_val_adj < 0.05)
+      # If a marker is marker of several clusters, collapse the information
+      marker_of <- markers_table  %>%
+        group_by(.data$gene) %>%
+        summarize(groups = paste(.data$cluster, collapse = ', ')) %>%
+        pull(groups, name = .data$gene)
+      markers_table$marker_of <- marker_of[match(markers_table$gene, names(marker_of))]
       return(markers_table)
     }) %>% bindCache(c(input$cell_annotation))#, cache = "session")
 
@@ -133,16 +141,13 @@ mod_markers_server <- function(id, COMMON_DATA, r){
     heatmap_table <- reactive({
       req(length(input$markers_table_rows_all) > 0, input$top, markers_table(), aggrexpression_table())
       #cat(length(input$markers_table_rows_all), '\n')
+      #saveRDS(markers_table(), "~/Desktop/temp/markers.rds")
+      #saveRDS(aggrexpression_table(), "~/Desktop/temp/aggrexpression_table")
       markers_table <- markers_table()[input$markers_table_rows_all,]
       markers <- markers_table %>% group_by(.data$cluster) %>%
         arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top) %>%
-        select(.data$gene, .data$cluster)
-      # TODO : changer marker of to take into account all and not just top X ?
-      # If a marker is marker of several clusters, collapse the information
-      marker_of <- markers %>% group_by(.data$gene) %>%
-        summarize(groups = paste(.data$cluster, collapse = ', ')) %>%
-        pull(groups, name = .data$gene)
+        select(.data$gene, .data$cluster, .data$marker_of)
 
       data <- aggrexpression_table() %>%
         filter(.data$gene %in% markers$gene) %>%
@@ -150,8 +155,9 @@ mod_markers_server <- function(id, COMMON_DATA, r){
         mutate(gene = factor(.data$gene, levels=unique(markers$gene))) %>%
         pivot_longer(!.data$gene, names_to = 'group', values_to = "expression") %>%
         mutate(group = as.character(.data$group))
-      # TODO find a better way to do this ?
-      data$marker_of <- marker_of[match(data$gene, names(marker_of))]
+
+      data$marker_of <- markers$marker_of[match(data$gene, names(markers$marker_of))]
+
 
       # Split group column
       # Check if data can be split
@@ -167,7 +173,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
                  group2 = factor(group2, levels = unique(group2)))
         if (!input$split) {
           data <- data %>%
-            group_by(.data$gene, .data$group, marker_of) %>%
+            group_by(.data$gene, .data$group, .data$marker_of) %>%
             summarise(expression = mean(expression), .groups = "keep")
         }
        } else {
@@ -177,8 +183,8 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       # order genes by the cluster they correspond to
       #data$gene <- factor(data$gene, levels = unique(levels(markers$gene)))
       data <- data %>% mutate(text = paste0('Gene: ', .data$gene, '\n',
-                                            'Expression: ', expression, '\n',
-                                            'Marker of group: ', marker_of, '' ),
+                                            'Expression: ', .data$expression, '\n',
+                                            'Marker of group: ', .data$marker_of, '' ),
                               group = factor(group, levels = levels(markers$cluster)))
       # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
       return(list(data = data, split = split))
