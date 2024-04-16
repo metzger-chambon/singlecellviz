@@ -47,6 +47,7 @@ mod_explore_ui <- function(id){
         ),
         tabPanel(
           "VlnPlot",
+          selectInput(ns("split_violin"), "Select an annotation to split by:", choices = NULL),
           # x = annotations ; y = genes expression (if several, uses all genes to compute?)
           # inspo : singlecell portal
           plotOutput(ns("violin"))
@@ -224,6 +225,13 @@ mod_explore_server <- function(id, COMMON_DATA, r){
           inputId = "cell_annotation",
           choices =  annotation_choices()
         )
+
+        updateSelectInput(
+          session,
+          inputId = "split_violin",
+          choices =  annotation_choices()
+        )
+
         updateSelectInput(
           session,
           inputId = "dimtype",
@@ -237,6 +245,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         COMMON_DATA$tabs_updated['explore'] <- r$selected_study
       }
     })
+
 
     # Retrieve table for dimension plot
     dimtable <- reactive(
@@ -264,6 +273,18 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         as.data.frame()
       return(cell_annotation)
     }) %>% bindCache(input$cell_annotation) #, cache = "session")
+
+    # TODO: refactorize cell_annotation and split_violin
+    split_violin <- reactive({
+      req(input$split_violin)
+      experiment <- COMMON_DATA$experiment
+      annotation <- remove_suffix(input$split_violin, isolate(r$selected_study))
+
+      cell_annotation <- experiment$obs$read(column_names = annotation)$concat()$to_data_frame() %>%
+        as.data.frame()
+      return(cell_annotation)
+    }) %>% bindCache(input$split_violin) #, cache = "session")
+
 
     gene_annotation <- reactive({
       #cat(file=stderr(), paste0("\nGene_annotation begin: ", Sys.time(), "\n"))
@@ -341,9 +362,22 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       #cat(file=stderr(), paste0("\nviolin begins: ", Sys.time(), "\n"))
 
       gene <- gene_annotation()
+      features <- colnames(gene)
+
       cell <- cell_annotation() %>% numeric_to_factor()
+      group <- colnames(cell)
       table <- cbind(gene, cell)
-      plot <- VlnPlot(table = table, features = colnames(gene), group = colnames(cell))
+
+      split_violin <- split_violin() %>% numeric_to_factor()
+
+      if (isolate(input$split_violin) != isolate(input$cell_annotation)){
+        split.by <- colnames(split_violin)
+        table <- cbind(table, split_violin)
+      } else {
+        split.by <- group
+      }
+
+      plot <- VlnPlot(table = table, features = features, group = group, split.by = split.by)
       #cat(file=stderr(), paste0("\nviolin ends: ", Sys.time(), "\n"))
 
       return(plot)

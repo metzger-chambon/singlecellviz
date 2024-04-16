@@ -8,7 +8,9 @@ singlecellplot_theme <- function(){
   theme_set(theme(panel.background = element_rect(fill = "white", color = NA),
                   panel.grid.major = element_line(color = 'lightgrey'),#element_blank(), #
                   panel.grid.minor = element_blank(),
-                  legend.key = element_blank())
+                  legend.key = element_blank(),
+                  text = element_text(size = 16)
+                  )
   )
 }
 
@@ -64,17 +66,41 @@ DimPlot <- function(table, features,
 #'
 #' @return a patchwork of violin plots
 #'
+#' @examples
+#' structure(list(Epcam = c(0, 0, 0, 0, 0, 0, 0, 0, 2.80717076108235,
+#' 0, 1.78347441769395, 0, 0, 0, 0, 2.73443906513021, 0, 0, 0, 0
+#' ), Krt8 = c(0, 0, 0, 0, 0, 0, 0, 0, 3.77959331014652, 0, 0, 0,
+#'             0, 0, 0, 1.79327148482397, 0, 0, 1.37038283208645, 0), orig.ident = structure(c(1L,
+#'             2L, 2L, 2L, 2L, 2L, 2L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L,
+#'             2L, 2L, 2L), levels = c("Control", "Gem72"), class = "factor"),
+#'             group = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L,
+#'                                 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L), levels = c("1","2"), class = "factor")),
+#'                                 row.names = c("GTTCATTGTCACTGGC-1_1",
+#'                                "CGGACGTAGGGCATGT-1_2", "GCAAACTCATTCACTT-1_2", "GCAATCACACGCGAAA-1_2",
+#'                                "CACACCTCAGTCGATT-1_2", "CATATGGGTAAACGCG-1_2", "ATTACTCTCACAGTAC-1_2",
+#'                                "GGTATTGCACTGCCAG-1_2", "CCTAAAGCATGTCCTC-1_1", "GGCAATTCAATGGATA-1_1",
+#'                                "CGATGGCAGCGAGAAA-1_1", "CGAGCACAGCCACCTG-1_2", "CGGACGTAGAGGGCTT-1_2",
+#'                                "AGTGGGATCTAAGCCA-1_1", "TTCCCAGTCACTCCTG-1_1", "CCCAGTTGTAGCGTAG-1_2",
+#'                                "GATCGTACATGCTGGC-1_2", "ATTTCTGGTCGCGAAA-1_2", "GGCTGGTAGGGTCTCC-1_2",
+#'                                "CAGCATAAGCACCGTC-1_2"), class = "data.frame")
+#' VlnPlot(table = table, features = c("Epcam", "Krt8"), group = "group", split.by = "orig.ident")
 #' @noRd
 #' @importFrom patchwork wrap_plots
 
-VlnPlot <- function(table, features, group){
+VlnPlot <- function(table, features, group, split.by){
   # TODO: check that the results are exactly the same as Seurat
+
+  # Add noise ?
+  noise <- rnorm(n = length(x = table[, features])) / 100000
+  table[, features] <- table[, features] + noise
+
   plots <- lapply(features, function(x){
-    ggplot(table) + geom_violin(aes(x = .data[[group]], y = .data[[x]], fill = .data[[group]]),
-                                scale = 'width', adjust = 1, trim = TRUE) +
+    ggplot(table, aes(x = .data[[group]], y = .data[[x]], fill = .data[[split.by]])) +
+      geom_violin(scale = 'width', adjust = 1, trim = TRUE) +
+      geom_jitter(height = 0, size = 0.1, alpha = 1, show.legend = FALSE) +
       labs(title = x,
            x = group,
-           fill = group,
+           fill = split.by,
            y = "Expression Level") +
       theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
   })
@@ -245,7 +271,9 @@ HeatmapPlot <- function(table, split = FALSE, threshold_value = 50){
     geom_tile() +
     scale_y_discrete(limits = rev) +
     scale_fill_viridis_c() +
-    theme(axis.text.x = element_text(angle = 45, vjust = 0.5,
+    theme(text = element_text(size = 12),
+          #legend.text = element_text(size = 10),
+          axis.text.x = element_text(angle = 45, vjust = 0.5,
                                      hjust=1, size = fct_size(n_x)),
           #axis.title.x = element_text(vjust = -2), # does not work with ggplotly
           axis.text.y = element_text(size = fct_size(n_y)) ) +
