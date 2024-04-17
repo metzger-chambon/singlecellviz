@@ -94,7 +94,7 @@ VlnPlot <- function(table, features, group, split.by){
   plots <- lapply(features, function(x){
     ggplot(table, aes(x = .data[[group]], y = .data[[x]], fill = .data[[split.by]])) +
       geom_violin(scale = 'width', adjust = 1, trim = TRUE) +
-      geom_jitter(height = 0, size = 0.1, alpha = 1, show.legend = FALSE) +
+      #geom_jitter(height = 0, size = 0.1, alpha = 1, show.legend = FALSE) +
       labs(title = x,
            x = group,
            fill = split.by,
