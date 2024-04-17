@@ -23,7 +23,6 @@ mod_markers_ui <- function(id){
         column(
           width = 6,
           numericInput(ns("top"), "Top genes to show in heatmap:", 5, min = 1, max = 1000),
-          # TODO: add tool tips change for a solution not using shinyBS
           # shinyBS::bsTooltip(ns("top"), paste("Only the top X genes are shown. Selection is based on p_val_adj",
           #                            "(and avg_log2FC in case of equality),",
           #                            "of each group in a selected annotation."),

@@ -23,7 +23,6 @@ mod_differential_ui <- function(id){
         column(
           width = 6,
           numericInput(ns("top"), "Top genes to show in heatmap:", 15, min = 1, max = 1000),
-          # TODO: add tool tips change for a solution not using shinyBS
           # shinyBS::bsTooltip(ns("top"), paste("Only the top X genes are shown. Selection is based on p_val_adj",
           #                            "(and avg_log2FC in case of equality),",
           #                            "of each group in a selected annotation."),
@@ -171,7 +170,6 @@ mod_differential_server <- function(id, COMMON_DATA, r){
 
       # Split group column
       # Check if data can be split
-      # TODO: keep in mind in the db the fact that you can split or not
       aggregation_labels <- colnames(aggrexpression_table())[-1]
       # TRUE = you can split ; FALSE = you cannot split
       condition <- all(sapply(c(aggregation_labels), FUN= function(x){grepl("_", x)}))

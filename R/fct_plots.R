@@ -38,7 +38,6 @@ singlecellplot_theme <- function(){
 
 DimPlot <- function(table, features,
                     gradient_cols = c("lightgrey", "blue")){
-  # TODO: verify order of the barcodes to make sure we are aggregating data correctly?
   # .data is used to handle R CMD check
   # https://stackoverflow.com/questions/9439256/how-can-i-handle-r-cmd-check-no-visible-binding-for-global-variable-notes-when
   plots <- lapply(features, function(x){
@@ -88,8 +87,6 @@ DimPlot <- function(table, features,
 #' @importFrom patchwork wrap_plots
 
 VlnPlot <- function(table, features, group, split.by){
-  # TODO: check that the results are exactly the same as Seurat
-
   # Add noise ?
   noise <- rnorm(n = length(x = table[, features])) / 100000
   table[, features] <- table[, features] + noise
@@ -140,7 +137,6 @@ DotPlot <- function(table, features, group,
     return(data2)
   }
   # data.features$id = table$group
-  # TODO checks that results are the same as the ones in seurat
 
   ordered_groups <- if(is.factor(table[,group])) {levels(table[,group])} else {unique(x = table[,group])}
   data.plot <- lapply(

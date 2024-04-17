@@ -26,7 +26,6 @@ mod_download_server <- function(id, COMMON_DATA, r){
         paste0(gsub("[[:space:]|[:punct:]]", "_", studies[r$selected_study,, drop = F]$title), ".rds")
       },
       content = function(file) {
-        # TODO: Understand why The first time it takes time then no
         showModal(modalDialog(tags$div(
           HTML('<i class="fas fa-spinner fa-spin"></i> Preparing file for downloading...'),
           style = "text-align: center;")

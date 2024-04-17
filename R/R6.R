@@ -31,7 +31,6 @@ DATA <- R6::R6Class(
       #   }
       # }
     ),
-    # TODO: should all of this be in r$ ? because it is somewhat reactive
     active = list(
       experiment = function(){
         if(!is.null(self$output)){

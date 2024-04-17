@@ -187,18 +187,16 @@ mod_explore_server <- function(id, COMMON_DATA, r){
     #
     # })
 
-    # TODO : find another way ?
-    observe({
-
-      if(restoreState() &
-         !is.null(input$gene_annotation) &
-         r$tabs() == "explore"){
-        newValue <- validate_gene_annotation() + 1     # newValue <- rv$value + 1
-        validate_gene_annotation(newValue)
-        restoreState(F)
-      }
-
-    }) %>% bindEvent(c(restoreState(), input$gene_annotation, r$tabs()))
+    # observe({
+    #
+    #   if(restoreState() &
+    #      !is.null(input$gene_annotation) &
+    #      r$tabs() == "explore"){
+    #     newValue <- validate_gene_annotation() + 1     # newValue <- rv$value + 1
+    #     validate_gene_annotation(newValue)
+    #     restoreState(F)
+    #   }
+    #}) %>% bindEvent(c(restoreState(), input$gene_annotation, r$tabs()))
 
     # Changes genes and cell annotations options in UI
     observeEvent(c(r$tabs(), r$selected_study), {
@@ -274,7 +272,6 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       return(cell_annotation)
     }) %>% bindCache(input$cell_annotation) #, cache = "session")
 
-    # TODO: refactorize cell_annotation and split_violin
     split_violin <- reactive({
       req(input$split_violin)
       experiment <- COMMON_DATA$experiment
