@@ -32,7 +32,10 @@ app_ui <- function(request) {
           menuItem("General information", tabName = "information", icon = icon("list")),
           menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass")),
           menuItem("Markers", tabName = "markers", icon = icon("tags")),
-          menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus"))#,
+          menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus")),
+          mod_download_ui("download")
+
+
 
           #tags$head(tags$script(js, type = "text/javascript"))
           #mod_bookmark_ui("bookmark")
@@ -63,8 +66,6 @@ app_ui <- function(request) {
           tabItem(tabName = "information",
                   h2("General information about the study"),
                   mod_dataset_ui("dataset")
-
-
           ),
           tabItem(tabName = "explore",
                   h2("Explore the dataset"),

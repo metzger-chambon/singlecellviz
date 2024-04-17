@@ -43,6 +43,8 @@ app_server <- function(input, output, session) {
 
   mod_differential_server("differential", COMMON_DATA, r)
 
+  mod_download_server("download", COMMON_DATA, r)
+
   # Cannot be put into a module
   # without creating a reactive value for names(input),
   # or passing the input to the function
