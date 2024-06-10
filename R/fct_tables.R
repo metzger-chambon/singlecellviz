@@ -53,13 +53,23 @@ numeric_to_factor <- function(table, n = 10){
       cut(x, breaks = qv[!duplicated(qv)], include.lowest=TRUE)
     })
   }
-  # convert str values into factor
-  # need_conversion <- sapply(table, is.character)
-  # if (any(need_conversion)){
-  #   table[need_conversion] <- lapply(table[need_conversion], FUN = function(x){
-  #     as.factor(x)
-  #   })
-  # }
+  return(table)
+}
+
+#' @description A fct function
+#'
+#' @return The return value, if any, from executing the function.
+#'
+#' @noRd
+#'
+string_to_factor <- function(table){
+  # convert string values into factor
+  need_conversion <- sapply(table, is.character)
+  if (any(need_conversion)){
+    table[need_conversion] <- lapply(table[need_conversion], FUN = function(x){
+      as.factor(x)
+    })
+  }
   return(table)
 }
 

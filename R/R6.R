@@ -4,13 +4,6 @@
 DATA <- R6::R6Class(
     "DATA",
     public = list(
-      title = NULL,
-      # description = NULL,
-      # doi = NULL,
-      # date = NULL,
-      # ncells = NULL,
-      # nfeatures = NULL,
-      # nsamples = NULL,
       output = NULL,
       initialize = function(){
         # Some initialization if needed
@@ -20,16 +13,6 @@ DATA <- R6::R6Class(
                        "explore" = FALSE,
                        "markers" = FALSE,
                        "differential" = FALSE)
-      # update_tiledb = function(){
-      #   if(!is.null(self$output)){
-      #     uri <- file.path("../singlecelldatabase/db/tiledb", self$output)
-      #     experiment <- tiledbsoma::SOMAOpen(uri) # need to specify the library for callr
-      #     self$experiment <- experiment
-      #     self$cell_annotation <- self$experiment$obs$attrnames()
-      #     group <- self$experiment$ms$names()[1] # usually RNA
-      #     self$genes <- self$experiment$ms$get(group)$get("var")$read(column_names = c("var_id"))$concat()$var_id$as_vector()
-      #   }
-      # }
     ),
     active = list(
       experiment = function(){
@@ -41,22 +24,9 @@ DATA <- R6::R6Class(
           return(NULL)
         }
       },
-      # cell_annotation = function(){
-      #   if(!is.null(self$output)){
-      #     experiment <- self$experiment
-      #     cell_annotation <- experiment$obs$attrnames()
-      #     return(cell_annotation)
-      #   } else {
-      #     return(NULL)
-      #   }
-      # },
       groups = function(){
-        if(!is.null(self$output)){ # ask self$output and not self$experiment to not have a new api request
-          order <- c("integrated", "ChromatinAssay", "SCT", "RNA")
-          groups <- self$experiment$ms$names() # RNA, SCT, integrated
-          groups <- order[which(order %in% groups)]
-          stopifnot("Error, cannot find a valid assay (one of integrated, ChromatinAssay, SCT, RNA)." = !is.null(groups))
-
+        if(!is.null(self$output)){
+          groups <- self$experiment$ms$names() # e.g. RNA, SCT, integrated
           return(groups)
         } else {
           return(NULL)
@@ -66,9 +36,7 @@ DATA <- R6::R6Class(
         if(!is.null(self$output)){
           # Choose the most important group (in which the dimension should have been calculated)
           group <- self$groups[1]
-          order <- c("scale_data", "data", "counts")
-          arrays <- self$experiment$ms$get(group)$X$names() # counts data scale_data
-          arrays <- order[which(order %in% arrays)]
+          arrays <- self$experiment$ms$get(group)$X$names() # e.g. counts data scale_data
           return(arrays)
         } else {
           return(NULL)

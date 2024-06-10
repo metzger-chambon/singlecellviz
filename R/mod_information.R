@@ -34,28 +34,6 @@ mod_information_ui <- function(id) {
 mod_information_server <- function(id, COMMON_DATA, r) {
   moduleServer(id, function(input, output, session) {
 
-
-    # r$selected_study <- reactive(
-    #   {
-    #     req(input$study)
-    #     study <- studies[which(studies$title == input$study),, drop = F]
-    #     COMMON_DATA$output <- study$output
-    #     COMMON_DATA$title <- study$title
-    #     # COMMON_DATA$description <- study$description
-    #     # COMMON_DATA$date <- study$date
-    #     # COMMON_DATA$doi <- study$doi
-    #     # COMMON_DATA$ncells <- study$ncells
-    #     # COMMON_DATA$nfeatures <- study$nfeatures
-    #     # COMMON_DATA$nsamples <- study$nsamples
-    #     # Recalls that the homepage and information page have been update accordingly to the new study
-    #     COMMON_DATA$tabs_updated['homepage'] <- study$title
-    #     COMMON_DATA$tabs_updated['information'] <- study$title
-    #
-    #     return(study$title)
-    #   },
-    #   label = "selected_study")
-
-
     output$study_title <- renderText({
       studies[r$selected_study,, drop = F]$title
     })

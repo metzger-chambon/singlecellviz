@@ -7,23 +7,12 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @importFrom tidyr %>%
-mod_dataset_ui <- function(id) {
+#' @importFrom stats setNames
+mod_dataset_ui <- function(id){
   ns <- NS(id)
-  fluidRow(
-    box(
-      title = textOutput(ns("study_title")) %>% tagAppendAttributes(class = 'study-title'),
-      tagList(
-        textOutput(ns("study_description")) %>%
-          tagAppendAttributes(class = 'study-description', style = 'min-height:100px; max-height:200px'),
-      ),
-      footer = span(textOutput(ns("study_date")) %>% tagAppendAttributes(class = 'study-date'),
-                    htmlOutput(ns("study_doi")) %>% tagAppendAttributes(class = 'study-doi'))
-    ),
-    div(
-      infoBoxOutput(ns("ncells")),
-      infoBoxOutput(ns("nfeatures")),
-      infoBoxOutput(ns("nsamples"))
+  tagList(
+    selectInput(ns("study"), "Select a dataset:",
+                choices = setNames(object = 1:nrow(studies), studies$title)
     )
   )
 }
@@ -31,77 +20,22 @@ mod_dataset_ui <- function(id) {
 #' dataset Server Functions
 #'
 #' @noRd
-mod_dataset_server <- function(id, COMMON_DATA, r) {
-  moduleServer(id, function(input, output, session) {
+mod_dataset_server <- function(id, COMMON_DATA, r){
+  moduleServer( id, function(input, output, session){
+    ns <- session$ns
 
+    observeEvent(input$study, {
+      study <- studies[input$study,, drop = F]
+      COMMON_DATA$output <- study$output
 
-    # r$selected_study <- reactive(
-    #   {
-    #     req(input$study)
-    #     study <- studies[which(studies$title == input$study),, drop = F]
-    #     COMMON_DATA$output <- study$output
-    #     COMMON_DATA$title <- study$title
-    #     # COMMON_DATA$description <- study$description
-    #     # COMMON_DATA$date <- study$date
-    #     # COMMON_DATA$doi <- study$doi
-    #     # COMMON_DATA$ncells <- study$ncells
-    #     # COMMON_DATA$nfeatures <- study$nfeatures
-    #     # COMMON_DATA$nsamples <- study$nsamples
-    #     # Recalls that the homepage and information page have been update accordingly to the new study
-    #     COMMON_DATA$tabs_updated['homepage'] <- study$title
-    #     COMMON_DATA$tabs_updated['information'] <- study$title
-    #
-    #     return(study$title)
-    #   },
-    #   label = "selected_study")
+      # Set r$selected_study to be able to pass it to other modules
+      r$selected_study <- input$study
+      stopifnot("Study selected matches with more than one, or none, of the studies title" = length(r$selected_study) == 1)
 
-
-    output$study_title <- renderText({
-      studies[r$selected_study,, drop = F]$title
+      # Recalls that the homepage and information page have been update accordingly to the new study
+      COMMON_DATA$tabs_updated['homepage'] <- r$selected_study
+      COMMON_DATA$tabs_updated['information'] <- r$selected_study
     })
-    output$study_description <- renderText({
-      studies[r$selected_study,, drop = F]$description
-    })
-    output$study_date <- renderText({
-      studies[r$selected_study,, drop = F]$date
-    })
-    output$study_doi <-  renderText({
-      doi <- studies[r$selected_study,, drop = F]$doi
-      if (!is.null(doi) & doi != ""){
-        url <- a(doi, href=paste0("https://doi.org/", doi), target="_blank", rel="noopener") #rel is for security reasons
-        return(HTML(paste(HTML("<span style='font-weight:bold'>DOI: </span>"), url)))
-      } else {
-        return("")
-      }
-    })
-    output$ncells <- renderInfoBox({
-      ncells <- studies[r$selected_study,, drop = F]$ncells
-      infoBox(
-        "Cells",
-        ncells,
-        icon = icon("droplet"),
-        color = "teal"
-      )
-    })
-    output$nfeatures <- renderInfoBox({
-      nfeatures <- studies[r$selected_study,, drop = F]$nfeatures
-      infoBox(
-        "Features",
-        nfeatures,
-        icon = icon("dna"),
-        color = "teal"
-      )
-    })
-    output$nsamples <- renderInfoBox({
-      nsamples <- studies[r$selected_study,, drop = F]$nsamples
-      infoBox(
-        "Samples",
-        nsamples,
-        icon = icon("vial"),
-        color = "teal"
-      )
-    })
-
   })
 }
 

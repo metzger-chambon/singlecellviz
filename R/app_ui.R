@@ -9,63 +9,35 @@
 #'
 #'
 app_ui <- function(request) {
-  # js <- HTML(paste("$(function() {",
-  #                  "$('body').on('shown.bs.modal', function() {",
-  #                  "$('.modal-dialog .modal-body > span:first').text('This link stores the current state of this application. The validity of the link is not guaranteed for more than X months.')",
-  #                  "})",
-  #                  "})",
-  #                  sep = "\n"))
+
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     dashboardPage(
       skin = "black",
-      dashboardHeader(title = "SingleCellViz"#,
-                      #mod_dropdownmenu_ui("message")
-                      ),
+      dashboardHeader(title = "SingleCellViz"),
       dashboardSidebar(
         sidebarMenu(
           id = "tabs",
           menuItem("Homepage", tabName = "homepage", icon = icon("house")), # must match the tabItem(tabName = "") in dashboardBody()
-          mod_common_ui("common"),
+          mod_dataset_ui("dataset"),
           menuItem("General information", tabName = "information", icon = icon("list")),
           menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass")),
           menuItem("Markers", tabName = "markers", icon = icon("tags")),
           menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus")),
           mod_download_ui("download")
-
-
-
-          #tags$head(tags$script(js, type = "text/javascript"))
-          #mod_bookmark_ui("bookmark")
-
         )
-        # https://stackoverflow.com/questions/68452272/how-to-prevent-user-from-doing-anything-on-shiny-app-when-app-is-busy
-        # conditionalPanel(
-        #   condition = "$(\'html\').hasClass(\'shiny-busy\')",
-        #   tags$div(class = "loader"),
-        #   tags$div(class = "prevent_click")
-        # )
       ),
       dashboardBody(
-        #shinyjs::useShinyjs(),
-        # waiter::autoWaiter(id = c("explore-plotDim1", "explore-plotDim2",
-        #                           "explore-violin", "explore-dotplot",
-        #                           "markers-heatmap", "differential-heatmap"
-        #                           ),
-        #                    color = waiter::transparent(0),
-        #                    html = waiter::spin_throbber()),
-        #waiter::waiterShowOnLoad(waiter::spin_fading_circles()), # shows before anything else
-
         tabItems(
           tabItem(tabName = "homepage", # must match the menuItem(tabName = "") in dashboardSidebar()
                   h2("Homepage"),
                   mod_homepage_ui()
              ),
           tabItem(tabName = "information",
-                  h2("General information about the study"),
-                  mod_dataset_ui("dataset")
+                  h2("General information about the dataset"),
+                  mod_information_ui("information")
           ),
           tabItem(tabName = "explore",
                   h2("Explore the dataset"),

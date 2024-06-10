@@ -33,9 +33,7 @@ mod_markers_ui <- function(id){
         column(
           width = 6,
           div(style = "margin-top: 28px;",
-              #shinyjs::hidden(
               checkboxInput(ns("split"), "Split heatmap by conditions (if applicable)", value = FALSE)
-              #)
           )
         )
       ),
@@ -85,35 +83,6 @@ mod_markers_server <- function(id, COMMON_DATA, r){
         return(cell_annotation_choices)
       })
 
-    # Update the tab with saved options in bookmark
-    # (and sets COMMON_DATA$tabs_updated['markers'] to not update
-    # a second time in the observer later on,
-    # which would cause the updateSelectizeInput(selected = ) to be set to NULL)
-    onRestore(function(state) {
-      updateSelectizeInput(session,
-                           inputId = "cell_annotation",
-                           selected = ifelse(is.null(state$input$cell_annotation), 1, state$input$cell_annotation),
-                           choices = cell_annotation_choices())
-      COMMON_DATA$tabs_updated['markers'] <- r$selected_study
-    })
-
-    # Deal with DT table and Bookmark
-    # https://stackoverflow.com/questions/41900515/shiny-dt-bookmarking-state
-    # setBookmarkExclude(names = c("markers_table_rows_all", "markers_table_rows_selected",
-    #                              "markers_table_columns_selected", "markers_table_cells_selected",
-    #                              "markers_table_rows_current", "markers_table_state",
-    #                              "markers_table_cell_clicked"
-    #                              ))
-
-    markers_table_proxy <- dataTableProxy("markers_table")
-
-    # Restore table selection and search
-    onRestored(function(state) {
-      DT::updateSearch(markers_table_proxy,
-                       keywords = list(global = state$input$markers_table_search,
-                                       columns = state$input$markers_table_search_columns))
-    })
-
     # Changes genes and cell annotations options in UI
     observeEvent(c(r$tabs(), r$selected_study), {
       # Recalculate annotation_choices and genes_choices everytime:
@@ -139,9 +108,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
     # Heatmap creation
     heatmap_table <- reactive({
       req(length(input$markers_table_rows_all) > 0, input$top, markers_table(), aggrexpression_table())
-      #cat(length(input$markers_table_rows_all), '\n')
-      #saveRDS(markers_table(), "~/Desktop/temp/markers.rds")
-      #saveRDS(aggrexpression_table(), "~/Desktop/temp/aggrexpression_table")
+      # cat(length(input$markers_table_rows_all), '\n')
       markers_table <- markers_table()[input$markers_table_rows_all,]
       markers <- markers_table %>% group_by(.data$cluster) %>%
         arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
@@ -180,39 +147,20 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       }
 
       # order genes by the cluster they correspond to
-      #data$gene <- factor(data$gene, levels = unique(levels(markers$gene)))
+      # data$gene <- factor(data$gene, levels = unique(levels(markers$gene)))
       data <- data %>% mutate(text = paste0('Gene: ', .data$gene, '\n',
                                             'Expression: ', .data$expression, '\n',
                                             'Marker of group: ', .data$marker_of, '' ),
                               group = factor(group, levels = levels(markers$cluster)))
       # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
       return(list(data = data, split = split))
-    }) #%>% bindCache(c(input$comparison), cache = "session")
-
+    })
 
     #observe({
     output$heatmap <- renderPlotly({
       p <- HeatmapPlot(table = heatmap_table()$data, split = heatmap_table()$split)
       ggplotly(p, tooltip=c("text"))
     })
-
-    # Heatmap where each row is a marker gene and each colon is a cluster
-    # inpiration: https://www.ebi.ac.uk/gxa/sc/experiments/E-MTAB-9954/results/marker-genes?plotType=umap&plotOption=3&geneId=ENSMUSG00000032554&colourBy=cell+type
-    # output$heatmap <- renderPlotly({
-    #   random_ggplotly(type = "bin2d")
-    # })
-
-
-    #
-    #     observeEvent(input$selectAll, {
-    #       updateSelectizeInput(
-    #         session,
-    #         inputId = "cell_label",
-    #         selected = r$cell_label_choices()
-    #       )
-    #     })
-
-
   })
 }
 

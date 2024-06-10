@@ -257,8 +257,6 @@ HeatmapPlot <- function(table, split = FALSE, threshold_value = 50){
   fct_size <- function(x){
     val <- 15-3*log(0.239876*x+8)
     min <- 1
-    # data <- data.frame(x = seq(1:1000)) %>% mutate(y = fct_size(x))
-    # ggplot(data, aes(x = x, y = y)) + geom_point()
     return(ifelse(val > min, val, min))
   }
   p <- ggplot(table, aes(x=.data$group, y=.data$gene,
