@@ -99,7 +99,7 @@ compute_marker <- function(seuratObj, opt){
 #' @param opt a list like: list(
 #'  list(
 #'    name = "First comparison",
-#'    subset = list(subset(substitute(CellType %in% c("Luminal C"))),
+#'    subset = list(subset = substitute(CellType %in% c("Luminal C"))),
 #'    Ident = "orig.ident",
 #'    FindMarkers = list(ident.1 = PTEN),
 #'    AggregateExpression = list(assays = "RNA",

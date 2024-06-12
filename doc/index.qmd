@@ -1,0 +1,9 @@
+---
+title: "SingleCellViz doc"
+---
+
+This is a website for the SingleCellViz documentation.
+
+SingleCellViz is a RShiny App accessible online from the IGBMC internal network or VPN at the following url: [https://metzger-chambon.igbmc.science/SingleCellViz/](https://metzger-chambon.igbmc.science/SingleCellViz/)
+
+Go on the [Github repository](https://github.com/metzger-chambon/singlecellviz) for more information.

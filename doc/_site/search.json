@@ -1,0 +1,212 @@
+[
+  {
+    "objectID": "development.html",
+    "href": "development.html",
+    "title": "Development",
+    "section": "",
+    "text": "NB: The following documentation assumes you have basic notions of how to build a RShiny app. Follow the documentations of RShiny and Mastering Shiny for more explanations on Shiny, and for some practical examples."
+  },
+  {
+    "objectID": "development.html#generalities",
+    "href": "development.html#generalities",
+    "title": "Development",
+    "section": "2.1 Generalities",
+    "text": "2.1 Generalities\nThe app follows the structure proposed by the R package golem and their associated documentation on developing production-grade Shiny Apps.\nIn practice, this means that it uses shiny modules to separate the app code in smaller parts. The modules are under R/mod_*.R, there is one for each tab of the app, and for some other features like choosing the dataset R/mod_dataset.R or downloading it R/mod_download.R. Moreover, some useful common functions are under R/fct_*.R, for example, for generating the plots and tables.\nNB: Although the app follows golem guidelines, it cannot be built like an R package directly as it is dependent on large datasets that cannot be saved into a package."
+  },
+  {
+    "objectID": "development.html#description-of-the-repository",
+    "href": "development.html#description-of-the-repository",
+    "title": "Development",
+    "section": "2.2 Description of the repository",
+    "text": "2.2 Description of the repository\nHere is the general structure of the repository:\n\n├── app.R\n├── data\n│   ├── dataset_summary.txt\n│   ├── db\n│   └── script\n├── DESCRIPTION\n├── dev\n│   ├── 01_start.R\n│   ├── 02_dev.R\n│   ├── 03_deploy.R\n│   ├── config_attachment.yaml\n│   └── run_dev.R\n├── doc\n    ├── deployment.Rmd\n    ├── development.Rmd\n    └── usage.Rmd\n├── inst\n│   ├── app\n│   ├── golem-config.yml\n│   └── WORDLIST\n├── LICENSE\n├── LICENSE.md\n├── man\n│   ├── figures\n│   └── run_app.Rd\n├── NAMESPACE\n├── NEWS.md\n├── R\n│   ├── app_config.R\n│   ├── app_server.R\n│   ├── app_ui.R\n│   ├── _disable_autoload.R\n│   ├── fct_*.R\n│   ├── golem_utils_server.R\n│   ├── golem_utils_ui.R\n│   ├── mod_*.R\n│   ├── R6.R\n│   └── run_app.R\n├── README.md\n├── README.Rmd\n├── renv\n│   ├── activate.R\n│   ├── settings.json\n│   └── staging\n├── renv.lock\n├── singlecellviz.Rproj\n├── tests\n│   ├── spelling.R\n│   ├── testthat\n│   └── testthat.R\n\nHere is a quick description of some important content inside of the app repository:\n\napp.R file contains code to launch the app when deployed on the server (see golem doc)\ndata folder contains the file dataset_summary.txt that describes all datasets for the app, the folder db with subfolders for each dataset, and the folder script with some useful scripts to add datasets (see the section called Adding a new dataset)\ndoc folder contains some documentation about the app\nNEWS.md file contains all updates made to the app\nR folder contains all R scripts for the app to work (see the section called Description of R/ scripts)\nrenv folder and renv.lock file are generated from using the renv library (see the section called renv (mandatory))\ntests folder contains automatic tests of the app behavior (see golem doc)\n\nNB: for more information about other folders specific to golem structure (e.g. inst, dev, man), check out the golem documentation."
+  },
+  {
+    "objectID": "development.html#description-of-r-scripts",
+    "href": "development.html#description-of-r-scripts",
+    "title": "Development",
+    "section": "2.3 Description of R/ scripts",
+    "text": "2.3 Description of R/ scripts\n\nrun_app.R contains the function to run the app for the server, it is also where the cache directory is defined\napp_config.R TODO\napp_ui.R and app_server.R contains respectively the ui and server main code of the app (this is where each module function is called)\nmod_*.R contains independent code parts of the app, there is one for each tab of the app, and for some other features like choosing the dataset or downloading it (see the section called [Development of modules] for more information)\nfct_*.R contains useful common functions for example for handling plots or tables\ngolem_utils_*.R contains general utility functions relative to ui or server handling\nR6.R contains the definition of the DATA class (see the section called R6 object, COMMON_DATA for more information)"
+  },
+  {
+    "objectID": "development.html#description-of-existing-modules",
+    "href": "development.html#description-of-existing-modules",
+    "title": "Development",
+    "section": "3.1 Description of existing modules",
+    "text": "3.1 Description of existing modules\n\nmod_ TODO"
+  },
+  {
+    "objectID": "development.html#description-of-existing-functions-utils",
+    "href": "development.html#description-of-existing-functions-utils",
+    "title": "Development",
+    "section": "3.2 Description of existing functions / utils",
+    "text": "3.2 Description of existing functions / utils\n\nfct_ TODO also give link to this sections in the generalies for example"
+  },
+  {
+    "objectID": "development.html#create-a-new-module",
+    "href": "development.html#create-a-new-module",
+    "title": "Development",
+    "section": "3.3 Create a new module",
+    "text": "3.3 Create a new module\nTo create a new module, run golem::add_module(name = \"your_new_module_name\", with_test = TRUE), it will create the R scripts in the R/ folder, as well as tests in the tests folder (see the section called testthat (optional) for more information on tests).\nYou can add the module_*_ui.R and module_*_server.R functions to respectively app_ui.R and app_server.R.\nFollow golem doc and Shiny doc for more practical information on how to develop modules.\nIn this app, there are two objects you might need when developing a new module : r and COMMON_DATA, the two following sections (reactiveValue object, r and R6 object, COMMON_DATA) describes these objects and their usage."
+  },
+  {
+    "objectID": "development.html#reactivevalue-object-r",
+    "href": "development.html#reactivevalue-object-r",
+    "title": "Development",
+    "section": "3.4 reactiveValue object, r",
+    "text": "3.4 reactiveValue object, r\nModules might have the r object as parameter. It is a global reactiveValues (see Shiny and golem doc). It is a special list with elements:\n\ntabs, the name of the current tab in use\nselected_study, the number of the current selected study\n\nThe particularity of reactiveValues objects is that every time the object gets updated, the parts of code that are dependent on them gets recomputed. So if you might need to use:\n\nr$selected_study if the output of a function is dependent on the dataset\nr$tabs if you only want to update an output when on a specific tab"
+  },
+  {
+    "objectID": "development.html#r6-object-common_data",
+    "href": "development.html#r6-object-common_data",
+    "title": "Development",
+    "section": "3.5 R6 object, COMMON_DATA",
+    "text": "3.5 R6 object, COMMON_DATA\nModules might have the COMMON_DATA object as parameter. It is a R6 object (see R6 and golem doc).\nIt contains the public methods:\n\noutput, the value of the uri of the current study\ntabs_updated, a list of value of the latest study shown for each tab\n\nand the active methods:\n\nexperiment, returns an opened SOMA\ngroups, returns the name of available groups, which would be the equivalent of Seurat Assays (e.g. RNA)\narrays, returns the name of available arrays, which would be the equivalent of Seurat slots (e.g. count)\nmarkers, returns the name of available markers tables\ncomparison, returns the name of available comparison tables\n\nThe particularity of R6 objects is that if it modified inside of a function, the modified value is kept outside the function when it is called. So if you develop a module and need some data to be passed to other modules, without the need for reactivity, you will likely have to use the COMMON_DATA object."
+  },
+  {
+    "objectID": "development.html#tiledb-soma",
+    "href": "development.html#tiledb-soma",
+    "title": "Development",
+    "section": "4.1 TileDB-SOMA",
+    "text": "4.1 TileDB-SOMA\nThe datasets are saved in in the format provided by TileDB-SOMA.\nTileDB-SOMA is a R package developed to store and access single-cell data at scale. Indeed, when working with Seurat object, the whole object is loaded, even though only parts of it are needed (not all genes are going to be visualized for example).\nIn addition to the original TileDB-SOMA structure for Seurat objects, the app adds on the two following SOMACollections:\n\nmarker\ncomparison\n\nBoth contains two tables:\n\nresult, the result of Seurat’s FindAllMarkers (for marker) or Seurat’s FindMarkers (for comparison)\naggrexpression, the result of Seurat’s AggregateExpression"
+  },
+  {
+    "objectID": "development.html#rds-object",
+    "href": "development.html#rds-object",
+    "title": "Development",
+    "section": "4.2 rds object",
+    "text": "4.2 rds object\nThe rds object is the one that the user will be able to download in the app. It is a list of the following elements:\n\nseurat, the Seurat object\nmarker, a list with the table of FindAllMarkers and AggregateExpression\ncomparison, a list with the table of FindMarkers and AggregateExpression\n\nIt is created from the corresponding create_rds.R script, using functions in data/script/process_seurat_obj.R."
+  },
+  {
+    "objectID": "development.html#adding-a-new-dataset",
+    "href": "development.html#adding-a-new-dataset",
+    "title": "Development",
+    "section": "4.3 Adding a new dataset",
+    "text": "4.3 Adding a new dataset\nTake a look at the create_rds.R and config.yaml of existing datasets to see how you can easily clean the Seurat object, create necessary tables and convert to TileDB-SOMA format. At the end, add the dataset to data/dataset_summary.txt by running data/db/script/update_summary.R.\nFor more explanation, read the following sections.\n\n4.3.1 Cleaning the Seurat object\nTo add a new dataset you will need to clean the Seurat object, for example check that:\n\nthere is no unnecessary columns in @meta.data\nthat the columns in @meta.data are in the expected format (generally numeric or factors)\nremove unnecessary elements in @reductions\nremove unnecessary elements in @assays, there should only be one at the end (typically RNA) which is the one used for the explore tab (for the DimPlot, VlnPlot, DotPlot)\nremove scale.data of the @assays left (it is usually very heavy, and not useful for visualization, although you should keep it for running AggregateExpression which results is used for the marker and comparison heatmaps)\n\n\n\n4.3.2 Create marker and comparison tables\nTo ease the process of creating the tables, the functions compute_marker and compute_comparison have been developed. They are available in data/script/process_seurat_obj.R.\nIt takes as input a seurat object, and a list with markers/comparisons to compute. The parameters can also bethen be retrieved/saved in yaml format inside of the config.yaml (see section Creating config.yaml).\nFor compute_marker the list is of the following format:\n\noptMarkers &lt;- list(\n  list(\n    name = \"CellType markers\",\n    Ident = \"CellType\",\n    FindAllMarkers = list(only.pos = TRUE,\n                         min.pct = 0.25,\n                         logfc.threshold = 0.5),\n    AggregateExpression = list(assays = \"RNA\",\n                              slot = \"scale.data\",\n                              group.by = c(\"CellType\", \"orig.ident\")\n                          )\n  ), \n  list(\n    name = \"CellType markers\",\n    ...\n  )\n)\n\nIt’s a list, where each element defines an instance of FindAllMarkers to run. Each element has a value:\n\nname, a string being the name that will appear in the app\nIdent, a string being one of the Idents of the Seurat object to run FindAllMarkers on\nFindAllMarkers, a list with all possible parameters of FindAllMarkers function. Only the parameter object is given by default. The name of each element in the list is the name of parameters of the function, and its value is the value to give to the parameters.\nAggregateExpression, a list with all possible parameters of AggregateExpression function. Only the parameter object is given by default. The name of each element in the list is the name of parameters of the function, and its value is the value to give to the parameters.\n\nFor compute_comparison the list is of the following format:\n\noptMarkers &lt;- list(\n  list(\n    name = \"First comparison\",\n    subset = list(\n      subset = substitute(CellType %in% c(\"Luminal C\"))\n      ),\n    Ident = \"orig.ident\",\n    FindMarkers = list(ident.1 = PTEN),\n    AggregateExpression = list(assays = \"RNA\",\n                              slot = \"scale.data\",\n                              group.by = c(\"orig.ident\", \"CellType\")\n                          )\n  ), \n  \n  list(\n    name = \"Second comparison\",\n    ...\n  )\n)\n\nIt’s a list, where each element defines an instance of FindMarkers to run. Each element has a value:\n\nname, a string being the name that will appear in the app\nsubset, a list with all possible parameters of subset function. Only the parameter x is given by default. The name of each element in the list is the name of parameters of the function, and its value is the value to give to the parameters.\nIdent, a string being one of the Idents of the Seurat object to run FindMarkers on\nFindMarkers, a list with all possible parameters of FindMarkers function. Only the parameter object is given by default. The name of each element in the list is the name of parameters of the function, and its value is the value to give to the parameters.\nAggregateExpression, a list with all possible parameters of AggregateExpression function. Only the parameter object is given by default. The name of each element in the list is the name of parameters of the function, and its value is the value to give to the parameters.\n\nIt gives as output a list of two elements: - table being the result of FindAllMarkers or FindMarkers - aggrexpression being the results of AggregateExpression.\n\n\n4.3.3 Creating the rds\nThe rds object structure is described in rds object. If you followed the previous sections, you only have to create a list like so:\n\nlist(seuratObj = x, \n     markers = y, \n     comparison = z)\n\nwhere x is the cleaned Seurat object, y is the result of compute_marker and z is the result of compute_comparison.\n\n\n4.3.4 Creating config.yaml\nYou then need to save this list under data/db/${DATASET_NAME}/${DATASET_NAME}.rds, and create the config.yaml, that has the following structure, and at least the following elements:\n\ntitle: 'Some string as title of the dataset'\nrds: path/of/the/rds/object\noutput_folder: path/of/the/tiledb/folder\ndescription: 'Some string describing the dataset'\ndoi: 'Some string being a doi'\ndate: DD/MM/YYYY\nforce: boolean (true or false)\n\nOptionally, you can add the parameters used for compute_marker and compute_comparison in this format:\n\nmarkers:\n- name: CellType markers\n  Ident: CellType\n  FindAllMarkers:\n    only.pos: yes\n  AggregateExpression:\n    assays: RNA\n    slot: scale.data\n    group.by:\n    - CellType\n    - orig.ident\n\nThis can be achieved with the code cat(yaml::as.yaml(optMarkers)) where optMarkers is the list of the parameters.\n\n\n4.3.5 Creating tiledb\nThe TileDB-SOMA database can be easily created with the function populate_tiledb of data/script/populate_tiledb.R.\nIt takes as input the path of the config.yaml file, and gives no output. It creates the TileDB-SOMA database based on the with the name, rds and output_folder elements given in config.yaml (see section Creating config.yaml).\n\n\n4.3.6 Updating the summary\nThe dataset_summary.txt file can be easily updated with the code in data/script/update_summary.R. It automatically searches for all available config.yaml in each subfolder of data/db/. It retrieves the mandatory elements (see section Creating config.yaml), summarizes them in a table, to finally write it in dataset_summary.txt.\nIt can also be used to modify some information in dataset_summary.txt. For example to change a description, first modify the corresponding config.yaml and then re-run data/script/update_summary.R.\n\n\n4.3.7 Making the change effective online\nThis describes how to add a database locally. You should then check that everything is working fine. Once you are ready, you should follow the steps written in the deployment documentation."
+  },
+  {
+    "objectID": "development.html#git-mandatory",
+    "href": "development.html#git-mandatory",
+    "title": "Development",
+    "section": "5.1 Git (mandatory)",
+    "text": "5.1 Git (mandatory)\n\n5.1.1 Introduction\nGit is a version control system used to track changes made to the code over time. It is helpful to:\n\nrevert/compare with previous versions\nunderstand who made changes and why (with commit messages)\nmanage conflicts when various changes were made to the code\n\nIt is different from github, which is a git platform service to create, store and manage code. This is the place where you can share code to collaborate, as well as create, assign and track issues, bugs and feature requests.\n\n\n5.1.2 Usage in practice\nYou can pull and push new versions of the app via github. You must be a member of github’s metzger-chambon team to push to the repository.\nWhen you locally make a change in a file and want to apply the changes on github, you need to run the commands (in Terminal, and in the local folder of the app) in the following order:\n\ngit add $FILE: add the changes in the file\ngit commit -m $MESSAGE: commit the changes\ngit push: push commits on github\n\nWhen doing a lot of changes, it is good practice to create a new branch (git branch $BRANCHNAME), and work on it (git checkout $BRANCHNAME), until all changes are made and working, in order to merge the main and new branch (git checkout master then, git merge $BRANCHNAME).\nTo practice and learn more about git: https://www.w3schools.com/git/default.asp."
+  },
+  {
+    "objectID": "development.html#renv-mandatory",
+    "href": "development.html#renv-mandatory",
+    "title": "Development",
+    "section": "5.2 renv (mandatory)",
+    "text": "5.2 renv (mandatory)\nrenv is a R package to create reproducible environments for R projects. Each project has its own independent collection of packages with specific versions."
+  },
+  {
+    "objectID": "development.html#testthat-optional",
+    "href": "development.html#testthat-optional",
+    "title": "Development",
+    "section": "5.3 testthat (optional)",
+    "text": "5.3 testthat (optional)\ntestthat is a R package to deal with unitary tests. This is advised but not obligatory."
+  },
+  {
+    "objectID": "usage.html",
+    "href": "usage.html",
+    "title": "Usage",
+    "section": "",
+    "text": "library(singlecellviz)"
+  },
+  {
+    "objectID": "usage.html#dimplot",
+    "href": "usage.html#dimplot",
+    "title": "Usage",
+    "section": "5.1 DimPlot",
+    "text": "5.1 DimPlot\nThe first subtab is DimPlot. This is where you finally get a view of your dataset, in the form of a dimension plot. The type of dimension plot is a parameter. Depending on your dataset, you might be able to view a UMAP, t-SNE, or a PCA plot.\nThis is a typical representation, where each dot represent a cell.\nThe cells on the dimension plot on the right panel will have as color the annotation parameter common to all visualizations. The cells on the dimension plot on the left panel will have as color the gene(s) expression. The left panel will contain as many dimension plot(s) as gene(s) selected.\nIf you do not see a plot on the left, that is because you first need to select and validate genes."
+  },
+  {
+    "objectID": "usage.html#vlnplot",
+    "href": "usage.html#vlnplot",
+    "title": "Usage",
+    "section": "5.2 VlnPlot",
+    "text": "5.2 VlnPlot\nThe VlnPlot subtab presents violin plots to better understand the distribution of gene expression across cells of different annotations. There are as many violin plots as genes selected, and the expression is grouped by the annotation common to all visualizations. It can be furthered splited by an additional annotation, which is a parameter specific to this visualization only."
+  },
+  {
+    "objectID": "usage.html#dotplot",
+    "href": "usage.html#dotplot",
+    "title": "Usage",
+    "section": "5.3 DotPlot",
+    "text": "5.3 DotPlot\nThe DotPlot subtab shows the average expression scaled and percent expressed of genes (x-axis) across cells grouped by the annotation (y-axis) common to all visualizations."
+  },
+  {
+    "objectID": "deployment.html",
+    "href": "deployment.html",
+    "title": "Deployment",
+    "section": "",
+    "text": "To deploy the app, you should have access to the local machine with sudo rights. Refer to the person in charge for the name of the machine and/or the IT department to have the sudo rights (“superuser do”, i.e. allows a permitted user to execute a command as the superuser).\nYou need to connect to the server with ssh yourusername@server-adress.\nWhen running a bash command that require specific rights, you will have to add sudo just before, and it will ask you for your password.\nEverything that the app uses needs to be on the server (datasets, R packages, scripts…)."
+  },
+  {
+    "objectID": "deployment.html#general",
+    "href": "deployment.html#general",
+    "title": "Deployment",
+    "section": "4.1 General",
+    "text": "4.1 General\n\nsudo -i act like sudo interactively, you won’t have to add sudo before every command, but be very careful with what you do, with greats powers comes great responsibility, and you will have the rights to modify and delete very important files without warning! Run exit to come back to your normal user rights.\nhistory output the history of bash commands run by the user"
+  },
+  {
+    "objectID": "deployment.html#file-handling",
+    "href": "deployment.html#file-handling",
+    "title": "Deployment",
+    "section": "4.2 File handling",
+    "text": "4.2 File handling\n\nchmod change the reading / writing / executing rights of a file or folder\nchown change the owner of a file or folder\nln -s create symbolic link, in order to point to a file/folder that already exists somewhere in the server, without having to copy it (~ shortcut).\nscp copy a file or folder from one location to another (e.g. copy from hpc server to this shiny server!)"
+  },
+  {
+    "objectID": "deployment.html#space-usage",
+    "href": "deployment.html#space-usage",
+    "title": "Deployment",
+    "section": "4.3 Space usage",
+    "text": "4.3 Space usage\n\ndf -h output the hard disk space used by every partitions\ndu -sh output the hard disk space used of files/directories"
+  },
+  {
+    "objectID": "deployment.html#server-processes",
+    "href": "deployment.html#server-processes",
+    "title": "Deployment",
+    "section": "4.4 Server processes",
+    "text": "4.4 Server processes\n\nwatch -d free -m observe periodically (every 2.0 seconds) the memory and swap usage of the server\nps aux report a snapshot of the current processes\nkill stop a process (you can use the PID shown in ps aux)"
+  },
+  {
+    "objectID": "deployment.html#update-the-app-via-git",
+    "href": "deployment.html#update-the-app-via-git",
+    "title": "Deployment",
+    "section": "6.1 Update the app via git",
+    "text": "6.1 Update the app via git\nThe development of the app can be done locally. Once a stable version is available, it should be pushed to the github repository (git push).\nThis version can then be retrieved from the server by running git pull. All the tracked files will be updated (e.g. scripts under R/, renv.lock, data/dataset_summary.txt)."
+  },
+  {
+    "objectID": "deployment.html#update-datasets-via-scp",
+    "href": "deployment.html#update-datasets-via-scp",
+    "title": "Deployment",
+    "section": "6.2 Update datasets via scp",
+    "text": "6.2 Update datasets via scp\nHeavy files should not be tracked with git. It is the case of datasets. Everything under data/db/ has to be updated/added manually by using the command scp.\nBe careful, to correctly add a dataset to the app it needs to both:\n\nhave a row in the file data/dataset_summary.txt which notably states its name and location in data/db/\nhave the dataset present under the said location in data/db/"
+  },
+  {
+    "objectID": "deployment.html#update-the-r-packages-via-renv",
+    "href": "deployment.html#update-the-r-packages-via-renv",
+    "title": "Deployment",
+    "section": "6.3 Update the R packages via renv",
+    "text": "6.3 Update the R packages via renv\nIf some packages have been locally installed/updated, the new (versions) of R packages should be tracked by running renv::snapshot(), and saving the updated renv.lock in git.\nOnce git pull has been run on the server, the renv.lock file is updated, but the new (versions) of the R packages are not yet downloaded on the server. Indeed, renv::restore() needs to be run successfully to install the new packages."
+  },
+  {
+    "objectID": "deployment.html#update-the-cache",
+    "href": "deployment.html#update-the-cache",
+    "title": "Deployment",
+    "section": "6.4 Update the cache",
+    "text": "6.4 Update the cache\nThe app makes use of the cache. When an update has been made, the previously created cache must be removed in order to prevent old results to appear.\nTo do that, run in the server rm -r singlecellviz/myapp-cache/*.rds."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "SingleCellViz doc",
+    "section": "",
+    "text": "This is a website for the SingleCellViz documentation.\nSingleCellViz is a RShiny App accessible online from the IGBMC internal network or VPN at the following url: https://metzger-chambon.igbmc.science/SingleCellViz/\nGo on the Github repository for more information."
+  }
+]
