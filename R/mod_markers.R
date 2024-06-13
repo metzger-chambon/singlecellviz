@@ -57,7 +57,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       markers_table <- COMMON_DATA$experiment$get('markers')$get(cell_annotation)$get("result")$read()$concat()$to_data_frame()
       markers_table <- clean_findmarkers_result(markers_table) %>%
         # This filter is useful to define "what is a marker"
-        filter(p_val_adj < 0.05)
+        filter(.data$p_val_adj < 0.05)
       # If a marker is marker of several clusters, collapse the information
       marker_of <- markers_table  %>%
         group_by(.data$gene) %>%
@@ -135,15 +135,15 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       if (condition){
         data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_') %>%
           # To keep the same order of labels
-          mutate(group = factor(group, levels = unique(group)),
-                 group2 = factor(group2, levels = unique(group2)))
+          mutate(group = factor(.data$group, levels = unique(.data$group)),
+                 group2 = factor(.data$group2, levels = unique(.data$group2)))
         if (!input$split) {
           data <- data %>%
             group_by(.data$gene, .data$group, .data$marker_of) %>%
-            summarise(expression = mean(expression), .groups = "keep")
+            summarise(expression = mean(.data$expression), .groups = "keep")
         }
        } else {
-        data <- data %>% mutate(group = factor(group, levels = unique(group)))
+        data <- data %>% mutate(group = factor(.data$group, levels = unique(.data$group)))
       }
 
       # order genes by the cluster they correspond to
@@ -151,7 +151,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       data <- data %>% mutate(text = paste0('Gene: ', .data$gene, '\n',
                                             'Expression: ', .data$expression, '\n',
                                             'Marker of group: ', .data$marker_of, '' ),
-                              group = factor(group, levels = levels(markers$cluster)))
+                              group = factor(.data$group, levels = levels(markers$cluster)))
       # exemple of a marker for two groups :  CST7 (if you take top 9 gene in experiment pbmc3k markers gens of seurat clusters )
       return(list(data = data, split = split))
     })

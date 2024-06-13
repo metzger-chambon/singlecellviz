@@ -16,12 +16,11 @@ testServer(
       grepl("test", ns("test"))
     )
 
-
 })
 
 test_that("module ui works", {
   ui <- mod_dataset_ui(id = "test")
-  golem::expect_shinytag(ui)
+  golem::expect_shinytaglist(ui)
   # Check that formals have not been removed
   fmls <- formals(mod_dataset_ui)
   for (i in c("id")){

@@ -85,6 +85,7 @@ DimPlot <- function(table, features,
 #' VlnPlot(table = table, features = c("Epcam", "Krt8"), group = "group", split.by = "orig.ident")
 #' @noRd
 #' @importFrom patchwork wrap_plots
+#' @importFrom stats rnorm
 
 VlnPlot <- function(table, features, group, split.by){
   # Add noise ?

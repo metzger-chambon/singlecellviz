@@ -8,7 +8,6 @@ test_that("DATA class works", {
   expect_null(COMMON_DATA$title)
 
   COMMON_DATA$output <- test_path("testdata", "experiment-pbmc10")
-  COMMON_DATA$title <- "test"
 
   # # Test the opening of the SOMAExperiment
   # expect_s3_class(COMMON_DATA$experiment, "SOMAExperiment")

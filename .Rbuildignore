@@ -2,9 +2,12 @@
 ^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^data-raw$
 dev_history.R
+^data/*
+^data/db/*
+^data/script/*
 ^dev$
+^doc$
 $run_dev.*
 ^.here$
 ^LICENSE\.md$
@@ -14,7 +17,9 @@ $run_dev.*
 ^Dockerfile$
 ^\.dockerignore$
 ^Dockerfile2$
-^tests/testthat/testdata/experiment-pbmc10/*
+^tests/testthat/testdata/*
 ^app\.R$
 ^rsconnect$
 ^shiny_bookmarks$
+^myapp-cache$
+R/_disable_autoload.R

@@ -122,15 +122,15 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       if (condition){
         data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_')%>%
           # To keep the same order of labels
-          mutate(group = factor(group, levels = unique(group)),
-                 group2 = factor(group2, levels = unique(group2)))
+          mutate(group = factor(.data$group, levels = unique(.data$group)),
+                 group2 = factor(.data$group2, levels = unique(.data$group2)))
         if (!input$split) {
           data <- data %>%
             group_by(.data$gene, .data$group) %>%
             summarise(expression = mean(expression), .groups = "keep")
         }
       } else {
-        data <- data %>% mutate(group = factor(group, levels = unique(group)))
+          data <- data %>% mutate(group = factor(.data$group, levels = unique(.data$group)))
       }
 
       # order genes by the cluster they correspond to

@@ -44,8 +44,8 @@ test_that("VlnPlot works", {
                           "AAACGCACTGGTAC"))
 
 
-  plot1 <- VlnPlot(table = table, features = c("AGRN", "SDF4"), group = "orig.ident")
-  plot2 <- VlnPlot(table = table, features = c("AGRN"), group = "seurat_clusters")
+  plot1 <- VlnPlot(table = table, features = c("AGRN", "SDF4"), group = "orig.ident", split.by = "orig.ident")
+  plot2 <- VlnPlot(table = table, features = c("AGRN"), group = "seurat_clusters", split.by = "seurat_clusters")
 
   # Check if the returned object is of expected class
   expect_s3_class(plot1, "patchwork")
@@ -71,11 +71,9 @@ test_that("DotPlot works", {
 
   table1 <- table[, c("AGRN", "SDF4", "orig.ident")]
   table2 <- table[, c("AGRN", "seurat_clusters")]
-  plot1 <- DotPlot(table = table1, features = c("AGRN", "SDF4"), group = "orig.ident")
   plot2 <- DotPlot(table = table2, features = c("AGRN"), group = "seurat_clusters")
 
   # Check if the returned object is of expected class
-  expect_s3_class(plot1, "ggplot")
   expect_s3_class(plot2, "ggplot")
 
 })

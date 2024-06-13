@@ -6,6 +6,7 @@
 #'
 #' @export
 #' @importFrom shiny shinyApp
+#' @importFrom cachem cache_disk
 #' @importFrom golem with_golem_options
 run_app <- function(
   onStart = NULL,
@@ -17,7 +18,7 @@ run_app <- function(
 
   shinyOptions(cache = cachem::cache_disk("./myapp-cache"))
   #shinyOptions(cache = cachem::cache_mem(max_size = 512 * 1024^2)) # 512 megabytes
-  
+
   with_golem_options(
     app = shinyApp(
       ui = app_ui,
