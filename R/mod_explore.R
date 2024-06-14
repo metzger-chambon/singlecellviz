@@ -69,8 +69,6 @@ mod_explore_ui <- function(id){
 mod_explore_server <- function(id, COMMON_DATA, r){
   moduleServer(id, function(input, output, session){
 
-    restoreState <- reactiveVal(F)
-
     # Calculate genes_choices options
     genes_choices <- reactive(
       {

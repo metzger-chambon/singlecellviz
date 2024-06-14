@@ -5,15 +5,9 @@
 .httr-oauth
 .DS_Store
 .quarto
-DESCRIPTION
-NAMESPACE
 man/run_app.Rd
 log/
-data/db/*/*.rds
-data/db/*/*.R
-data/db/*/tiledb/
 tmp/
 myapp-cache/
 renv/
 performances/
-shiny_bookmarks

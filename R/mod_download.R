@@ -19,6 +19,7 @@ mod_download_ui <- function(id){
 mod_download_server <- function(id, COMMON_DATA, r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    studies <- get_golem_options("studies")
 
     output$downloadData <- downloadHandler(
       filename = function() {

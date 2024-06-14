@@ -6,6 +6,7 @@
 #' @import dplyr
 #' @import tidyr
 #' @import ggplot2
+#' @importFrom golem get_golem_options
 #' @noRd
 #'
 #
@@ -14,6 +15,7 @@ app_server <- function(input, output, session) {
   # La stratégie du petit r et du grand R
   # https://engineering-shiny.org/structuring-project.html?q=strat%C3%A9#communication-between-modules
   COMMON_DATA <- DATA$new()
+
   r <- reactiveValues()
   r$tabs <- reactive(
     {input$tabs}

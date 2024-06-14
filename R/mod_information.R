@@ -33,6 +33,7 @@ mod_information_ui <- function(id) {
 #' @noRd
 mod_information_server <- function(id, COMMON_DATA, r) {
   moduleServer(id, function(input, output, session) {
+    studies <- get_golem_options("studies")
 
     output$study_title <- renderText({
       studies[r$selected_study,, drop = F]$title

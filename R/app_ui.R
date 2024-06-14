@@ -5,11 +5,11 @@
 #' @import shiny
 #' @import shinydashboard
 #' @importFrom waiter autoWaiter
+#' @importFrom golem get_golem_options
 #' @noRd
 #'
 #'
 app_ui <- function(request) {
-
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),

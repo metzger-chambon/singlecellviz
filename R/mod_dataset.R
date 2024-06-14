@@ -9,6 +9,8 @@
 #' @importFrom shiny NS tagList
 #' @importFrom stats setNames
 mod_dataset_ui <- function(id){
+  studies <- get_golem_options("studies")
+
   ns <- NS(id)
   tagList(
     selectInput(ns("study"), "Select a dataset:",
@@ -21,8 +23,11 @@ mod_dataset_ui <- function(id){
 #'
 #' @noRd
 mod_dataset_server <- function(id, COMMON_DATA, r){
+
   moduleServer( id, function(input, output, session){
+
     ns <- session$ns
+    studies <- get_golem_options("studies")
 
     observeEvent(input$study, {
       study <- studies[input$study,, drop = F]

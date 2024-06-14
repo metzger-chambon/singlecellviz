@@ -1,4 +1,4 @@
-run_dev <- function(port = NULL){
+run_dev <- function(port = NULL, studies = NULL){
   # Sass code compilation
   sass::sass(input = sass::sass_file("inst/app/www/custom.sass"), output = "inst/app/www/custom.css", cache = NULL)
 
@@ -16,13 +16,18 @@ run_dev <- function(port = NULL){
   # Document and reload your package
   golem::document_and_reload()
 
-  # Run the application
-  run_app()
+  run_app(studies = studies)
 }
 
 port = 9560
-run_dev(port)
 
-source('R/fct_dataset.R')
-source('R/R6.R')
+mystudy <- read.table("../singlecelldatabase/dataset_summary.txt",
+                      header = TRUE, sep = "\t")
+mystudy$output <- file.path("../singlecelldatabase", mystudy$output)
+mystudy$rds <- file.path("../singlecelldatabase", mystudy$rds)
+
+#mystudy <- NULL
+
+run_dev(port, studies = mystudy)
+
 
