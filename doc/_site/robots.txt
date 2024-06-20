@@ -1,1 +1,0 @@
-Sitemap: https:/metzger-chambon.igbmc.science/SingleCellViz/sitemap.xml

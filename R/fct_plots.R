@@ -1,9 +1,10 @@
 #' plots
 #'
 #'
-
 #'
 #' @description Creates theme of plot(s).
+#' @noRd
+
 singlecellplot_theme <- function(){
   theme_set(theme(panel.background = element_rect(fill = "white", color = NA),
                   panel.grid.major = element_line(color = 'lightgrey'),#element_blank(), #

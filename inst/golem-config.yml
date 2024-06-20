@@ -1,6 +1,6 @@
 default:
   golem_name: singlecellviz
-  golem_version: '0.00'
+  golem_version: 0.0.1
   app_prod: no
 production:
   app_prod: yes

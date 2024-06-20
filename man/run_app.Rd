@@ -34,7 +34,12 @@ request to determine whether the \code{ui} should be used to handle the
 request. Note that the entire request path must match the regular
 expression in order for the match to be considered successful.}
 
-\item{studies}{a file path to a summary of all available studies}
+\item{studies}{a file path to a summary of all available studies.
+The file should be a tab separated table, with the headers:
+\code{title  output  rds  description  doi  date  nsamples  nfeatures  ncells}.
+By default the file read contains information about a very small subset
+of pbmc3k present in the package. Check out
+\code{vignette("database", package = "singlecellviz")} for more information.}
 
 \item{...}{arguments to pass to golem_opts.
 See `?golem::get_golem_options` for more details.}

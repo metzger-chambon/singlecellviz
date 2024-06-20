@@ -1,0 +1,27 @@
+url: ~
+template:
+  bootstrap: 5
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - usage
+  - database
+  - development
+  - deployment
+
+reference:
+- title: "Running the app"
+  contents:
+  - run_app
+- title: "Adding a new dataset"
+  contents:
+  - compute_comparison
+  - compute_markers
+  - populate_tiledb
+  - update_summary
+- title: internal
+  contents:
+  - small_seurat
+

@@ -5,7 +5,8 @@
 #' @import shiny
 #' @import shinydashboard
 #' @importFrom waiter autoWaiter
-#' @importFrom golem get_golem_options
+#' @importFrom utils packageVersion
+#' @importFrom golem get_golem_options get_golem_version
 #' @noRd
 #'
 #'
@@ -26,7 +27,13 @@ app_ui <- function(request) {
           menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass")),
           menuItem("Markers", tabName = "markers", icon = icon("tags")),
           menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus")),
-          mod_download_ui("download")
+          mod_download_ui("download"),
+
+          div(style="margin-left: 14px; margin-top: 14px;",
+              a(icon("github"),
+                href = "https://github.com/metzger-chambon/singlecellviz",
+                target="_blank", rel="noopener"),
+              paste0("SingleCellViz v.", packageVersion("singlecellviz")))
         )
       ),
       dashboardBody(

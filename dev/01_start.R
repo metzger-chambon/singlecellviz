@@ -21,12 +21,12 @@
 golem::fill_desc(
   pkg_name = "singlecellviz", # The Name of the package containing the App
   pkg_title = "SingleCellViz", # The Title of the package containing the App
-  pkg_description = "Visualize singlecell datasets.", # The Description of the package containing the App
+  pkg_description = "Visualize scRNA-seq datasets.", # The Description of the package containing the App
   author_first_name = "Valentine", # Your First Name
   author_last_name = "Gilbart", # Your Last Name
   author_email = "gilbartv@igbmc.fr", # Your Email
-  repo_url = NULL, # The URL of the GitHub Repo (optional),
-  pkg_version = "0.00" # The Version of the package containing the App
+  repo_url = "https://github.com/metzger-chambon/singlecellviz", # The URL of the GitHub Repo (optional),
+  pkg_version = "0.0.1" # The Version of the package containing the App
 )
 
 ## Set {golem} options ----

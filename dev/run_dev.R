@@ -23,10 +23,7 @@ port = 9560
 
 mystudy <- read.table("../singlecelldatabase/dataset_summary.txt",
                       header = TRUE, sep = "\t")
-mystudy$output <- file.path("../singlecelldatabase", mystudy$output)
-mystudy$rds <- file.path("../singlecelldatabase", mystudy$rds)
-
-#mystudy <- NULL
+# mystudy <- NULL # to test on the example dataset
 
 run_dev(port, studies = mystudy)
 

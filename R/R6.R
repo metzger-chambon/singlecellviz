@@ -62,12 +62,3 @@ DATA <- R6::R6Class(
     private = list()
 )
 
-if (FALSE){
-  source("R/fct_dataset.R")
-  COMMON_DATA <- DATA$new()
-  COMMON_DATA$output <- studies[1,"output"]
-  COMMON_DATA$experiment
-  COMMON_DATA$arrays
-}
-
-

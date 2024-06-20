@@ -5,9 +5,9 @@
 .httr-oauth
 .DS_Store
 .quarto
-man/run_app.Rd
 log/
 tmp/
-myapp-cache/
+cache/
 renv/
 performances/
+

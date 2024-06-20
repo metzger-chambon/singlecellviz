@@ -10,6 +10,10 @@ $run_dev.*
 ^README\.Rmd$
 ^performances$
 ^app\.R$
-^myapp-cache$
+^cache$
+^presentation$
 R/_disable_autoload.R
-^doc$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+

@@ -1,0 +1,251 @@
+---
+title: "Development"
+output: rmarkdown::html_vignette
+
+vignette: >
+  %\VignetteIndexEntry{Development}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+The following documentation assumes you have basic notions of how to build a RShiny app. Follow the documentations of [RShiny](https://shiny.posit.co/) and [Mastering Shiny](https://mastering-shiny.org/) for more explanations on Shiny, and for some practical examples.
+
+
+
+# Installation
+
+You can install the development version of SingleCellViz in the folder of your choice like so:
+
+```bash
+# in bash Terminal
+git clone git@github.com:metzger-chambon/singlecellviz.git
+```
+
+or alternatively create a new R project using the GUI of RStudio (by clicking on the top-right R icon in a blue box), which is the Project menu. Select the "Version Control" way of creating a project, then "Git", and finally type in the repository url: https://github.com/metzger-chambon/singlecellviz.git. 
+
+In either case, you will be working inside a R project. Check out the [doc about using R projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects). 
+An important thing to remember when developing is that you should always have the root of this R project as you working directory (`getwd()` and `setwd()`). Moreover, everything you refer to while developing should be relative to your working directory. 
+
+## R environment 
+
+You should first check that you have the same version of R (also written at the very top of `renv.lock` file). 
+
+```{r, eval = TRUE}
+R.version.string
+```
+
+You will need to install the required packages and their dependencies. This can easily be done using renv R package, by running the following:
+
+```r
+renv::init() 
+# Select Answer 1: Restore the project from the lockfile.
+```
+
+Check out [renv documentation](https://rstudio.github.io/renv/articles/renv.html) and section [Using renv] for more information on how this works.
+
+You can also find necessary packages and suggested packages in the DESCRIPTION file (respectively under `Imports` field and `Suggests` field). In particular, suggested packages are useful when developing the app.
+
+# Running the app
+
+Once you have your local version of the app, you can test your developmental version of the app easily by running with the code in `dev/run_dev.R`. 
+
+Notably, it runs the golem wrapper `run_app()` function. The default database to run the app has only one very small dataset, corresponding to a subset of pbmc3k dataset. 
+If you want to test it on other datasets, check out the [Database vignette](database.html).
+
+As the default dataset is very small, it is good practice to also test the app on a bigger dataset, to make sure that it is not lagging when going up to scale. 
+
+# General structure 
+
+## Generalities
+
+The app follows the structure proposed by the R package [golem](https://thinkr-open.github.io/golem/) and their associated [book](https://engineering-shiny.org/) on developing production-grade Shiny Apps.
+
+This impacts the structure of the app, as it means that:
+
+- the app is built around the notion of [submodule and utility functions](https://engineering-shiny.org/build-app-golem.html#submodules-and-utility-functions)
+- the app is [built as an R package](https://engineering-shiny.org/structuring-project.html?q=package#shiny-app-as-a-package) (also check out [package development doc](https://rstudio.github.io/cheatsheets/html/package-development.html))
+
+## Description of the repository
+
+Here is the general structure of the repository:
+
+```{bash, eval = FALSE}
+├── app.R               # file with script to launch the app when deployed on the server (RShiny)
+├── data                # folder containing datasets available in the package (R packages)
+├── DESCRIPTION         # file with metadata (R packages)
+├── dev                 # folder with scripts to run when developping the app (golem)
+├── docs                # folder for (pkgdown)
+├── inst                # folder with arbitrary additional files (R packages) 
+├── LICENSE.md          # LICENSE of the app (R package)
+├── man                 # folder with documentation of the package (R packages)
+├── cache         # folder containing the cache (RShiny)
+├── NAMESPACE           # file with import/export to make package self-contained (R packages)
+├── NEWS.md             # file to summarize updates made to the package (R packages)
+├── _pkgdown.yml        # file with configuration of pkgdown (pkgdown)
+├── presentation        # folder containing pdf presentation of the app
+├── R                   # folder with all R code (R packages)
+├── README.md           # README file (R packages)
+├── renv                # folder with renv libraries (renv)
+├── renv.lock           # file with name and version of packages (renv)
+├── singlecellviz.Rproj # defines the R project of the app
+├── tests               # folder containing automatic tests (testthat)
+└── vignettes           # folder containing documentation (R packages)
+```
+
+
+## Description of `R/` scripts
+
+Here is a description of scripts developed for the app:
+
+-   `app_config.R` contains function for golem usage
+-   `app_ui.R` and `app_server.R` contains respectively the ui and server main code of the app (this is where each module function is called)
+-   `mod_*.R` contains independent code parts of the app, there is one for each tab of the app, and for some other features like choosing the dataset or downloading it
+-   `fct_*.R` contains useful common functions for example for handling plots, tables, or for adding new datasets
+-   `golem_utils_*.R` contains general utility functions relative to ui or server handling
+-   `R6.R` contains the definition of the DATA class (see section [COMMON_DATA variable])
+-   `run_app.R` contains golem wrapper of `shinyApp()` function to run the app. 
+
+# Create a new module
+
+To create a new module, run `golem::add_module(name = "your_new_module_name", with_test = TRUE)`, it will create the R scripts in the `R/` folder, as well as tests in the `tests` folder (see [golem doc](https://engineering-shiny.org/build-yourself-safety-net.html#testing-the-business-logic) for more information).
+
+You can add `module_*_ui()` and `module_*_server()` functions respectively to `app_ui.R` and `app_server.R`.
+
+Follow [golem doc](https://engineering-shiny.org/structuring-project.html?q=petit%20r#using-shiny-modules) and [Shiny doc](https://mastering-shiny.org/scaling-modules.html) for more technical information on how to develop modules.
+
+In this app, there are some objects you might need when developing a new module. The following sections ([studies variable], [r variable] and [COMMON_DATA variable]) describe these objects and their usage.
+
+## studies variable
+
+Modules might need to have access to some summary information of all datasets. `studies` is the data.frame object for that. It is structured like so:
+
+```{r eval = FALSE}
+structure(list(title = "small example", 
+               output = "extdata/small_example/tiledb", 
+               rds = "extdata/small_example/small_example.rds", 
+               description = "Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk and DC cells. Freely available from 10X Genomics.", 
+               doi = "10.1038/ncomms14049", 
+               date = "16/01/2017", 
+               nsamples = 1L, 
+               nfeatures = 100L, 
+               ncells = 46L), 
+          class = "data.frame", row.names = c(NA, -1L))
+```
+
+As you can notice, it has a similar structure than the file given as input of `run_app()` (described in section [Running the app]). This is because the input file given to `run_app()` is read, and saved in the variable `studies`.
+
+To get access to it in a module just add the line of code in your module:
+
+```
+studies <- get_golem_options("studies")
+```
+
+For more information about how this works, check out [golem doc](https://engineering-shiny.org/golem.html?q=get_golem_options#run_app.r).
+
+## r variable
+
+Modules might have the `r` object as parameter. It is a global reactiveValues (see [Shiny](http://rstudio.github.io/shiny/reference/reactiveValues.html) and [golem](https://engineering-shiny.org/structuring-project.html?q=petit%20r#b.-the-strat%C3%A9gie-du-petit-r) doc). It is a special list with elements:
+
+-   `tabs`, the name of the current tab in use
+-   `selected_study`, the number of the current selected study
+
+It is a way to share information across otherwise independent modules.
+The particularity of reactiveValues objects is that every time the object gets updated, the parts of code that are dependent on them get recomputed. So you might need to use: 
+
+- `r$selected_study` if the output of a function is dependent on the dataset
+- `r$tabs` if you only want to update an output when on a specific tab
+
+## COMMON_DATA variable
+
+Modules might have the `COMMON_DATA` object as parameter. It is a R6 object (see [R6](https://r6.r-lib.org/articles/Introduction.html) and [golem](https://engineering-shiny.org/structuring-project.html?q=petit%20r#c.-the-strat%C3%A9gie-du-grand-r6) doc).
+
+It contains the public methods:
+
+-   `output`, the value of the uri of the current study
+-   `tabs_updated`, a list of value of the latest study shown for each tab
+
+and the active methods:
+
+-   `experiment`, returns an opened SOMA
+-   `groups`, returns the name of available groups, which would be the equivalent of Seurat Assays (e.g. RNA)
+-   `arrays`, returns the name of available arrays, which would be the equivalent of Seurat slots (e.g. count)
+-   `markers`, returns the name of available `markers` tables
+-   `comparison`, returns the name of available `comparison` tables
+
+
+The particularity of a R6 object is that if it modified inside of a function, the modified value is kept outside the function when it is called. So if you develop a module and need some data to be passed to other modules, without the need for reactivity, you will likely have to use the `COMMON_DATA` object.
+
+# Good pratices 
+
+To develop the app efficiently, there are some good practice that **need** to be followed. They are presented in the following sections. They are all explained in more details in the golem documentation, but the following sections describe the major points to keep in mind when developping.
+
+## Using git
+
+### Introduction
+
+Git is a version control system used to track changes made to the code over time. It is helpful to:
+
+-   revert/compare with previous versions
+-   understand who made changes and why (with commit messages)
+-   manage conflicts when various changes were made to the code
+
+It is different from github, which is a git platform service to create, store and manage code. This is the place where you can share code to collaborate, as well as create, assign and track issues, bugs and feature requests.
+
+### Usage in practice
+
+You can pull and push new versions of the app on [github](https://github.com/metzger-chambon/singlecellviz).
+
+When you locally make a change in a file and want to apply the changes on github, you need to run the commands (in Terminal, and in the local folder of the app) in the following order:
+
+-   `git add $FILE`: add the changes in the file
+-   `git commit -m $MESSAGE`: commit the changes
+-   `git push`: push commits on github (you must have the rights to do so on the repository)
+
+When doing a lot of changes, it is good practice to create a new branch (`git branch $BRANCHNAME`), and work on it (`git checkout $BRANCHNAME`). When all changes are made and working, you can merge the main and new branch (`git checkout master` then, `git merge $BRANCHNAME`).
+
+Read the related [golem documentation](https://engineering-shiny.org/version-control.html?q=git#git-integration).
+
+To practice and learn more about git: <https://www.w3schools.com/git/default.asp>.
+
+## Using renv 
+
+renv is a R package to create reproducible environments for R projects. Each R project has its own independent collection of packages with specific versions. 
+
+Basically: 
+
+- to check if `renv.lock` is up-to-date, run `renv::status()`
+- to restore an environment from the current `renv.lock`, run `renv::restore()`
+- to update it, run `renv::snapshot()`
+
+Check out [renv](https://rstudio.github.io/renv/articles/renv.html) and [golem doc](https://engineering-shiny.org/build-yourself-safety-net.html?q=renv#b.-using-renv) for more information.
+
+
+# Create a new version release 
+
+You've made changes to the app, and it should be released as a new version of the app? Follow (at least) these steps: 
+
+- run `run_dev()` one last time and make sure that the whole app works as expected, also on bigger datasets
+- document the changes made in the code and vignettes
+- update the DESCRIPTION file with `attachment::att_amend_desc()` if needed
+- run `devtools::check()`, and make sure you don't have any errors. One warning about the size of files in `singlecellviz/inst/extdata/small_example/tiledb/` is yet not resolved. It is not a problem as long as the package does not go on CRAN.
+- run `golem::set_golem_version("X.X.X")` with your new version numbers
+- describe changes in `NEWS.md`
+
+Finally, with git:
+
+- add and commit your last changes
+- merge your changes with master
+- push your new release to github
+- give it a tag (`git tag -a vX.X.X -m "version X.X.X"`)
+- push the tag (`git push origin tag`) 
+
+Golem doc provides some more [things to check checklist](https://engineering-shiny.org/appendix-a---use-case-building-an-app-from-start-to-finish.html?q=check#before-deployment-checklist-1).

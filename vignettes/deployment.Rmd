@@ -1,0 +1,125 @@
+---
+title: "Deployment"
+output: rmarkdown::html_vignette
+
+vignette: >
+  %\VignetteIndexEntry{Deployment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The following gives some insights on how to deploy the app on a local machine.
+
+To deploy the app, you should have access to the local machine with **sudo rights** ("superuser do", i.e. allows a permitted user to execute a command as the superuser). Refer to a person in charge for the name of the machine and/or the IT department to have the sudo rights. 
+
+You need to connect to the server with by running the following in a bash Terminal:
+```bash
+ssh yourusername@server-adress
+``` 
+
+When working on the machine, if you run a command that require specific rights, you will have to add `sudo` just before the command, and it will ask you for your password before allowing you to run the command. 
+
+**Everything that the app uses needs to be on the server (datasets, R packages, scripts...).**
+
+# Characteristics of the server
+
+The server machine is under Debian 12. It has: 
+
+- 8Go of hard disk 
+- 4Go of RAM 
+- 1 vCPU
+
+
+# Shiny Server
+
+To learn about how to host and manage an app with Shiny Server, check out their documentation: https://docs.posit.co/shiny-server/. 
+
+Notably you can:
+
+- start/stop/restart the server manually with `sudo systemctl start shiny-server`/`sudo systemctl stop shiny-server`/`sudo systemctl restart shiny-server`
+- check the status of the shiny-server with `sudo systemctl status shiny-server`
+- reload configuration of the server without interruption with `sudo systemctl reload shiny-server`
+- change the **configuration file** `shiny-server.conf` to host various apps within the same server, redirect to another locations etc...
+
+# Deploy a new version of the app
+
+In practice, here is how to update the app.
+
+## Update the app via git
+
+The development of the app can be done locally. Once a stable version is available, it should be pushed to the github repository (`git push`). 
+
+This version can then be retrieved from the server by running `git pull`. All the tracked files will be updated (e.g. scripts under `R/`, `renv.lock`...). 
+
+## Update datasets via scp
+
+Heavy files should not be tracked with git. It is the case of datasets. Everything under `db/` has to be updated/added manually by using the command `scp`. 
+
+To correctly add a dataset to the app it needs to both:
+
+- have a row in the file `dataset_summary.txt`, which notably states its name and location in `db/`
+- have the dataset present under the said location in `db/`
+
+## Update the R packages via renv 
+
+If some packages have been locally installed/updated, the new (versions) of R packages should be tracked by running `renv::snapshot()`, and saving the updated `renv.lock` in git. 
+
+Once `git pull` has been run on the server, the `renv.lock` file is updated, but the new (versions) of the R packages are not yet downloaded on the server. Indeed, `renv::restore()` needs to be run successfully to install the new packages. 
+
+## Update the cache
+
+The app makes use of the cache. When an update has been made, the previously created cache must be removed in order to prevent old results to appear. 
+
+To do that, run in the server `rm -r singlecellviz/cache/*.rds`. 
+The first time you open the app and test out that it works with the new datasets, it might take some time as it will ask the database for some data, and save the data as `.rds` in the cache file. If you re-try, it should be faster as the data is saved in the cache!
+
+# Important locations
+
+The location of the important paths are listed in the `README.txt` of the `/srv/shiny-server/` directory.
+
+For example, you can find the location of: 
+
+- the packages relative to shiny
+- the packages relative to the app
+- temp files
+- cache files
+- server config
+- ... 
+
+
+# Important commands
+
+This assumes that you know the basics of bash (`cd`, `ls`, `cp`, `mv`, `mkdir`, `rm`, `cat`, `grep`...), and how to navigate through the paths. But these are some commands line that you might not be familiar with, and that are quite useful when working on the machine.
+
+## General
+
+- `sudo -i` act like **sudo interactively**, you won't have to add `sudo` before every command, but be very careful with what you do, with greats powers comes great responsibility, and you will have the rights to modify and delete very important files without warning! To come back to your normal user rights, run `exit`.
+- `history` output the history of bash commands run by the user
+ 
+## File handling
+
+- `chmod` change the **reading / writing / executing rights** of a file or folder (be careful about giving enough rights to the cache folder for example!).
+- `chown` change the **owner** of a file or folder.
+- `ln -s` create **symbolic link**, in order to point to a file/folder that already exists somewhere in the server, without having to copy it (~ shortcut).
+- `scp` copy a file or folder from one location to another (e.g. **copy a dataset from hpc server to this shiny server!**)
+
+## Space usage
+
+- `df -h` output the hard disk space used by every partitions
+- `du -sh` output the hard disk space used of files/directories
+
+## Server processes
+
+- `watch -d free -m` observe periodically (every 2.0 seconds) the **memory and swap usage** of the server
+- `ps aux` report a snapshot of the current processes
+- `kill` stop a process (you can use the PID shown in `ps aux`)

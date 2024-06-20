@@ -1,10 +1,14 @@
 Package: singlecellviz
 Title: SingleCellViz
-Version: 0.00
+Version: 0.0.1
 Authors@R: 
     person("Valentine", "Gilbart", , "gilbartv@igbmc.fr", role = c("cre", "aut"))
-Description: Visualize singlecell datasets.
+Description: Visualize scRNA-seq datasets.
 License: MIT + file LICENSE
+URL: https://github.com/metzger-chambon/singlecellviz
+BugReports: https://github.com/metzger-chambon/singlecellviz/issues
+Depends: 
+    R (>= 2.10)
 Imports: 
     cachem,
     config (>= 0.3.2),
@@ -15,17 +19,22 @@ Imports:
     patchwork,
     plotly,
     R6,
+    Seurat,
     shiny (>= 1.8.0),
     shinydashboard,
     stats,
     tidyr,
     tiledbsoma,
-    waiter
+    utils,
+    waiter,
+    yaml
 Suggests: 
-    covr,
+    knitr,
+    rmarkdown,
     spelling,
-    pkgload,
     testthat (>= 3.0.0)
+VignetteBuilder: 
+    knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US

@@ -1,0 +1,137 @@
+---
+title: "Usage"
+output: rmarkdown::html_vignette
+
+vignette: >
+  %\VignetteIndexEntry{Usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+SingleCellViz is a RShiny App with the aim to quickly and dynamically:
+
+- visualize
+- explore
+- highlight 
+- download 
+
+results of scRNA-seq datasets. 
+
+We believe that giving an **easy access** through a RShiny App will enable a better **visibility** of the studies, and maximize the use of already available datasets. 
+
+SingleCellViz is not meant to perform new analysis, but to guide through already analyzed datasets, by enabling easy exploration and presenting important results. 
+
+SingleCellViz is structured in different tabs that will be described in the following chapters of this document. 
+Except for the homepage tab, which is general, all the other tabs are dependent on the dataset selected. That means that the structure of one tab is always the same, but its content (the data), is **reactive to the choice of the study**.
+
+# Homepage tab
+
+The homepage presents the aim of the app and how to use it. 
+
+# Select a dataset
+
+Selecting a dataset is pretty straight-forward. You have to click on the drop-down menu on the left, under `Select a dataset:`, and click on the study of interest. You can change it at any time, no matter the tab you currently are on. 
+
+# General information tab
+
+The general information tab contains a box with the:
+
+- title
+- description
+- date
+- doi (if relevant)
+
+of the selected dataset. 
+
+On the right, some **basics statistics** are highlighted:
+
+- number of cells
+- number of features
+- number of samples
+
+# Explore tab
+
+This is where SingleCellViz gets interesting! 
+Two parameters are common to all visualization in this tab: 
+
+- **annotation**: to choose from the drop-down menu, for example it could be the type of cell
+- **gene(s)**: to type or browse from the available list, and **validate** by clicking on the `Validate selection` button. If the gene you are looking for does not appear when you type it, it means that it does not exist in this dataset. 
+
+This tab is composed of three subtabs for various visualization:
+
+- [DimPlot]
+- [VlnPlot]
+- [DotPlot]
+
+They are presented in the following paragraphs. 
+
+## DimPlot 
+
+The first subtab is DimPlot. This is where you finally get a view of your dataset, in the form of a **dimension plot**. The type of dimension plot is a parameter. Depending on your dataset, you might be able to view a UMAP, t-SNE, or a PCA plot. This is a typical representation, where each dot represent a cell. 
+
+The cells on the dimension plot on the right panel will have **as color the annotation** parameter common to all visualizations. 
+
+The cells on the dimension plot on the left panel will have as **color the gene(s) expression**. The left panel will contain as many dimension plot(s) as gene(s) selected. 
+
+If you do not see a plot on the left, that is because **you first need to select and validate genes**. 
+
+## VlnPlot
+
+The VlnPlot subtab presents violin plots to better understand the **distribution of gene expression** across cells of different annotations. There are as many violin plots as genes selected, and the **expression is grouped by the annotation** common to all visualizations. It can be furthered **split by an additional annotation**, which is a parameter specific to this visualization only. 
+
+If you do not see a plot, that is because **you first need to select and validate genes**. 
+
+## DotPlot
+
+The DotPlot subtab shows the **average expression scaled and percent expressed of genes** (x-axis) across cells **grouped by the annotation** (y-axis) common to all visualizations.
+
+If you do not see a plot, that is because **you first need to select and validate genes**. 
+
+# Markers tab
+
+The markers tab presents **pre-calculated results** of Seurat's `FindAllMarkers()`. This means that only the markers of annotations that were found to be relevant will be available. 
+
+There are two elements to this tab:
+
+- a heatmap
+- a table
+
+Filtering the table will update the heatmap automatically.
+
+The heatmap represents the **aggregated value of the gene in all cells from a (combination of) annotations**. When applicable, there is a possibility to split the heatmap with another (pre-chosen) annotation. 
+
+The plot is interactive, browsing the tile with the mouse will show more information, for example which annotation's label(s) the gene is a marker of. A gene is considered a marker of a label if the adjusted p-value is less than 0.05 for this label in the table result of `FindAllMarkers()`.
+
+Finally, the number of genes (per annotation's label) to show in the heatmap is a parameter. 
+
+
+# Differential expression tab
+
+The differential expression tab presents **pre-calculated results** of Seurat's `FindMarkers()` for specific comparisons. This means that only the comparisons that were found to be relevant will be available. 
+
+The structure of the comparison tab is very similar to the one of the markers tab, as it also contains two elements: 
+
+- a heatmap
+- a table
+
+with the same characteristics. 
+
+The number of genes to show in the heatmap is also a parameter. 
+
+# Download data
+
+Finally, there is a `Download` button from which you can **download the original Seurat object**. 
+
+
+
+
