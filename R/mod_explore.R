@@ -83,7 +83,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         genes_choices <- add_suffix(res, isolate(r$selected_study))
 
         return(genes_choices)
-      }) %>% bindCache(r$selected_study)
+      }) %>% bindCache(c(r$selected_study, COMMON_DATA$title))
 
     # Calculate annotation_choices options
     annotation_choices <- reactive(
@@ -188,7 +188,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
         dimtable <- as.matrix(dimtable)
         dimtable <- as.data.frame(dimtable) %>% select(c(.data$V1, .data$V2))
         return(dimtable)
-      }) %>% bindCache(input$dimtype) #, cache = "session")
+      }) %>% bindCache(c(input$dimtype, COMMON_DATA$title)) #, cache = "session")
 
     cell_annotation <- reactive({
       req(input$cell_annotation)
@@ -198,7 +198,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       cell_annotation <- experiment$obs$read(column_names = annotation)$concat()$to_data_frame() %>%
         as.data.frame()
       return(cell_annotation)
-    }) %>% bindCache(input$cell_annotation) #, cache = "session")
+    }) %>% bindCache(c(input$cell_annotation, COMMON_DATA$title)) #, cache = "session")
 
     split_violin <- reactive({
       req(input$split_violin)
@@ -208,7 +208,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       cell_annotation <- experiment$obs$read(column_names = annotation)$concat()$to_data_frame() %>%
         as.data.frame()
       return(cell_annotation)
-    }) %>% bindCache(input$split_violin) #, cache = "session")
+    }) %>% bindCache(c(input$split_violin, COMMON_DATA$title)) #, cache = "session")
 
 
     gene_annotation <- reactive({
@@ -247,7 +247,7 @@ mod_explore_server <- function(id, COMMON_DATA, r){
       # cat(file=stderr(), paste0("\nGene_annotation ends: ", Sys.time(), "\n"))
 
       return(gene_annotation)
-    }) %>% bindCache(input$gene_annotation) %>%#, cache = "session") %>%
+    }) %>% bindCache(c(input$gene_annotation, COMMON_DATA$title)) %>%#, cache = "session") %>%
       bindEvent(validate_gene_annotation())
 
 
