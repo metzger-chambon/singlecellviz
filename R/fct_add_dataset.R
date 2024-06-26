@@ -292,12 +292,19 @@ populate_tiledb <- function(yaml){
 #' Update dataset summary
 #' @description Creates a txt file summarizing information about
 #' all available datasets by automatically
-#' searching for \code{config.yaml} files in each subfolder of specified
+#' searching for \code{config.yaml}, \code{object.rds} and
+#' \code{tiledb/} in each subfolder of specified
 #' \code{db_dir}.
+#'
+#' The order of the datasets is alphanumerical according to the
+#' name of the folder containing them. Therefore, to change the order of the datasets,
+#' simply add the desired position to the folder name
+#' (e.g. if the folder \code{zzz/} contains the first dataset to
+#' show, rename it to \code{1_zzz/}).
 #' @param db_dir a character, corresponding to the path of the database
 #' (containing subfolders)
-#' @param output_file a character, corresponding to the path and filename
-#' to give to the txt file created
+#' @param output_file a character, corresponding to the filename
+#' to give to the txt. It will automatically be in the \code{db_dir}.
 #' @param config_filename a character, corresponding to the name of the
 #' yaml configuration files to look for (by default  \code{"config.yaml"})
 #' @return None. It creates a txt file.
@@ -308,54 +315,51 @@ populate_tiledb <- function(yaml){
 #' @export
 #' @importFrom utils write.table
 #'
-update_summary <- function(db_dir, output_file, config_filename = "config.yaml"){
-  get_studies <- function(){
-    studies <- list()
-    files <- list.files(path = db_dir,
-                        pattern = config_filename,
-                        recursive = TRUE, full.names = TRUE)
-    for (file in files){
-      x <- read_yaml(file, eval.expr=TRUE)
-      uri <- file.path(x$output_folder)
-      experiment <- SOMAOpen(uri)
-      assay <- ifelse("RNA" %in% experiment$ms$names(),
-                               "RNA",
-                      experiment$ms$names()[1])
-      query <- SOMAExperimentAxisQuery$new(
-        experiment = experiment,
-        measurement_name = assay
-      )
-      x$ncells <- query$n_obs
-      x$nfeatures <- query$n_vars
-      metadata_col <- ifelse("orig.ident" %in% experiment$obs$attrnames(),
-                             "orig.ident",
-                             experiment$obs$attrnames()[1])
-      x$nsamples <- nrow(unique(
-        experiment$obs$read(column_names = c(metadata_col))$concat()$to_data_frame()
-        ))
+update_summary <- function(db_dir,
+                           output_file,
+                           config_filename = "config.yaml"){
 
-      studies[x$title] <- list(x)
-    }
+  studies <- list()
+  folders <- list.dirs(db_dir, recursive = F)
+  folders <- stringr::str_sort(folders, numeric = TRUE)
 
-    studies <- data.frame(title = sapply(studies, '[[', "title"),
-                          output = sapply(studies, '[[', "output_folder"),
-                          rds = sapply(studies, '[[', "rds"),
-                          description = sapply(studies, '[[', "description"),
-                          doi = sapply(studies, '[[', "doi"),
-                          date = sapply(studies, '[[', "date"),
-                          nsamples = sapply(studies, '[[', "nsamples"),
-                          nfeatures = sapply(studies, '[[', "nfeatures"),
-                          ncells = sapply(studies, '[[', "ncells"))
+  for (folder in folders){
+    x <- yaml::read_yaml(file.path(folder, "config.yaml"), eval.expr=TRUE)
+    uri <- file.path(folder, "tiledb/")
+    experiment <- SOMAOpen(uri)
+    assay <- ifelse("RNA" %in% experiment$ms$names(),
+                             "RNA",
+                    experiment$ms$names()[1])
+    query <- SOMAExperimentAxisQuery$new(
+      experiment = experiment,
+      measurement_name = assay
+    )
+    x$ncells <- query$n_obs
+    x$nfeatures <- query$n_vars
+    metadata_col <- ifelse("orig.ident" %in% experiment$obs$attrnames(),
+                           "orig.ident",
+                           experiment$obs$attrnames()[1])
+    x$nsamples <- nrow(unique(
+      experiment$obs$read(column_names = c(metadata_col))$concat()$to_data_frame()
+      ))
 
-    rownames(studies) <- NULL
-    return(studies)
+    studies[x$title] <- list(x)
   }
 
-  studies <- get_studies()
-  # If you want to change the order of the datasets (default is alphabetical)
-  studies <- studies %>% slice(3, 4, 1, 2)
+  studies <- data.frame(title = sapply(studies, '[[', "title"),
+                        description = sapply(studies, '[[', "description"),
+                        doi = sapply(studies, '[[', "doi"),
+                        date = sapply(studies, '[[', "date"),
+                        nsamples = sapply(studies, '[[', "nsamples"),
+                        nfeatures = sapply(studies, '[[', "nfeatures"),
+                        ncells = sapply(studies, '[[', "ncells"))
 
-  write.table(studies, file = output_file, sep = '\t', quote = FALSE,
+  studies$output <- file.path(basename(folders), "tiledb/")
+  studies$rds <- file.path(basename(folders), "object.rds")
+
+  rownames(studies) <- NULL
+
+  write.table(studies, file = file.path(db_dir, output_file), sep = '\t', quote = FALSE,
               row.names = FALSE, col.names = TRUE)
 }
 

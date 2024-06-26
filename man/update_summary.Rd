@@ -10,8 +10,8 @@ update_summary(db_dir, output_file, config_filename = "config.yaml")
 \item{db_dir}{a character, corresponding to the path of the database
 (containing subfolders)}
 
-\item{output_file}{a character, corresponding to the path and filename
-to give to the txt file created}
+\item{output_file}{a character, corresponding to the filename
+to give to the txt. It will automatically be in the \code{db_dir}.}
 
 \item{config_filename}{a character, corresponding to the name of the
 yaml configuration files to look for (by default  \code{"config.yaml"})}
@@ -22,8 +22,15 @@ None. It creates a txt file.
 \description{
 Creates a txt file summarizing information about
 all available datasets by automatically
-searching for \code{config.yaml} files in each subfolder of specified
+searching for \code{config.yaml}, \code{object.rds} and
+\code{tiledb/} in each subfolder of specified
 \code{db_dir}.
+
+The order of the datasets is alphanumerical according to the
+name of the folder containing them. Therefore, to change the order of the datasets,
+simply add the desired position to the folder name
+(e.g. if the folder \code{zzz/} contains the first dataset to
+show, rename it to \code{1_zzz/}).
 }
 \examples{
 \dontrun{

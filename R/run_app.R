@@ -28,7 +28,7 @@ run_app <- function(
 ) {
 
   if (is.null(cache_path)){
-    cache_path <- tempdir()
+    cache_path <- file.path(tempdir(), "singlecellviz-cache/")
   }
   shinyOptions(cache = cachem::cache_disk(cache_path))
   # shinyOptions(cache = cachem::cache_mem(max_size = 512 * 1024^2)) # 512 megabytes
@@ -39,9 +39,13 @@ run_app <- function(
                                       package = "singlecellviz",
                                       mustWork = TRUE),
                           header = TRUE, sep = "\t")
-    studies$output <- file.path(system.file(package = "singlecellviz"), studies$output)
-    studies$rds <- file.path(system.file(package = "singlecellviz"), studies$rds)
+    studies$output <- file.path(system.file("extdata", package = "singlecellviz"),
+                                studies$output)
+    studies$rds <- file.path(system.file("extdata", package = "singlecellviz"),
+                             studies$rds)
   }
+
+  #rownames(studies) <- studies$title
 
   with_golem_options(
     app = shinyApp(

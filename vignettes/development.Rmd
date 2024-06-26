@@ -246,7 +246,7 @@ Finally, with git:
 - add and commit your last changes
 - merge your changes with master
 - push your new release to github
-- give it a tag (`git tag -a vX.X.X -m "version X.X.X"`)
+- give it a tag (`git tag -a X.X.X -m "version X.X.X"`)
 - push the tag (`git push origin tag`) 
 
 Golem doc provides some more [things to check checklist](https://engineering-shiny.org/appendix-a---use-case-building-an-app-from-start-to-finish.html?q=check#before-deployment-checklist-1).
