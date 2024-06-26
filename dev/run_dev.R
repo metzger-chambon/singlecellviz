@@ -1,4 +1,4 @@
-run_dev <- function(port = NULL, studies = NULL){
+run_dev <- function(port = NULL, ...){
   # Sass code compilation
   sass::sass(input = sass::sass_file("inst/app/www/custom.sass"), output = "inst/app/www/custom.css", cache = NULL)
 
@@ -16,7 +16,7 @@ run_dev <- function(port = NULL, studies = NULL){
   # Document and reload your package
   golem::document_and_reload()
 
-  run_app(studies = studies)
+  run_app(...)
 }
 
 port = 9560
@@ -25,6 +25,6 @@ mystudy <- read.table("../singlecelldatabase/dataset_summary.txt",
                       header = TRUE, sep = "\t")
 # mystudy <- NULL # to test on the example dataset
 
-run_dev(port, studies = mystudy)
+run_dev(port, studies = mystudy, cache_path = "./cache")
 
 

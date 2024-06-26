@@ -78,7 +78,7 @@ Once `git pull` has been run on the server, the `renv.lock` file is updated, but
 
 ## Update the cache
 
-The app makes use of the cache. When an update has been made, the previously created cache must be removed in order to prevent old results to appear. 
+The deployed app makes use of the cache. When an update has been made, the previously created cache must be removed in order to prevent old results to appear. 
 
 To do that, run in the server `rm -r singlecellviz/cache/*.rds`. 
 The first time you open the app and test out that it works with the new datasets, it might take some time as it will ask the database for some data, and save the data as `.rds` in the cache file. If you re-try, it should be faster as the data is saved in the cache!

@@ -10,4 +10,5 @@ mystudies <- read.table(file.path("../singlecelldatabase", "dataset_summary.txt"
 mystudies$output <- file.path("../singlecelldatabase", mystudies$output)
 mystudies$rds <- file.path("../singlecelldatabase", mystudies$rds)
 
-singlecellviz::run_app(studies = mystudies) # add parameters here (if any)
+singlecellviz::run_app(studies = mystudies,
+                       cache_path = "./cache") # add parameters here (if any)

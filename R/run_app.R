@@ -10,7 +10,8 @@
 #' By default the file read contains information about a very small subset
 #' of pbmc3k present in the package. Check out
 #' \code{vignette("database", package = "singlecellviz")} for more information.
-#'
+#' @param cache_path a file path to the cache directory to use.
+#' If the folder already exists, make sure that the use has read and write access.
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom cachem cache_disk
@@ -22,10 +23,14 @@ run_app <- function(
   enableBookmarking = "url",
   uiPattern = "/",
   studies = NULL,
+  cache_path = NULL,
   ...
 ) {
-  # TODO make cache optional
-  shinyOptions(cache = cachem::cache_disk("./cache"))
+
+  if (is.null(cache_path)){
+    cache_path <- tempdir()
+  }
+  shinyOptions(cache = cachem::cache_disk(cache_path))
   # shinyOptions(cache = cachem::cache_mem(max_size = 512 * 1024^2)) # 512 megabytes
 
   if(is.null(studies)){
