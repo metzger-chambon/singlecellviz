@@ -246,36 +246,31 @@ populate_with_res <- function(res, uri, name, force = FALSE){
 
 #' Populate TileDB-SOMA with a new dataset.
 #' @description Populate TileDB-SOMA with a new dataset.
-#' @param yaml a character, corresponding to the path file of a
-#' config.yaml file for a dataset. Check out the section 'Adding a new dataset'
-#' in \code{vignette("database", package = "singlecellviz")}
-#' for a description of the config.yaml file.
+#' @param dir a character, corresponding to the path folder of the dataset.
+#' It is where a object.rds file is expected, and where the tiledb folder will be created.
+#' @param force a boolean, if a tiledb folder already exists, should it be removed?
 #' @return None. It creates a TileDB-SOMA in a specified folder.
 #' @export
-#' @importFrom yaml read_yaml
 #' @importFrom tiledbsoma write_soma
 
-populate_tiledb <- function(yaml){
-  x <- read_yaml(yaml, eval.expr=TRUE)
-  uri <- file.path(x$output_folder)
-  cat(paste0("##################\n",
-             sprintf("Treating %s.\n", x$title)))
+populate_tiledb <- function(dir, force = F){
+  uri <- file.path(dir, "tiledb")
   # Load the seurat object
-  cat(sprintf("Loading %s rds object.\n", x$title))
-  obj <- readRDS(x$rds)
+  cat(sprintf("Loading rds object.\n"))
+  obj <- readRDS(file.path(dir, "object.rds"))
 
   # Check if such a folder already exists
-  if (!x$force & dir.exists(uri)){
-    cat(paste(x$output_uri, "already exists. If you want to",
-              "update it, please, add 'force: true' in the YAML.\n"))
+  if (!force & dir.exists(uri)){
+    cat(paste(uri, "already exists. If you want to",
+              "update it, please, add option 'force = T'.\n"))
     return(NULL)
   }
   if (dir.exists(uri)){
-    cat(sprintf("Removing existing %s tiledb.\n", x$title))
+    cat(sprintf("Removing existing tiledb.\n"))
     unlink(uri, recursive = TRUE)
   }
 
-  cat(sprintf("Creating %s tiledb.\n", x$title))
+  cat(sprintf("Creating tiledb.\n"))
   # Populate the database with the seurat object
   write_soma(obj$seuratObj, uri)
 

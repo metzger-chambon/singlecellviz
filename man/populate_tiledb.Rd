@@ -4,13 +4,13 @@
 \alias{populate_tiledb}
 \title{Populate TileDB-SOMA with a new dataset.}
 \usage{
-populate_tiledb(yaml)
+populate_tiledb(dir, force = F)
 }
 \arguments{
-\item{yaml}{a character, corresponding to the path file of a
-config.yaml file for a dataset. Check out the section 'Adding a new dataset'
-in \code{vignette("database", package = "singlecellviz")}
-for a description of the config.yaml file.}
+\item{dir}{a character, corresponding to the path folder of the dataset.
+It is where a object.rds file is expected, and where the tiledb folder will be created.}
+
+\item{force}{a boolean, if a tiledb folder already exists, should it be removed?}
 }
 \value{
 None. It creates a TileDB-SOMA in a specified folder.
