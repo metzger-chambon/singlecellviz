@@ -75,7 +75,7 @@ optMarkers <- list(
     )
   )
 )
-markers <- compute_marker(seuratObj, optMarkers)
+markers <- compute_markers(seuratObj, optMarkers)
 
 
 # Compute differential comparison tables
@@ -107,15 +107,12 @@ format(object.size(markers), "Mb")
 format(object.size(comparison), "Mb")
 obj <- list(seuratObj = seuratObj, markers = markers, comparison = comparison)
 
-saveRDS(obj, file.path(dir, "small_example.rds"))
+saveRDS(obj, file.path(dir, "object.rds"))
 
 yaml_content <- list(title = "small example",
-                     output_folder = file.path(dir, "tiledb"),
-                     rds = file.path(dir, "small_example.rds"),
                      description = "Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk and DC cells. Freely available from 10X Genomics.",
                      doi = "10.1038/ncomms14049",
-                     date = "16/01/2017",
-                     force = TRUE)
+                     date = "16/01/2017")
 
 yaml::write_yaml(yaml_content, file.path(dir, "config.yaml"))
 

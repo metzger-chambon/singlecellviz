@@ -5,7 +5,7 @@ Authors@R:
     person("Valentine", "Gilbart", , "gilbartv@igbmc.fr", role = c("cre", "aut"))
 Description: Visualize scRNA-seq datasets.
 License: MIT + file LICENSE
-URL: https://github.com/metzger-chambon/singlecellviz
+URL: https://github.com/metzger-chambon/singlecellviz, https://metzger-chambon.github.io/singlecellviz/
 BugReports: https://github.com/metzger-chambon/singlecellviz/issues
 Depends: 
     R (>= 2.10)
@@ -16,13 +16,16 @@ Imports:
     DT,
     ggplot2,
     golem (>= 0.4.1),
+    methods,
     patchwork,
     plotly,
     R6,
     Seurat,
+    SeuratObject,
     shiny (>= 1.8.0),
     shinydashboard,
     stats,
+    stringr,
     tidyr,
     tiledbsoma,
     utils,
@@ -36,6 +39,7 @@ Suggests:
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
+Additional_repositories: https://tiledb-inc.r-universe.dev
 Encoding: UTF-8
 Language: en-US
 LazyData: true

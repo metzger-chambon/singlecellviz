@@ -247,6 +247,9 @@ populate_with_res <- function(res, uri, name, force = FALSE){
 #' @param object a list with containg a seurat object and the results of
 #' compute_markers and compute_comparison
 #' @return TRUE if no error was raised
+#' @importFrom Seurat Assays Reductions Cells
+#' @importFrom SeuratObject Layers Features
+#' @importFrom methods validObject
 #' @noRd
 #'
 validity_rds <- function(object){
@@ -402,6 +405,7 @@ populate_tiledb <- function(dir, force = F){
 #' }
 #' @export
 #' @importFrom utils write.table
+#' @importFrom stringr str_sort
 #'
 update_summary <- function(db_dir,
                            output_file,
