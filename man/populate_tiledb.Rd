@@ -4,10 +4,10 @@
 \alias{populate_tiledb}
 \title{Populate TileDB-SOMA with a new dataset.}
 \usage{
-populate_tiledb(dir, force = F)
+populate_tiledb(dataset_dir, force = F)
 }
 \arguments{
-\item{dir}{a character, corresponding to the path folder of the dataset.
+\item{dataset_dir}{a character, corresponding to the path folder of the dataset.
 It is where a object.rds file is expected, and where the tiledb folder will be created.}
 
 \item{force}{a boolean, if a tiledb folder already exists, should it be removed?}

@@ -19,57 +19,83 @@ knitr::opts_chunk$set(
 By default, the app is run on a very small subset of pbmc3k dataset. 
 To visualize other datasets of interest, they need to be available within a folder in a TileDB-SOMA format (see [TileDB-SOMA]). 
 
-A txt file summarizing all available datasets should be created, in order to give its path as input to `run_app()`.
+A txt file summarizing all available datasets should be created, it is the file given as input to `run_app()`.
 The txt file is in the following format:
 
 ```{bash, eval = FALSE}
 title    output    rds    description    doi    date    nsamples    nfeatures    ncells
-Study 1    /path/to/tiledb    path/to/rds    Some description    XX.XXXX/somealphanum    DD/MM/YYYY    number_of_samples    number_of_features    number_of_cells
+Study 1    /path/to/tiledb    path/to/rds    Some description    Some doi    DD/MM/YYYY    number_of_samples    number_of_features    number_of_cells
 ```
 
 where each row is an available dataset, and the separators are tabs. 
 
+It can be automatically generated with `update_summary()` (see [Updating the summary]). 
+
 ## Structure of the database
 
-There should be a folder, named `db/` for example, where each dataset has its own sub-folder named `DATASET_NAME/` (replace `DATASET_NAME` by the name of the dataset). 
+There should be a folder (e.g. named `db/`), where each dataset has its own sub-folder named `DATASET_NAME/` (replace `DATASET_NAME` with the name of the dataset). 
 
 Inside of each dataset folder, there should be:
 
-- `config.yaml` file containing metadata about the dataset such as the title, the description, etc (see section [Adding a new dataset])
-- `create_rds.R` file containing the script that cleans and process the original data into a compatible dataset for the app
-- `DATASET_NAME.rds` file containing the Seurat object, the markers and comparison tables that the user will be able to directly download in the app (see section [rds object])
-- `tiledb/` folder containing various folders and files corresponding to the tiledb database (this folder should not be modified manually)
+- `tiledb/` folder containing various folders and files corresponding to the tiledb database (see sections [TileDB-SOMA] and [Creating tiledb])
+- `object.rds` file containing the Seurat object, the markers and comparison tables that the user will be able to directly download in the app (see section [rds object])
+- `create_rds.R` file containing the script that cleans and process the original data into a compatible dataset for the app (see section [create_rds.R file])
+- `config.yaml` file containing metadata about the dataset such as the title, the description, etc (see section [config.yaml file])
 
-## TileDB-SOMA
 
-The datasets are saved in the format provided by [TileDB-SOMA](https://single-cell-data.github.io/TileDB-SOMA/index.html).
+### TileDB-SOMA
+
+The datasets are saved under `DATASET_NAME/tildeb/` in the format provided by [TileDB-SOMA](https://single-cell-data.github.io/TileDB-SOMA/index.html).
 
 TileDB-SOMA is a R package developed to store and access single-cell data at scale. 
-Indeed, when working with a Seurat object, the whole object is loaded, even though only parts of it are needed (not all genes are going to be visualized for example). In the case of our app, meant to be deployed on a server, this would be too heavy on the RAM usage. Thus we decided to use TileDB-SOMA.
+Indeed, when working with a Seurat object, the whole object is loaded, even though only parts of it are needed (not all genes are going to be visualized for example). In the case of our app, meant to be deployed on a server, loading the full Seurat object would be too heavy on the RAM usage. Thus we decided to use TileDB-SOMA.
 
 In addition to the [original TileDB-SOMA structure](https://single-cell-data.github.io/TileDB-SOMA/articles/soma-objects.html) for Seurat objects, the app adds on the two following SOMACollections:
 
 - `markers`
 - `comparison` 
 
-Both SOMACollections contain two tables:
+Both SOMACollections contains a given number of sub-SOMACollection (one for each markers identity/comparisons). Every sub-SOMACollection contains two SOMADataFrame:
 
 - `result`, the result of Seurat's `FindAllMarkers` (for the SOMACollections `markers`) or Seurat's `FindMarkers` (for the SOMACollections `comparison`)
 - `aggrexpression`, the result of Seurat's `AggregateExpression`
 
-## rds object
+### rds object
 
-The rds object is the one that the user will be able to download in the app. It is a list of the following elements:
+The rds object under `DATASET_NAME/object.rds` is the one that will be used to create the tiledb folder. 
+It is also the one that the user will be able to download in the app. 
+It is a list of the following elements:
 
-- `seurat`, the Seurat object
+- `seuratObj`, the Seurat object
 - `markers`, a list with the table of `FindAllMarkers` and `AggregateExpression`
 - `comparison`, a list with the table of `FindMarkers` and `AggregateExpression`
 
 See section [Creating the rds].
 
+### config.yaml file
+
+The `DATASET_NAME/config.yaml` will be used to create summary of all datasets (see section [Updating the summary]). 
+It must have the following structure, and at least the following elements:
+
+```{bash, eval = FALSE}
+title: 'Study 1'
+description: 'Some description'
+doi: 'Some doi'
+date: DD/MM/YYYY
+```
+
+See section [Creating config.yaml].
+
+### create_rds.R file
+
+To keep a note of how every dataset was created, it is strongly advised to write a script with the code run into `DATASET_NAME/create_rds.R`. 
+
 ## Adding a new dataset
 
-If you are adding to a pre-existing database, take a look at some `create_rds.R` and `config.yaml` of existing datasets to better grasp how you can easily clean the Seurat object, create necessary tables and convert to TileDB-SOMA format. At the end, add the dataset to txt file summarizing the datasets by running `singlecellviz::update_summary()`.
+If you are adding to a pre-existing database, take a look at some `create_rds.R` of existing datasets to better grasp how you can easily clean the Seurat object, create necessary tables, convert to TileDB-SOMA format, and create a `config.yaml` file. 
+At the end, add the dataset to the txt file summarizing all datasets by running `singlecellviz::update_summary()`.
+
+Save everything that was run in the `create_rds.R` file in this dataset sub-folder!
 
 For more explanation, read the following sections. 
 
@@ -77,70 +103,79 @@ For more explanation, read the following sections.
 
 To add a new dataset you will need to clean the Seurat object, for example:
 
-- there is no unnecessary columns in `@meta.data`
-- that the columns in `@meta.data` are in the expected format (generally `numeric` or `factors`)
+- remove unnecessary columns in `@meta.data`.
+- check that the columns in `@meta.data` are in the expected format (generally `numeric` or `factors`).
 - remove unnecessary elements in `@reductions`. You can use `Seurat::DietSeurat()` to facilitate this process.
 - remove unnecessary elements in `@assays`, there should only be one at the end (typically `RNA`) which is the one used for the explore tab (what Seurat typically uses for DimPlot, VlnPlot, DotPlot). You can use `Seurat::DietSeurat()` to facilitate this process.
 - remove `scale.data` of the `@assays` left at the very end. It is usually heavy, and not useful for visualization. But only do it at the end, as it is used to run `AggregateExpression` in the following steps (see the next section [Create markers and comparison tables]).
 
-Save everything that was run in the `create_rds.R` file in this dataset sub-folder.
+In general, think of keeping only what you want to show in the app, and lighten the Seurat object. 
 
 ### Create markers and comparison tables
 
-To ease the process of creating the tables, the functions `singlecellviz::compute_markers()` and `singlecellviz::compute_comparison()` have been developed. Check the help of each function for more information. 
+To ease the process of creating the tables, the functions `singlecellviz::compute_markers()` and `singlecellviz::compute_comparison()` have been developed. Check the help of each function for more information and examples.
 
-Save everything that was run, especially the parameters, in the `create_rds.R` file in this dataset sub-folder.
+They are basically wrappers for `Seurat::FindAllMarkers()`, `Seurat::FindMarkers()` and `Seurat::AggregateExpression()`.
 
 ### Creating the rds
 
-The `rds` object structure is described in [rds object]. If you followed the previous sections ([Cleaning the Seurat object] and [Create markers and comparison tables]), you only have to create a list, and save it like so:
+The `rds` object structure is described in [rds object]. If you followed the previous sections, you only have to create a list and save it like so:
 
 ```{r, eval = FALSE}
-# Don't forget to remove `scale.data` from the `@assays` left in the Seurat object!
+# Don't forget to remove `scale.data` from the Assays left in the Seurat object!
 rds_obj <- list(seuratObj = x, 
-     markers = y, 
-     comparison = z)
+                markers = y, 
+                comparison = z)
 
-saveRDS(rds_obj, "db/DATASET_NAME/DATASET_NAME.rds")
+saveRDS(rds_obj, "db/DATASET_NAME/object.rds")
 
 ```
 
-where `x` is the cleaned Seurat object, `y` is the result of `singlecellviz::compute_markers()` and `z` is the result of `singlecellviz::compute_comparison()`.
+where: 
 
-Save these last lines in the `create_rds.R` file in this dataset sub-folder.
-
-
-### Creating config.yaml 
-
-You should now create the `config.yaml` in this dataset folder. It must have the following structure, and at least the following elements:
-
-```{bash, eval = FALSE}
-title: 'Some string as title of the dataset'
-rds: path/of/the/rds/object
-output_folder: path/of/the/tiledb/folder
-description: 'Some string describing the dataset'
-doi: 'Some string being a doi'
-date: DD/MM/YYYY
-force: boolean # true or false: whether or not to recreate the database if it already exists
-```
+- `x` is the cleaned Seurat object 
+- `y` is the result of `singlecellviz::compute_markers()`
+- `z` is the result of `singlecellviz::compute_comparison()`
 
 ### Creating tiledb
 
 The TileDB-SOMA database can be easily created with the function `singlecellviz::populate_tiledb()`. 
 
-It takes as input the path of the `config.yaml` file, and gives no output. It creates the TileDB-SOMA database based on the with the `name`, `rds` and `output_folder` elements given in `config.yaml` (see section [Creating config.yaml]).
+It takes as input `dataset_dir`, the path folder of the dataset. It gives no output. It will look for the `object.rds` present in `dataset_dir`, and create the TileDB-SOMA database in a folder called `tildeb` inside of `dataset_dir`.
+
+### Creating config.yaml 
+
+You should now create the `config.yaml` in this dataset folder.
+
+This can be done easily like so:
+
+```{r, eval = FALSE}
+# Create yaml
+yaml_content <- list("title" = "Study 1",
+     "description" = "Some description",
+     "doi" = "XX.XXXX/somealphanum",
+     "date" = "DD/MM/YYYY")
+
+yaml::write_yaml(yaml_content, file = "config.yaml")
+```
+
+Make sure that your list contains all elements needed in `config.yaml` (see section [config.yaml file]).
 
 ### Updating the summary 
 
-The txt file summarizing the datasets can be easily updated with the code in `singlecellviz::update_summary()`. It is this file that can then be used as input to `run_app()`. 
+The txt file summarizing all datasets can be easily updated with the code in `singlecellviz::update_summary()`. It is this file that can then be used as input to `run_app()`. 
 
-It automatically searches for all available `config.yaml` in each subfolder of the giver db_dir. It retrieves the mandatory elements (see section [Creating config.yaml]), summarizes them in a table, to finally write it in txt file. 
+It automatically searches for all available `config.yaml`, `object.rds`and `tiledb/` in each subfolder of the given db_dir (e.g. `db/`). 
 
-It can also be used to modify some information in txt file summarizing the datasets without modifying it manually. For example to change a description, first modify the corresponding `config.yaml` and then re-run `singlecellviz::update_summary()`. 
+It summarizes mandatory elements (e.g. the title, description...) from the `config.yaml`, as well as retrieves the number of cells, features and samples. 
+By default, it will look for the equivalent of an `RNA` assay in the TileDB-SOMA database (if it does not exist it will take the first assay available). This retrieves the number of cells and features. 
+Moreover, it will look for a metadata column called `orig.ident` (if it does not exist it will take the first available metadata column) and assess the number of unique values for this column to compute the number of samples.
 
-It is recommended to run the `singlecellviz::update_summary()` instead of 
-changing the file manually. 
+The order of the datasets is alphanumerical according to the name of the folder containing them. Therefore, to change the order of the datasets, simply add the desired position at the beginning of the folder name (e.g. if the folder `zzz/` contains the first dataset to show, rename it to `1_zzz/`).
+
+The function `singlecellviz::update_summary()` can also be used to modify the txt file summarizing the datasets without modifying it manually. For example to change a description, first modify the corresponding `config.yaml` and then re-run `singlecellviz::update_summary()`. 
+
+It is recommended to run the `singlecellviz::update_summary()` instead of changing the file manually. 
 First of all, it will prevent from breaking the file due to manual error (for example by not using tabs as separator). 
 Second, it will be a first test to verify that the TileDB-SOMA database works for every dataset, as it retrieves the number of cells, features and samples available by querying each database. 
 
-By default, it will look for the equivalent of an `RNA` assay in the TileDB-SOMA database (if it does not exist it will take the first assay available). Moreover, it will look for a metadata column called `orig.ident` (if it does not exist it will take the first available metadata column) and assess the number of unique values for this column.

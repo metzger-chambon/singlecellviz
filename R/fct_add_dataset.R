@@ -337,15 +337,15 @@ validity_rds <- function(object){
 
 #' Populate TileDB-SOMA with a new dataset.
 #' @description Populate TileDB-SOMA with a new dataset.
-#' @param dir a character, corresponding to the path folder of the dataset.
+#' @param dataset_dir a character, corresponding to the path folder of the dataset.
 #' It is where a object.rds file is expected, and where the tiledb folder will be created.
 #' @param force a boolean, if a tiledb folder already exists, should it be removed?
 #' @return None. It creates a TileDB-SOMA in a specified folder.
 #' @export
 #' @importFrom tiledbsoma write_soma
 
-populate_tiledb <- function(dir, force = F){
-  uri <- file.path(dir, "tiledb")
+populate_tiledb <- function(dataset_dir, force = F){
+  uri <- file.path(dataset_dir, "tiledb")
 
   # Check if such a folder already exists
   if (!force & dir.exists(uri)){
@@ -359,8 +359,8 @@ populate_tiledb <- function(dir, force = F){
   }
 
   # Load the seurat object
-  cat(sprintf("Loading %s/object.rds.\n", dir))
-  obj <- readRDS(file.path(dir, "object.rds"))
+  cat(sprintf("Loading %s/object.rds.\n", dataset_dir))
+  obj <- readRDS(file.path(dataset_dir, "object.rds"))
 
   cat(sprintf("Checking the validity of rds object.\n"))
   validity_rds(obj)
