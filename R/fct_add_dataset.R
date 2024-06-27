@@ -242,7 +242,95 @@ populate_with_res <- function(res, uri, name, force = FALSE){
   experiment$close()
 }
 
+#' Check the validity of the object inside object.rds
+#' @description Check the validity of the object inside object.rds
+#' @param object a list with containg a seurat object and the results of
+#' compute_markers and compute_comparison
+#' @return TRUE if no error was raised
+#' @noRd
+#'
+validity_rds <- function(object){
+  # Check that all objects are present
+  if (!all(c("seuratObj", "markers", "comparison") %in% names(object))){
+    stop("Object list must contain elements 'seuratObj',
+         'markers' and 'comparison'.")
+  }
 
+  # Check seuratObj
+  if (!validObject(object$seuratObj)){
+    stop("Element 'seuratObj' in object list must return
+         is not a validObject().")
+  }
+
+  if (length(Assays(object$seuratObj)) < 1){
+    stop("Element 'seuratObj' in object list must return
+         at least one value in Assays().")
+  }
+  if (length(Reductions(object$seuratObj)) < 1){
+    stop("Element 'seuratObj' in object list must return
+         at least one value in Reductions().")
+  }
+  if (length(Layers(object$seuratObj)) < 1){
+    stop("Element 'seuratObj' in object list must return
+         at least one value in Layers().")
+  }
+  if (length(Features(object$seuratObj)) < 1){
+    stop("Element 'seuratObj' in object list must return
+         at least one value in Features().")
+  }
+  if (length(Cells(object$seuratObj)) < 1){
+    stop("Element 'seuratObj' in object list must return
+         at least one value in Cells().")
+  }
+
+  # Check markers
+  if (length(object$markers) < 1){
+    stop("Element 'markers' in object list must contain
+         at least one element.")
+  }
+  validity <- sapply(object$markers, FUN = function(x){all(c("table", "aggrexpression") %in%
+                                                             names(x))})
+  if (!all(validity)){
+    stop("Every elements of 'markers' in object list must contain
+         elements 'table' and 'aggrexpression'.")
+  }
+  validity <- sapply(object$markers, FUN = function(x){nrow(x$table) > 1})
+  if (!all(validity)){
+    stop("Every 'table' in elements of 'markers' in object list must contain
+         at least one row.")
+  }
+  validity <- sapply(object$markers, FUN = function(x){nrow(x$aggrexpression[[1]]) ==
+                                                       length(Features(object$seuratObj))})
+  if (!all(validity)){
+    stop("Every 'aggrexpression' in elements of 'markers' in object list
+         must contain as many rows as 'seuratObj' Features().")
+  }
+
+  # Check comparison
+  if (length(object$comparison) < 1){
+    stop("Element 'comparison' in object list must contain
+         at least one element.")
+  }
+  validity <- sapply(object$comparison, FUN = function(x){all(c("table", "aggrexpression") %in%
+                                                             names(x))})
+  if (!all(validity)){
+    stop("Every elements of 'comparison' in object list must contain
+         elements 'table' and 'aggrexpression'.")
+  }
+  validity <- sapply(object$comparison, FUN = function(x){nrow(x$table) > 1})
+  if (!all(validity)){
+    stop("Every 'table' in elements of 'comparison' in object list must contain
+         at least one row.")
+  }
+  validity <- sapply(object$comparison, FUN = function(x){nrow(x$aggrexpression[[1]]) ==
+      length(Features(object$seuratObj))})
+  if (!all(validity)){
+    stop("Every 'aggrexpression' in elements of 'comparison' in object list
+         must contain as many rows as 'seuratObj' Features().")
+  }
+
+  return(TRUE)
+}
 
 #' Populate TileDB-SOMA with a new dataset.
 #' @description Populate TileDB-SOMA with a new dataset.
@@ -255,9 +343,6 @@ populate_with_res <- function(res, uri, name, force = FALSE){
 
 populate_tiledb <- function(dir, force = F){
   uri <- file.path(dir, "tiledb")
-  # Load the seurat object
-  cat(sprintf("Loading rds object.\n"))
-  obj <- readRDS(file.path(dir, "object.rds"))
 
   # Check if such a folder already exists
   if (!force & dir.exists(uri)){
@@ -270,12 +355,20 @@ populate_tiledb <- function(dir, force = F){
     unlink(uri, recursive = TRUE)
   }
 
-  cat(sprintf("Creating tiledb.\n"))
+  # Load the seurat object
+  cat(sprintf("Loading %s/object.rds.\n", dir))
+  obj <- readRDS(file.path(dir, "object.rds"))
+
+  cat(sprintf("Checking the validity of rds object.\n"))
+  validity_rds(obj)
+
   # Populate the database with the seurat object
+  cat(sprintf("Populating %s with Seurat object.\n", uri))
   write_soma(obj$seuratObj, uri)
 
   # Save comparison gene tables in tiledb under the "comparison" collection
   populate_with_res(obj$comparison, uri, name = 'comparison')
+
   # Save marker gene tables in tiledb under the "marker" collection
   populate_with_res(obj$marker, uri, name = 'markers')
 
