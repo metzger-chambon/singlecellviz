@@ -1,6 +1,4 @@
 title: small example
-output_folder: /Volumes/projects/PCa_SingleCell/utils/git/singlecellviz/inst/extdata/small_example/tiledb
-rds: /Volumes/projects/PCa_SingleCell/utils/git/singlecellviz/inst/extdata/small_example/small_example.rds
 description: Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk
   and DC cells. Freely available from 10X Genomics.
 doi: 10.1038/ncomms14049

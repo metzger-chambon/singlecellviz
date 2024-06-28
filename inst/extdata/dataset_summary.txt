@@ -1,2 +1,2 @@
 title	output	rds	description	doi	date	nsamples	nfeatures	ncells	new
-small example	extdata/small_example/tiledb	extdata/small_example/small_example.rds	Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk and DC cells. Freely available from 10X Genomics.	10.1038/ncomms14049	16/01/2017	1	100	46	FALSE
+small example	small_example/tiledb	small_example/object.rds	Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk and DC cells. Freely available from 10X Genomics.	10.1038/ncomms14049	16/01/2017	1	100	46	FALSE

@@ -53,7 +53,7 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       comparison_table <- COMMON_DATA$experiment$get('comparison')$get(comparison)$get("result")$read()$concat()$to_data_frame()
       comparison_table <- clean_findmarkers_result(comparison_table)
       return(comparison_table)
-    }) %>% bindCache(c(input$comparison))#, cache = "session")
+    }) %>% bindCache(c(input$comparison, COMMON_DATA$title))#, cache = "session")
 
     aggrexpression_table <- reactive({
       req(input$comparison)
@@ -61,7 +61,7 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       aggrexpression_table <- COMMON_DATA$experiment$get("comparison")$get(comparison)$get('aggrexpression')$read()$concat()$to_data_frame()
       aggrexpression_table <- clean_aggrexpression(aggrexpression_table)
       return(aggrexpression_table)
-    }) %>% bindCache(c(input$comparison))#, cache = "session")
+    }) %>% bindCache(c(input$comparison, COMMON_DATA$title))#, cache = "session")
 
     # Update cell_annotation_choices with study specificity
     comparison_choices <- reactive(

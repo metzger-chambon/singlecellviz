@@ -5,6 +5,7 @@ DATA <- R6::R6Class(
     "DATA",
     public = list(
       output = NULL,
+      title = NULL,
       initialize = function(){
         # Some initialization if needed
       },

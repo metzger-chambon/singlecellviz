@@ -32,6 +32,7 @@ mod_dataset_server <- function(id, COMMON_DATA, r){
     observeEvent(input$study, {
       study <- studies[input$study,, drop = F]
       COMMON_DATA$output <- study$output
+      COMMON_DATA$title <- study$title
 
       # Set r$selected_study to be able to pass it to other modules
       r$selected_study <- input$study

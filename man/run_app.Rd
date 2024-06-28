@@ -10,6 +10,7 @@ run_app(
   enableBookmarking = "url",
   uiPattern = "/",
   studies = NULL,
+  cache_path = NULL,
   ...
 )
 }
@@ -40,6 +41,9 @@ The file should be a tab separated table, with the headers:
 By default the file read contains information about a very small subset
 of pbmc3k present in the package. Check out
 \code{vignette("database", package = "singlecellviz")} for more information.}
+
+\item{cache_path}{a file path to the cache directory to use.
+If the folder already exists, make sure that the use has read and write access.}
 
 \item{...}{arguments to pass to golem_opts.
 See `?golem::get_golem_options` for more details.}
