@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">singlecellviz</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,49 +89,51 @@
 <p>By default, the app is run on a very small subset of pbmc3k dataset.
 To visualize other datasets of interest, they need to be available
 within a folder in a TileDB-SOMA format (see <a href="#tiledb-soma">TileDB-SOMA</a>).</p>
-<p>A txt file summarizing all available datasets should be created, in
-order to give its path as input to <code><a href="../reference/run_app.html">run_app()</a></code>. The txt file
-is in the following format:</p>
+<p>A txt file summarizing all available datasets should be created, it
+is the file given as input to <code><a href="../reference/run_app.html">run_app()</a></code>. The txt file is in
+the following format:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">title</span>    output    rds    description    doi    date    nsamples    nfeatures    ncells</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">Study</span> 1    /path/to/tiledb    path/to/rds    Some description    XX.XXXX/somealphanum    DD/MM/YYYY    number_of_samples    number_of_features    number_of_cells</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">Study</span> 1    /path/to/tiledb    path/to/rds    Some description    Some doi    DD/MM/YYYY    number_of_samples    number_of_features    number_of_cells</span></code></pre></div>
 <p>where each row is an available dataset, and the separators are
 tabs.</p>
+<p>It can be automatically generated with <code><a href="../reference/update_summary.html">update_summary()</a></code>
+(see <a href="#updating-the-summary">Updating the summary</a>).</p>
 </div>
 <div class="section level2">
 <h2 id="structure-of-the-database">Structure of the database<a class="anchor" aria-label="anchor" href="#structure-of-the-database"></a>
 </h2>
-<p>There should be a folder, named <code>db/</code> for example, where
-each dataset has its own sub-folder named <code>DATASET_NAME/</code>
-(replace <code>DATASET_NAME</code> by the name of the dataset).</p>
+<p>There should be a folder (e.g. named <code>db/</code>), where each
+dataset has its own sub-folder named <code>DATASET_NAME/</code> (replace
+<code>DATASET_NAME</code> with the name of the dataset).</p>
 <p>Inside of each dataset folder, there should be:</p>
 <ul>
 <li>
-<code>config.yaml</code> file containing metadata about the dataset
-such as the title, the description, etc (see section <a href="#adding-a-new-dataset">Adding a new dataset</a>)</li>
+<code>tiledb/</code> folder containing various folders and files
+corresponding to the tiledb database (see sections <a href="#tiledb-soma">TileDB-SOMA</a> and <a href="#creating-tiledb">Creating tiledb</a>)</li>
 <li>
-<code>create_rds.R</code> file containing the script that cleans and
-process the original data into a compatible dataset for the app</li>
-<li>
-<code>DATASET_NAME.rds</code> file containing the Seurat object, the
+<code>object.rds</code> file containing the Seurat object, the
 markers and comparison tables that the user will be able to directly
 download in the app (see section <a href="#rds-object">rds
 object</a>)</li>
 <li>
-<code>tiledb/</code> folder containing various folders and files
-corresponding to the tiledb database (this folder should not be modified
-manually)</li>
+<code>create_rds.R</code> file containing the script that cleans and
+process the original data into a compatible dataset for the app (see
+section <a href="#create_rds.r-file">create_rds.R file</a>)</li>
+<li>
+<code>config.yaml</code> file containing metadata about the dataset
+such as the title, the description, etc (see section <a href="#config.yaml-file">config.yaml file</a>)</li>
 </ul>
-</div>
-<div class="section level2">
-<h2 id="tiledb-soma">TileDB-SOMA<a class="anchor" aria-label="anchor" href="#tiledb-soma"></a>
-</h2>
-<p>The datasets are saved in the format provided by <a href="https://single-cell-data.github.io/TileDB-SOMA/index.html" class="external-link">TileDB-SOMA</a>.</p>
+<div class="section level3">
+<h3 id="tiledb-soma">TileDB-SOMA<a class="anchor" aria-label="anchor" href="#tiledb-soma"></a>
+</h3>
+<p>The datasets are saved under <code>DATASET_NAME/tildeb/</code> in the
+format provided by <a href="https://single-cell-data.github.io/TileDB-SOMA/index.html" class="external-link">TileDB-SOMA</a>.</p>
 <p>TileDB-SOMA is a R package developed to store and access single-cell
 data at scale. Indeed, when working with a Seurat object, the whole
 object is loaded, even though only parts of it are needed (not all genes
 are going to be visualized for example). In the case of our app, meant
-to be deployed on a server, this would be too heavy on the RAM usage.
-Thus we decided to use TileDB-SOMA.</p>
+to be deployed on a server, loading the full Seurat object would be too
+heavy on the RAM usage. Thus we decided to use TileDB-SOMA.</p>
 <p>In addition to the <a href="https://single-cell-data.github.io/TileDB-SOMA/articles/soma-objects.html" class="external-link">original
 TileDB-SOMA structure</a> for Seurat objects, the app adds on the two
 following SOMACollections:</p>
@@ -139,7 +141,9 @@ following SOMACollections:</p>
 <li><code>markers</code></li>
 <li><code>comparison</code></li>
 </ul>
-<p>Both SOMACollections contain two tables:</p>
+<p>Both SOMACollections contains a given number of sub-SOMACollection
+(one for each markers identity/comparisons). Every sub-SOMACollection
+contains two SOMADataFrame:</p>
 <ul>
 <li>
 <code>result</code>, the result of Seurat’s
@@ -152,14 +156,16 @@ SOMACollections <code>comparison</code>)</li>
 </li>
 </ul>
 </div>
-<div class="section level2">
-<h2 id="rds-object">rds object<a class="anchor" aria-label="anchor" href="#rds-object"></a>
-</h2>
-<p>The rds object is the one that the user will be able to download in
-the app. It is a list of the following elements:</p>
+<div class="section level3">
+<h3 id="rds-object">rds object<a class="anchor" aria-label="anchor" href="#rds-object"></a>
+</h3>
+<p>The rds object under <code>DATASET_NAME/object.rds</code> is the one
+that will be used to create the tiledb folder. It is also the one that
+the user will be able to download in the app. It is a list of the
+following elements:</p>
 <ul>
 <li>
-<code>seurat</code>, the Seurat object</li>
+<code>seuratObj</code>, the Seurat object</li>
 <li>
 <code>markers</code>, a list with the table of
 <code>FindAllMarkers</code> and <code>AggregateExpression</code>
@@ -171,15 +177,38 @@ the app. It is a list of the following elements:</p>
 </ul>
 <p>See section <a href="#creating-the-rds">Creating the rds</a>.</p>
 </div>
+<div class="section level3">
+<h3 id="config-yaml-file">config.yaml file<a class="anchor" aria-label="anchor" href="#config-yaml-file"></a>
+</h3>
+<p>The <code>DATASET_NAME/config.yaml</code> will be used to create
+summary of all datasets (see section <a href="#updating-the-summary">Updating the summary</a>). It must have the
+following structure, and at least the following elements:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">title:</span> <span class="st">'Study 1'</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">description:</span> <span class="st">'Some description'</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="ex">doi:</span> <span class="st">'Some doi'</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="ex">date:</span> DD/MM/YYYY</span></code></pre></div>
+<p>See section <a href="#creating-config.yaml">Creating
+config.yaml</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="create_rds-r-file">create_rds.R file<a class="anchor" aria-label="anchor" href="#create_rds-r-file"></a>
+</h3>
+<p>To keep a note of how every dataset was created, it is strongly
+advised to write a script with the code run into
+<code>DATASET_NAME/create_rds.R</code>.</p>
+</div>
+</div>
 <div class="section level2">
 <h2 id="adding-a-new-dataset">Adding a new dataset<a class="anchor" aria-label="anchor" href="#adding-a-new-dataset"></a>
 </h2>
 <p>If you are adding to a pre-existing database, take a look at some
-<code>create_rds.R</code> and <code>config.yaml</code> of existing
-datasets to better grasp how you can easily clean the Seurat object,
-create necessary tables and convert to TileDB-SOMA format. At the end,
-add the dataset to txt file summarizing the datasets by running
+<code>create_rds.R</code> of existing datasets to better grasp how you
+can easily clean the Seurat object, create necessary tables, convert to
+TileDB-SOMA format, and create a <code>config.yaml</code> file. At the
+end, add the dataset to the txt file summarizing all datasets by running
 <code><a href="../reference/update_summary.html">singlecellviz::update_summary()</a></code>.</p>
+<p>Save everything that was run in the <code>create_rds.R</code> file in
+this dataset sub-folder!</p>
 <p>For more explanation, read the following sections.</p>
 <div class="section level3">
 <h3 id="cleaning-the-seurat-object">Cleaning the Seurat object<a class="anchor" aria-label="anchor" href="#cleaning-the-seurat-object"></a>
@@ -187,10 +216,10 @@ add the dataset to txt file summarizing the datasets by running
 <p>To add a new dataset you will need to clean the Seurat object, for
 example:</p>
 <ul>
-<li>there is no unnecessary columns in <code>@meta.data</code>
-</li>
-<li>that the columns in <code>@meta.data</code> are in the expected
-format (generally <code>numeric</code> or <code>factors</code>)</li>
+<li>remove unnecessary columns in <code>@meta.data</code>.</li>
+<li>check that the columns in <code>@meta.data</code> are in the
+expected format (generally <code>numeric</code> or
+<code>factors</code>).</li>
 <li>remove unnecessary elements in <code>@reductions</code>. You can use
 <code><a href="https://satijalab.org/seurat/reference/DietSeurat.html" class="external-link">Seurat::DietSeurat()</a></code> to facilitate this process.</li>
 <li>remove unnecessary elements in <code>@assays</code>, there should
@@ -205,8 +234,8 @@ only do it at the end, as it is used to run
 section <a href="#create-markers-and-comparison-tables">Create markers
 and comparison tables</a>).</li>
 </ul>
-<p>Save everything that was run in the <code>create_rds.R</code> file in
-this dataset sub-folder.</p>
+<p>In general, think of keeping only what you want to show in the app,
+and lighten the Seurat object.</p>
 </div>
 <div class="section level3">
 <h3 id="create-markers-and-comparison-tables">Create markers and comparison tables<a class="anchor" aria-label="anchor" href="#create-markers-and-comparison-tables"></a>
@@ -214,71 +243,93 @@ this dataset sub-folder.</p>
 <p>To ease the process of creating the tables, the functions
 <code><a href="../reference/compute_markers.html">singlecellviz::compute_markers()</a></code> and
 <code><a href="../reference/compute_comparison.html">singlecellviz::compute_comparison()</a></code> have been developed.
-Check the help of each function for more information.</p>
-<p>Save everything that was run, especially the parameters, in the
-<code>create_rds.R</code> file in this dataset sub-folder.</p>
+Check the help of each function for more information and examples.</p>
+<p>They are basically wrappers for
+<code><a href="https://satijalab.org/seurat/reference/FindAllMarkers.html" class="external-link">Seurat::FindAllMarkers()</a></code>,
+<code><a href="https://satijalab.org/seurat/reference/FindMarkers.html" class="external-link">Seurat::FindMarkers()</a></code> and
+<code><a href="https://satijalab.org/seurat/reference/AggregateExpression.html" class="external-link">Seurat::AggregateExpression()</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="creating-the-rds">Creating the rds<a class="anchor" aria-label="anchor" href="#creating-the-rds"></a>
 </h3>
-<p>The <code>rds</code> object structure is described in <a href="#rds-object">rds object</a>. If you followed the previous sections
-(<a href="#cleaning-the-seurat-object">Cleaning the Seurat object</a>
-and <a href="#create-markers-and-comparison-tables">Create markers and
-comparison tables</a>), you only have to create a list, and save it like
-so:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Don't forget to remove `scale.data` from the `@assays` left in the Seurat object!</span></span>
+<p>The <code>rds</code> object structure is described in <a href="#rds-object">rds object</a>. If you followed the previous
+sections, you only have to create a list and save it like so:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Don't forget to remove `scale.data` from the Assays left in the Seurat object!</span></span>
 <span><span class="va">rds_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seuratObj <span class="op">=</span> <span class="va">x</span>, </span>
-<span>     markers <span class="op">=</span> <span class="va">y</span>, </span>
-<span>     comparison <span class="op">=</span> <span class="va">z</span><span class="op">)</span></span>
+<span>                markers <span class="op">=</span> <span class="va">y</span>, </span>
+<span>                comparison <span class="op">=</span> <span class="va">z</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">rds_obj</span>, <span class="st">"db/DATASET_NAME/DATASET_NAME.rds"</span><span class="op">)</span></span></code></pre></div>
-<p>where <code>x</code> is the cleaned Seurat object, <code>y</code> is
-the result of <code><a href="../reference/compute_markers.html">singlecellviz::compute_markers()</a></code> and
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">rds_obj</span>, <span class="st">"db/DATASET_NAME/object.rds"</span><span class="op">)</span></span></code></pre></div>
+<p>where:</p>
+<ul>
+<li>
+<code>x</code> is the cleaned Seurat object</li>
+<li>
+<code>y</code> is the result of
+<code><a href="../reference/compute_markers.html">singlecellviz::compute_markers()</a></code>
+</li>
+<li>
 <code>z</code> is the result of
-<code><a href="../reference/compute_comparison.html">singlecellviz::compute_comparison()</a></code>.</p>
-<p>Save these last lines in the <code>create_rds.R</code> file in this
-dataset sub-folder.</p>
-</div>
-<div class="section level3">
-<h3 id="creating-config-yaml">Creating config.yaml<a class="anchor" aria-label="anchor" href="#creating-config-yaml"></a>
-</h3>
-<p>You should now create the <code>config.yaml</code> in this dataset
-folder. It must have the following structure, and at least the following
-elements:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">title:</span> <span class="st">'Some string as title of the dataset'</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">rds:</span> path/of/the/rds/object</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="ex">output_folder:</span> path/of/the/tiledb/folder</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="ex">description:</span> <span class="st">'Some string describing the dataset'</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="ex">doi:</span> <span class="st">'Some string being a doi'</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="ex">date:</span> DD/MM/YYYY</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="ex">force:</span> boolean <span class="co"># true or false: whether or not to recreate the database if it already exists</span></span></code></pre></div>
+<code><a href="../reference/compute_comparison.html">singlecellviz::compute_comparison()</a></code>
+</li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="creating-tiledb">Creating tiledb<a class="anchor" aria-label="anchor" href="#creating-tiledb"></a>
 </h3>
 <p>The TileDB-SOMA database can be easily created with the function
 <code><a href="../reference/populate_tiledb.html">singlecellviz::populate_tiledb()</a></code>.</p>
-<p>It takes as input the path of the <code>config.yaml</code> file, and
-gives no output. It creates the TileDB-SOMA database based on the with
-the <code>name</code>, <code>rds</code> and <code>output_folder</code>
-elements given in <code>config.yaml</code> (see section <a href="#creating-config.yaml">Creating config.yaml</a>).</p>
+<p>It takes as input <code>dataset_dir</code>, the path folder of the
+dataset. It gives no output. It will look for the
+<code>object.rds</code> present in <code>dataset_dir</code>, and create
+the TileDB-SOMA database in a folder called <code>tildeb</code> inside
+of <code>dataset_dir</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="creating-config-yaml">Creating config.yaml<a class="anchor" aria-label="anchor" href="#creating-config-yaml"></a>
+</h3>
+<p>You should now create the <code>config.yaml</code> in this dataset
+folder.</p>
+<p>This can be done easily like so:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create yaml</span></span>
+<span><span class="va">yaml_content</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"title"</span> <span class="op">=</span> <span class="st">"Study 1"</span>,</span>
+<span>     <span class="st">"description"</span> <span class="op">=</span> <span class="st">"Some description"</span>,</span>
+<span>     <span class="st">"doi"</span> <span class="op">=</span> <span class="st">"XX.XXXX/somealphanum"</span>,</span>
+<span>     <span class="st">"date"</span> <span class="op">=</span> <span class="st">"DD/MM/YYYY"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">yaml</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/yaml/man/write_yaml.html" class="external-link">write_yaml</a></span><span class="op">(</span><span class="va">yaml_content</span>, file <span class="op">=</span> <span class="st">"config.yaml"</span><span class="op">)</span></span></code></pre></div>
+<p>Make sure that your list contains all elements needed in
+<code>config.yaml</code> (see section <a href="#config.yaml-file">config.yaml file</a>).</p>
 </div>
 <div class="section level3">
 <h3 id="updating-the-summary">Updating the summary<a class="anchor" aria-label="anchor" href="#updating-the-summary"></a>
 </h3>
-<p>The txt file summarizing the datasets can be easily updated with the
+<p>The txt file summarizing all datasets can be easily updated with the
 code in <code><a href="../reference/update_summary.html">singlecellviz::update_summary()</a></code>. It is this file
 that can then be used as input to <code><a href="../reference/run_app.html">run_app()</a></code>.</p>
-<p>It automatically searches for all available <code>config.yaml</code>
-in each subfolder of the giver db_dir. It retrieves the mandatory
-elements (see section <a href="#creating-config.yaml">Creating
-config.yaml</a>), summarizes them in a table, to finally write it in txt
-file.</p>
-<p>It can also be used to modify some information in txt file
-summarizing the datasets without modifying it manually. For example to
-change a description, first modify the corresponding
-<code>config.yaml</code> and then re-run
+<p>It automatically searches for all available <code>config.yaml</code>,
+<code>object.rds</code>and <code>tiledb/</code> in each subfolder of the
+given db_dir (e.g. <code>db/</code>).</p>
+<p>It summarizes mandatory elements (e.g. the title, description…) from
+the <code>config.yaml</code>, as well as retrieves the number of cells,
+features and samples. By default, it will look for the equivalent of an
+<code>RNA</code> assay in the TileDB-SOMA database (if it does not exist
+it will take the first assay available). This retrieves the number of
+cells and features. Moreover, it will look for a metadata column called
+<code>orig.ident</code> (if it does not exist it will take the first
+available metadata column) and assess the number of unique values for
+this column to compute the number of samples.</p>
+<p>The order of the datasets is alphanumerical according to the name of
+the folder containing them. Therefore, to change the order of the
+datasets, simply add the desired position at the beginning of the folder
+name (e.g. if the folder <code>zzz/</code> contains the first dataset to
+show, rename it to <code>1_zzz/</code>).</p>
+<p>The function <code><a href="../reference/update_summary.html">singlecellviz::update_summary()</a></code> can also be
+used to modify the txt file summarizing the datasets without modifying
+it manually. For example to change a description, first modify the
+corresponding <code>config.yaml</code> and then re-run
 <code><a href="../reference/update_summary.html">singlecellviz::update_summary()</a></code>.</p>
 <p>It is recommended to run the
 <code><a href="../reference/update_summary.html">singlecellviz::update_summary()</a></code> instead of changing the
@@ -287,12 +338,6 @@ to manual error (for example by not using tabs as separator). Second, it
 will be a first test to verify that the TileDB-SOMA database works for
 every dataset, as it retrieves the number of cells, features and samples
 available by querying each database.</p>
-<p>By default, it will look for the equivalent of an <code>RNA</code>
-assay in the TileDB-SOMA database (if it does not exist it will take the
-first assay available). Moreover, it will look for a metadata column
-called <code>orig.ident</code> (if it does not exist it will take the
-first available metadata column) and assess the number of unique values
-for this column.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

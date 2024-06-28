@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">singlecellviz</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@
     
 <p>The following documentation assumes you have basic notions of how to
 build a RShiny app. Follow the documentations of <a href="https://shiny.posit.co/" class="external-link">RShiny</a> and <a href="https://mastering-shiny.org/" class="external-link">Mastering Shiny</a> for more
-explanations on Shiny, and for some practical examples.</p>
+explanations, and for some practical examples.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -131,16 +131,16 @@ useful when developing the app.</p>
 <h2 id="running-the-app">Running the app<a class="anchor" aria-label="anchor" href="#running-the-app"></a>
 </h2>
 <p>Once you have your local version of the app, you can test your
-developmental version of the app easily by running with the code in
+development version easily by running the code in
 <code>dev/run_dev.R</code>.</p>
-<p>Notably, it runs the golem wrapper <code><a href="../reference/run_app.html">run_app()</a></code> function.
-The default database to run the app has only one very small dataset,
+<p>Notably, it runs the golem wrapper <code><a href="../reference/run_app.html">run_app()</a></code>. The
+default database to run the app has only one very small dataset,
 corresponding to a subset of pbmc3k dataset. If you want to test it on
 other datasets, check out the <a href="database.html">Database
 vignette</a>.</p>
 <p>As the default dataset is very small, it is good practice to also
 test the app on a bigger dataset, to make sure that it is not lagging
-when going up to scale.</p>
+when scaling up.</p>
 </div>
 <div class="section level2">
 <h2 id="general-structure">General structure<a class="anchor" aria-label="anchor" href="#general-structure"></a>
@@ -169,22 +169,20 @@ development doc</a>)</li>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">├──</span> data                <span class="co"># folder containing datasets available in the package (R packages)</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="ex">├──</span> DESCRIPTION         <span class="co"># file with metadata (R packages)</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ex">├──</span> dev                 <span class="co"># folder with scripts to run when developping the app (golem)</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">├──</span> docs                <span class="co"># folder for (pkgdown)</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ex">├──</span> inst                <span class="co"># folder with arbitrary additional files (R packages) </span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="ex">├──</span> LICENSE.md          <span class="co"># LICENSE of the app (R package)</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="ex">├──</span> man                 <span class="co"># folder with documentation of the package (R packages)</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="ex">├──</span> cache         <span class="co"># folder containing the cache (RShiny)</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="ex">├──</span> NAMESPACE           <span class="co"># file with import/export to make package self-contained (R packages)</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="ex">├──</span> NEWS.md             <span class="co"># file to summarize updates made to the package (R packages)</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="ex">├──</span> _pkgdown.yml        <span class="co"># file with configuration of pkgdown (pkgdown)</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="ex">├──</span> presentation        <span class="co"># folder containing pdf presentation of the app</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="ex">├──</span> R                   <span class="co"># folder with all R code (R packages)</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="ex">├──</span> README.md           <span class="co"># README file (R packages)</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="ex">├──</span> renv                <span class="co"># folder with renv libraries (renv)</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="ex">├──</span> renv.lock           <span class="co"># file with name and version of packages (renv)</span></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="ex">├──</span> singlecellviz.Rproj <span class="co"># defines the R project of the app</span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="ex">├──</span> tests               <span class="co"># folder containing automatic tests (testthat)</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="ex">└──</span> vignettes           <span class="co"># folder containing documentation (R packages)</span></span></code></pre></div>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">├──</span> inst                <span class="co"># folder with arbitrary additional files (R packages) </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ex">├──</span> LICENSE.md          <span class="co"># LICENSE of the app (R package)</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="ex">├──</span> man                 <span class="co"># folder with documentation of the package (R packages)</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="ex">├──</span> NAMESPACE           <span class="co"># file with import/export to make package self-contained (R packages)</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="ex">├──</span> NEWS.md             <span class="co"># file to summarize updates made to the package (R packages)</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="ex">├──</span> _pkgdown.yml        <span class="co"># file with configuration of pkgdown (pkgdown)</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="ex">├──</span> presentation        <span class="co"># folder containing pdf presentation of the app</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="ex">├──</span> R                   <span class="co"># folder with all R code (R packages)</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="ex">├──</span> README.md           <span class="co"># README file (R packages)</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="ex">├──</span> renv                <span class="co"># folder with renv libraries (renv)</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="ex">├──</span> renv.lock           <span class="co"># file with name and version of packages (renv)</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="ex">├──</span> singlecellviz.Rproj <span class="co"># defines the R project of the app</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="ex">├──</span> tests               <span class="co"># folder containing automatic tests (testthat)</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="ex">└──</span> vignettes           <span class="co"># folder containing documentation (R packages)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="description-of-r-scripts">Description of <code>R/</code> scripts<a class="anchor" aria-label="anchor" href="#description-of-r-scripts"></a>
@@ -243,7 +241,7 @@ structured like so:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/structure.html" class="external-link">structure</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"small example"</span>, </span>
 <span>               output <span class="op">=</span> <span class="st">"extdata/small_example/tiledb"</span>, </span>
-<span>               rds <span class="op">=</span> <span class="st">"extdata/small_example/small_example.rds"</span>, </span>
+<span>               rds <span class="op">=</span> <span class="st">"extdata/small_example/object.rds"</span>, </span>
 <span>               description <span class="op">=</span> <span class="st">"Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk and DC cells. Freely available from 10X Genomics."</span>, </span>
 <span>               doi <span class="op">=</span> <span class="st">"10.1038/ncomms14049"</span>, </span>
 <span>               date <span class="op">=</span> <span class="st">"16/01/2017"</span>, </span>
@@ -252,7 +250,7 @@ structured like so:</p>
 <span>               ncells <span class="op">=</span> <span class="fl">46L</span><span class="op">)</span>, </span>
 <span>          class <span class="op">=</span> <span class="st">"data.frame"</span>, row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="op">-</span><span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>As you can notice, it has a similar structure than the file given as
-input of <code><a href="../reference/run_app.html">run_app()</a></code> (described in section <a href="#running-the-app">Running the app</a>). This is because the input
+input of <code><a href="../reference/run_app.html">run_app()</a></code> (described in <a href="database.html">Database vignette</a>). This is because the input
 file given to <code><a href="../reference/run_app.html">run_app()</a></code> is read, and saved in the variable
 <code>studies</code>.</p>
 <p>To get access to it in a module just add the line of code in your
@@ -272,8 +270,8 @@ doc). It is a special list with elements:</p>
 <li>
 <code>tabs</code>, the name of the current tab in use</li>
 <li>
-<code>selected_study</code>, the number of the current selected
-study</li>
+<code>selected_study</code>, the number (positional value) of the
+current selected study</li>
 </ul>
 <p>It is a way to share information across otherwise independent
 modules. The particularity of reactiveValues objects is that every time
@@ -297,10 +295,13 @@ doc).</p>
 <p>It contains the public methods:</p>
 <ul>
 <li>
-<code>output</code>, the value of the uri of the current study</li>
+<code>output</code>, the uri of the current study</li>
 <li>
-<code>tabs_updated</code>, a list of value of the latest study shown
-for each tab</li>
+<code>title</code>, the title of the current study</li>
+<li>
+<code>tabs_updated</code>, a list with elements name being the name
+of a tab, and their value being the number (positional value) of latest
+study it has been updated with</li>
 </ul>
 <p>and the active methods:</p>
 <ul>
@@ -331,9 +332,10 @@ use the <code>COMMON_DATA</code> object.</p>
 </h2>
 <p>To develop the app efficiently, there are some good practice that
 <strong>need</strong> to be followed. They are presented in the
-following sections. They are all explained in more details in the golem
-documentation, but the following sections describe the major points to
-keep in mind when developping.</p>
+following sections.</p>
+<p>They are all explained in more details in the golem documentation,
+but the following sections describe the major points to keep in mind
+when developping.</p>
 <div class="section level3">
 <h3 id="using-git">Using git<a class="anchor" aria-label="anchor" href="#using-git"></a>
 </h3>
@@ -355,10 +357,11 @@ and feature requests.</p>
 <div class="section level4">
 <h4 id="usage-in-practice">Usage in practice<a class="anchor" aria-label="anchor" href="#usage-in-practice"></a>
 </h4>
-<p>You can pull and push new versions of the app on <a href="https://github.com/metzger-chambon/singlecellviz" class="external-link">github</a>.</p>
+<p>You can pull and push new versions of the app on <a href="https://github.com/metzger-chambon/singlecellviz" class="external-link">github</a>, if
+you have the appropriate user rights.</p>
 <p>When you locally make a change in a file and want to apply the
-changes on github, you need to run the commands (in Terminal, and in the
-local folder of the app) in the following order:</p>
+changes on github, you need to run the commands (via the Terminal, in
+the local folder of the app) in the following order:</p>
 <ul>
 <li>
 <code>git add $FILE</code>: add the changes in the file</li>
@@ -373,10 +376,10 @@ branch (<code>git branch $BRANCHNAME</code>), and work on it
 (<code>git checkout $BRANCHNAME</code>). When all changes are made and
 working, you can merge the main and new branch
 (<code>git checkout master</code> then,
-<code>git merge $BRANCHNAME</code>).</p>
-<p>Read the related <a href="https://engineering-shiny.org/version-control.html?q=git#git-integration" class="external-link">golem
-documentation</a>.</p>
-<p>To practice and learn more about git: <a href="https://www.w3schools.com/git/default.asp" class="external-link uri">https://www.w3schools.com/git/default.asp</a>.</p>
+<code>git merge $BRANCHNAME</code>). Read the following <a href="https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/" class="external-link">good
+practice post on git branches</a>.</p>
+<p>Also, read the related <a href="https://engineering-shiny.org/version-control.html?q=git#git-integration" class="external-link">golem
+documentation</a> on git.</p>
 </div>
 </div>
 <div class="section level3">
@@ -416,20 +419,23 @@ errors. One warning about the size of files in
 <code>singlecellviz/inst/extdata/small_example/tiledb/</code> is yet not
 resolved. It is not a problem as long as the package does not go on
 CRAN.</li>
-<li>run <code>golem::set_golem_version("X.X.X")</code> with your new
-version numbers</li>
-<li>describe changes in <code>NEWS.md</code>
-</li>
 <li>run <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> to update the site with the
-new documentation</li>
+new documentation, and check that looks ok</li>
 </ul>
 <p>Finally, with git:</p>
 <ul>
 <li>add and commit your last changes</li>
-<li>merge your changes with master</li>
+<li>follow <a href="https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/" class="external-link">best
+practice</a> for merging to a release branch</li>
+<li>run <code>golem::set_golem_version("X.X.X")</code> with your new
+version numbers</li>
+<li>describe changes in <code>NEWS.md</code>
+</li>
+<li>follow <a href="https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/" class="external-link">best
+practice</a> for merging to the master branch</li>
 <li>push your new release to github</li>
 <li>give it a tag
-(<code>git tag -a vX.X.X -m "version X.X.X"</code>)</li>
+(<code>git tag -a X.X.X -m "version X.X.X"</code>)</li>
 <li>push the tag (<code>git push origin tag</code>)</li>
 </ul>
 <p>Golem doc provides some more <a href="https://engineering-shiny.org/appendix-a---use-case-building-an-app-from-start-to-finish.html?q=check#before-deployment-checklist-1" class="external-link">things
