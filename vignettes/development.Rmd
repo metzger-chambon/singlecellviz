@@ -235,14 +235,15 @@ You've made changes to the app, and it should be released as a new version of th
 - document the changes made in the code and vignettes
 - update the DESCRIPTION file with `attachment::att_amend_desc()` if needed
 - run `devtools::check()`, and make sure you don't have any errors. One warning about the size of files in `singlecellviz/inst/extdata/small_example/tiledb/` is yet not resolved. It is not a problem as long as the package does not go on CRAN.
-- run `golem::set_golem_version("X.X.X")` with your new version numbers
-- describe changes in `NEWS.md`
 - run `pkgdown::build_site()` to update the site with the new documentation, and check that looks ok
 
 Finally, with git:
 
 - add and commit your last changes
-- follow [best practice](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/) for merging to master branch 
+- follow [best practice](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/) for merging to a release branch 
+- run `golem::set_golem_version("X.X.X")` with your new version numbers
+- describe changes in `NEWS.md`
+- follow [best practice](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/) for merging to the master branch
 - push your new release to github
 - give it a tag (`git tag -a X.X.X -m "version X.X.X"`)
 - push the tag (`git push origin tag`) 
