@@ -12,12 +12,12 @@ mod_information_ui <- function(id) {
   ns <- NS(id)
   fluidRow(
     box(
-      title = textOutput(ns("study_title")) %>% tagAppendAttributes(class = 'study-title'),
+      title = htmlOutput(ns("study_title")) %>% tagAppendAttributes(class = 'study-title'),
       tagList(
-        textOutput(ns("study_description")) %>%
+        htmlOutput(ns("study_description")) %>%
           tagAppendAttributes(class = 'study-description', style = 'min-height:100px; max-height:200px'),
       ),
-      footer = span(textOutput(ns("study_date")) %>% tagAppendAttributes(class = 'study-date'),
+      footer = span(htmlOutput(ns("study_date")) %>% tagAppendAttributes(class = 'study-date'),
                     htmlOutput(ns("study_doi")) %>% tagAppendAttributes(class = 'study-doi'))
     ),
     div(
@@ -36,13 +36,13 @@ mod_information_server <- function(id, COMMON_DATA, r) {
     studies <- get_golem_options("studies")
 
     output$study_title <- renderText({
-      studies[r$selected_study,, drop = F]$title
+      HTML(studies[r$selected_study,, drop = F]$title)
     })
     output$study_description <- renderText({
-      studies[r$selected_study,, drop = F]$description
+      HTML(studies[r$selected_study,, drop = F]$description)
     })
     output$study_date <- renderText({
-      studies[r$selected_study,, drop = F]$date
+      HTML(studies[r$selected_study,, drop = F]$date)
     })
     output$study_doi <-  renderText({
       doi <- studies[r$selected_study,, drop = F]$doi
