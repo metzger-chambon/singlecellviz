@@ -11,6 +11,11 @@
 mod_information_ui <- function(id) {
   ns <- NS(id)
   fluidRow(
+    div(
+      infoBoxOutput(ns("ncells")),
+      infoBoxOutput(ns("nfeatures")),
+      infoBoxOutput(ns("nsamples"))
+    ),
     box(
       title = htmlOutput(ns("study_title")) %>% tagAppendAttributes(class = 'study-title'),
       tagList(
@@ -18,12 +23,8 @@ mod_information_ui <- function(id) {
           tagAppendAttributes(class = 'study-description', style = 'min-height:100px; max-height:200px'),
       ),
       footer = span(htmlOutput(ns("study_date")) %>% tagAppendAttributes(class = 'study-date'),
-                    htmlOutput(ns("study_doi")) %>% tagAppendAttributes(class = 'study-doi'))
-    ),
-    div(
-      infoBoxOutput(ns("ncells")),
-      infoBoxOutput(ns("nfeatures")),
-      infoBoxOutput(ns("nsamples"))
+                    htmlOutput(ns("study_doi")) %>% tagAppendAttributes(class = 'study-doi')),
+      width = 12
     )
   )
 }
