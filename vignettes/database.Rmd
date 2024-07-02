@@ -143,6 +143,13 @@ The TileDB-SOMA database can be easily created with the function `singlecellviz:
 
 It takes as input `dataset_dir`, the path folder of the dataset. It gives no output. It will look for the `object.rds` present in `dataset_dir`, and create the TileDB-SOMA database in a folder called `tildeb` inside of `dataset_dir`.
 
+```{r, eval = FALSE}
+
+populate_tiledb(dataset_dir = "db/DATASET_NAME/",
+                force = TRUE)
+
+```
+
 ### Creating config.yaml 
 
 You should now create the `config.yaml` in this dataset folder.
@@ -153,10 +160,10 @@ This can be done easily like so:
 # Create yaml
 yaml_content <- list("title" = "Study 1",
      "description" = "Some description",
-     "doi" = "XX.XXXX/somealphanum",
+     "doi" = "Some doi",
      "date" = "DD/MM/YYYY")
 
-yaml::write_yaml(yaml_content, file = "config.yaml")
+yaml::write_yaml(yaml_content, file = file.path("db/DATASET_NAME/", "config.yaml"))
 ```
 
 Make sure that your list contains all elements needed in `config.yaml` (see section [config.yaml file]).
