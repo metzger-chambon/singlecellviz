@@ -413,6 +413,7 @@ update_summary <- function(db_dir,
 
   studies <- list()
   folders <- list.dirs(db_dir, recursive = F)
+  folders <- folders[file.exists(file.path(folders, "config.yaml"))]
   folders <- stringr::str_sort(folders, numeric = TRUE)
 
   for (folder in folders){
