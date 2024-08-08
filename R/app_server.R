@@ -10,7 +10,6 @@
 #' @importFrom golem get_golem_options
 #' @noRd
 #'
-#
 
 app_server <- function(input, output, session) {
 
@@ -43,6 +42,11 @@ app_server <- function(input, output, session) {
   # cat(file=stderr(), paste0("\nStarting application: ", Sys.time(), "\n"))
 
   # A series of callModule() created with golem:add_module()
+
+  if (!is.null(get_golem_options("authr"))){
+    mod_authr_server("authr")
+  }
+
   mod_dataset_server("dataset", COMMON_DATA, r)
 
   mod_information_server("information", COMMON_DATA, r)

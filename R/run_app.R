@@ -12,6 +12,7 @@
 #' \code{vignette("database", package = "singlecellviz")} for more information.
 #' @param cache_path a file path to the cache directory to use.
 #' If the folder already exists, make sure that the use has read and write access.
+#' @param authr boolean, whether to use a password auth or not
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom cachem cache_disk
@@ -25,6 +26,7 @@ run_app <- function(
   studies = NULL,
   cache_path = NULL,
   log_path = "log",
+  authr = NULL,
   ...
 ) {
 
@@ -63,6 +65,7 @@ run_app <- function(
     golem_opts = list(
       studies = studies,
       log_path = log_path,
+      authr = authr,
       ...)
   )
 }

@@ -1,0 +1,3 @@
+user	password_hash	permissions	name
+user1	$7$C6..../....lyPS/o.T5ONILgFaP.M7ZYktWRvJ6iHdcG3CiPjSiw9$xgztRbDuoYqiGrFqPCKypJ9VMRxx3SwNbeZyVNTrVr1	admin	User One
+user2	$7$C6..../....K7nP1S9ls1fRztMt5eFEx48bsIK98TMdm/IMjFSQcI9$auptOuD/EFWS/bJ3Ok2XdybMu.wKVjvj2l2GHFxIpe.	standard	User Two

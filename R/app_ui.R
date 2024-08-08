@@ -60,7 +60,6 @@ app_ui <- function(request) {
                   mod_differential_ui("differential")
           )
         )
-
       )
     )
   )
