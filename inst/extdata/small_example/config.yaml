@@ -1,6 +1,5 @@
 title: small example
-description: Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk
+description: Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Platelets
   and DC cells. Freely available from 10X Genomics.
 doi: 10.1038/ncomms14049
 date: 16/01/2017
-force: yes

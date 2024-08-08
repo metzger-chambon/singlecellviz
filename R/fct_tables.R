@@ -27,7 +27,7 @@ clean_findmarkers_result <- function(table){
 #' @noRd
 #'
 
-clean_aggrexpression <- function(table){
+clean_expression <- function(table){
   table <- table %>%
     select(-c("soma_joinid")) %>%
     mutate_if(is.numeric, signif, 4) %>%

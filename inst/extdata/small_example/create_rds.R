@@ -13,6 +13,8 @@ pbmc3k <- LoadData("pbmc3k", type = "pbmc3k.final")
 seuratObj <- pbmc3k
 rm(pbmc3k)
 
+# TileDB does not support Assay5 yet
+seuratObj[["RNA"]] <- as(object = seuratObj[["RNA"]], Class = "Assay")
 seuratObj <- UpdateSeuratObject(seuratObj)
 
 seuratObj@meta.data$RNA_snn_res.0.5 <- NULL
@@ -22,7 +24,7 @@ seuratObj <- FindVariableFeatures(seuratObj,
                                   nfeatures = 100)
 
 seuratObj <- subset(seuratObj,
-                    subset = CellType %in% c("DC", "Mk"),
+                    subset = CellType %in% c("DC", "Platelet"),
                     features = VariableFeatures(seuratObj))
 
 seuratObj <- FindNeighbors(seuratObj, dims = 1:10)
@@ -49,8 +51,8 @@ seuratObj@reductions
 
 # Remove some assays to get a lighter object
 DefaultAssay(seuratObj) <- "RNA"
-seuratObj <- DietSeurat(seuratObj, assay = "RNA")
-# Add scale data as it is useful for AggregateExpression (used for heatmap plot)
+seuratObj <- DietSeurat(seuratObj, assay = "RNA", dimreducs = Reductions(seuratObj))
+# Add scale data as it is useful for PseudobulkExpression (used for heatmap plot)
 seuratObj <- ScaleData(seuratObj)
 
 
@@ -60,7 +62,7 @@ optMarkers <- list(
     name = "CellType-markers",
     Ident = "CellType",
     FindAllMarkers = list(only.pos = TRUE),
-    AggregateExpression = list(assays = "RNA",
+    PseudobulkExpression = list(assay = "RNA",
                                slot = "scale.data",
                                group.by = c("CellType")
     )
@@ -69,7 +71,7 @@ optMarkers <- list(
     name = "seurat_clusters-markers",
     Ident = "seurat_clusters",
     FindAllMarkers = list(only.pos = TRUE),
-    AggregateExpression = list(assays = "RNA",
+    PseudobulkExpression = list(assay = "RNA",
                                slot = "scale.data",
                                group.by = c("seurat_clusters")
     )
@@ -89,8 +91,8 @@ optComparison <- list(
     FindMarkers = list(
       ident.1 = c(1)
     ),
-    AggregateExpression = list(
-      assays = "RNA",
+    PseudobulkExpression = list(
+      assay = "RNA",
       slot = "scale.data",
       group.by = c("seurat_clusters")
     )
@@ -109,13 +111,15 @@ obj <- list(seuratObj = seuratObj, markers = markers, comparison = comparison)
 
 saveRDS(obj, file.path(dir, "object.rds"))
 
+# Populate tiledb
+populate_tiledb(dataset_dir = dir,
+                force = TRUE)
+
+# Create yaml
 yaml_content <- list(title = "small example",
-                     description = "Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Mk and DC cells. Freely available from 10X Genomics.",
+                     description = "Dataset of Peripheral Blood Mononuclear Cells (PBMC) subsetted for Platelets and DC cells. Freely available from 10X Genomics.",
                      doi = "10.1038/ncomms14049",
                      date = "16/01/2017")
 
 yaml::write_yaml(yaml_content, file.path(dir, "config.yaml"))
-
-# Populate tiledb
-populate_tiledb(yaml = file.path(dir, "config.yaml"))
 

@@ -58,7 +58,7 @@ In addition to the [original TileDB-SOMA structure](https://single-cell-data.git
 Both SOMACollections contains a given number of sub-SOMACollection (one for each markers identity/comparisons). Every sub-SOMACollection contains two SOMADataFrame:
 
 - `result`, the result of Seurat's `FindAllMarkers` (for the SOMACollections `markers`) or Seurat's `FindMarkers` (for the SOMACollections `comparison`)
-- `aggrexpression`, the result of Seurat's `AggregateExpression`
+- `expression`, the result of Seurat's `PseudobulkExpression`
 
 ### rds object
 
@@ -67,8 +67,8 @@ It is also the one that the user will be able to download in the app.
 It is a list of the following elements:
 
 - `seuratObj`, the Seurat object
-- `markers`, a list with the table of `FindAllMarkers` and `AggregateExpression`
-- `comparison`, a list with the table of `FindMarkers` and `AggregateExpression`
+- `markers`, a list with the table of `FindAllMarkers` and `PseudobulkExpression`
+- `comparison`, a list with the table of `FindMarkers` and `PseudobulkExpression`
 
 See section [Creating the rds].
 
@@ -107,7 +107,7 @@ To add a new dataset you will need to clean the Seurat object, for example:
 - check that the columns in `@meta.data` are in the expected format (generally `numeric` or `factors`).
 - remove unnecessary elements in `@reductions`. You can use `Seurat::DietSeurat()` to facilitate this process.
 - remove unnecessary elements in `@assays`, there should only be one at the end (typically `RNA`) which is the one used for the explore tab (what Seurat typically uses for DimPlot, VlnPlot, DotPlot). You can use `Seurat::DietSeurat()` to facilitate this process.
-- remove `scale.data` of the `@assays` left at the very end. It is usually heavy, and not useful for visualization. But only do it at the end, as it is used to run `AggregateExpression` in the following steps (see the next section [Create markers and comparison tables]).
+- remove `scale.data` of the `@assays` left at the very end. It is usually heavy, and not useful for visualization. But only do it at the end, as it is used to run `PseudobulkExpression` in the following steps (see the next section [Create markers and comparison tables]).
 
 In general, think of keeping only what you want to show in the app, and lighten the Seurat object. 
 
@@ -115,7 +115,7 @@ In general, think of keeping only what you want to show in the app, and lighten 
 
 To ease the process of creating the tables, the functions `singlecellviz::compute_markers()` and `singlecellviz::compute_comparison()` have been developed. Check the help of each function for more information and examples.
 
-They are basically wrappers for `Seurat::FindAllMarkers()`, `Seurat::FindMarkers()` and `Seurat::AggregateExpression()`.
+They are basically wrappers for `Seurat::FindAllMarkers()`, `Seurat::FindMarkers()` and `Seurat::PseudobulkExpression()`.
 
 ### Creating the rds
 

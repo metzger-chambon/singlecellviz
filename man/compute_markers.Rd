@@ -19,7 +19,7 @@ to use for \code{Seurat::FindAllMarkers()}
 (except 'object', which is by default the Seurat object).
 The name of each element in the list is the name of parameters of the function,
 and its value is the value to give to the parameters.
-\item 'AggregateExpression', a list with \code{Seurat::AggregateExpression()}
+\item 'PseudobulkExpression', a list with \code{Seurat::PseudobulkExpression()}
 parameters (except 'object', which is by default the Seurat object).
 The name of each element in the list is the name of parameters of the function,
 and its value is the value to give to the parameters.
@@ -30,11 +30,11 @@ a list of sub-lists (one for each individual marker table to compute).
 Each sub-list is named with the 'name' given as input, and contains the elements:
 \itemize{
 \item 'table', the output of \code{Seurat::FindAllMarkers()}
-\item 'aggrexpression', the output of \code{Seurat::AggregateExpression()}
+\item 'expression', the output of \code{Seurat::PseudobulkExpression()}
 }
 }
 \description{
-Compute several marker table and aggrexpression for
+Compute several marker table and expression for
 a dataset. The aim of this function is to facilitate creating a marker object
 in the correct format, in order to add it to the database.
 }
@@ -48,7 +48,7 @@ opt <- list(
    FindAllMarkers = list(only.pos = TRUE,
                         min.pct = 0.25,
                         logfc.threshold = 0.5),
-   AggregateExpression = list(assays = "RNA",
+   PseudobulkExpression = list(assay = "RNA",
                              slot = "scale.data",
                              group.by = c("CellType", "orig.ident")
                          )

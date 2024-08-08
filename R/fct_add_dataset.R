@@ -1,5 +1,5 @@
 #' Compute marker
-#' @description Compute several marker table and aggrexpression for
+#' @description Compute several marker table and expression for
 #' a dataset. The aim of this function is to facilitate creating a marker object
 #' in the correct format, in order to add it to the database.
 #'
@@ -14,7 +14,7 @@
 #' (except 'object', which is by default the Seurat object).
 #' The name of each element in the list is the name of parameters of the function,
 #' and its value is the value to give to the parameters.
-#' \item 'AggregateExpression', a list with \code{Seurat::AggregateExpression()}
+#' \item 'PseudobulkExpression', a list with \code{Seurat::PseudobulkExpression()}
 #' parameters (except 'object', which is by default the Seurat object).
 #' The name of each element in the list is the name of parameters of the function,
 #' and its value is the value to give to the parameters.
@@ -23,7 +23,7 @@
 #' Each sub-list is named with the 'name' given as input, and contains the elements:
 #' \itemize{
 #' \item 'table', the output of \code{Seurat::FindAllMarkers()}
-#' \item 'aggrexpression', the output of \code{Seurat::AggregateExpression()}
+#' \item 'expression', the output of \code{Seurat::PseudobulkExpression()}
 #' }
 #' @examples
 #' \dontrun{
@@ -35,7 +35,7 @@
 #'    FindAllMarkers = list(only.pos = TRUE,
 #'                         min.pct = 0.25,
 #'                         logfc.threshold = 0.5),
-#'    AggregateExpression = list(assays = "RNA",
+#'    PseudobulkExpression = list(assay = "RNA",
 #'                              slot = "scale.data",
 #'                              group.by = c("CellType", "orig.ident")
 #'                          )
@@ -48,18 +48,18 @@
 #' compute_markers(small_seurat, opt)
 #' }
 #' @export
-#' @importFrom Seurat AggregateExpression SetIdent FindAllMarkers
+#' @importFrom Seurat PseudobulkExpression SetIdent FindAllMarkers
 
 compute_markers <- function(seuratObj, opt){
-  cat("Calculating marker genes and aggrexpression.\n")
+  cat("Calculating marker genes and expression.\n")
   res <- lapply(opt, function(y){
     cat("Dealing with", y$name, "\n")
     # Check parameters
-    if (is.null(y$AggregateExpression$group.by)){
-      y$AggregateExpression$group.by <- y$Ident
+    if (is.null(y$PseudobulkExpression$group.by)){
+      y$PseudobulkExpression$group.by <- y$Ident
     }
-    stopifnot("Value in AggregateExpression(group.by = ...) should be either c(Ident, SomeOtherAnnot) or c(Ident)" =
-                y$Ident %in% y$AggregateExpression$group.by[1])
+    stopifnot("Value in PseudobulkExpression(group.by = ...) should be either c(Ident, SomeOtherAnnot) or c(Ident)" =
+                y$Ident %in% y$PseudobulkExpression$group.by[1])
     stopifnot("Character underscore '_' in label name is not accepted in the current version of the app, please change your labels" =
                 !any(sapply(levels(seuratObj@meta.data[[y$Ident]]), function(x){grepl("_", x)})))
 
@@ -69,12 +69,12 @@ compute_markers <- function(seuratObj, opt){
     optFindAllMarkers$object <- seuratObj
     # Same markers
     markers <- do.call(FindAllMarkers, args = optFindAllMarkers)
-    # Save aggrexpression (used in the heatmap)
-    optAggregateExpression <- y$AggregateExpression
-    optAggregateExpression$object <- seuratObj
-    aggrexpression <- do.call(AggregateExpression, args = optAggregateExpression)
+    # Save expression (used in the heatmap)
+    optPseudobulkExpression <- y$PseudobulkExpression
+    optPseudobulkExpression$object <- seuratObj
+    expression <- do.call(PseudobulkExpression, args = optPseudobulkExpression)
 
-    return(list(table = markers, aggrexpression = aggrexpression))
+    return(list(table = markers, expression = expression))
   })
   names(res) <- sapply(opt, '[[', 'name')
   return(res)
@@ -96,7 +96,7 @@ compute_markers <- function(seuratObj, opt){
 #' (except 'object', which is by default the Seurat object).
 #' The name of each element in the list is the name of parameters of the function,
 #' and its value is the value to give to the parameters.
-#' \item 'AggregateExpression', a list with \code{Seurat::AggregateExpression()}
+#' \item 'PseudobulkExpression', a list with \code{Seurat::PseudobulkExpression()}
 #' parameters (except 'object').
 #' The name of each element in the list is the name of parameters of the function,
 #' and its value is the value to give to the parameters.
@@ -105,7 +105,7 @@ compute_markers <- function(seuratObj, opt){
 #' Each sub-list is named with the 'name' given as input, and contains the elements:
 #' \itemize{
 #' \item 'table', the output of \code{Seurat::FindMarkers()}
-#' \item 'aggrexpression', the output of \code{Seurat::AggregateExpression()}
+#' \item 'expression', the output of \code{Seurat::PseudobulkExpression()}
 #' }
 #' @examples
 #' \dontrun{
@@ -118,7 +118,7 @@ compute_markers <- function(seuratObj, opt){
 #'   ),
 #'   Ident = "seurat_clusters",
 #'   FindMarkers = list(ident.1 = 1),
-#'   AggregateExpression = list(assays = "RNA",
+#'   PseudobulkExpression = list(assays = "RNA",
 #'                              slot = "scale.data",
 #'                              group.by = c("seurat_clusters", "CellType")
 #'   )
@@ -132,19 +132,19 @@ compute_markers <- function(seuratObj, opt){
 #' compute_comparison(small_seurat, opt)
 #' }
 #' @export
-#' @importFrom Seurat AggregateExpression SetIdent FindMarkers
+#' @importFrom Seurat PseudobulkExpression SetIdent FindMarkers
 
 # Compute comparison tables
 compute_comparison <- function(seuratObj, opt){
-  cat("Calculating differential comparisons tables and related aggrexpression.\n")
+  cat("Calculating differential comparisons tables and related expression.\n")
   res <- lapply(opt, function(y){
     cat("Dealing with", y$name, "\n")
     # Check parameters
-    if (is.null(y$AggregateExpression$group.by)){
-      y$AggregateExpression$group.by <- y$Ident
+    if (is.null(y$PseudobulkExpression$group.by)){
+      y$PseudobulkExpression$group.by <- y$Ident
     }
-    stopifnot("Value in AggregateExpression(group.by = ...) should be either c(Ident, SomeOtherAnnot) or c(Ident)" =
-                y$Ident %in% y$AggregateExpression$group.by[1])
+    stopifnot("Value in PseudobulkExpression(group.by = ...) should be either c(Ident, SomeOtherAnnot) or c(Ident)" =
+                y$Ident %in% y$PseudobulkExpression$group.by[1])
     stopifnot("Character underscore '_' in label name is not accepted in the current version of the app, please change your labels" =
                 !any(sapply(levels(seuratObj@meta.data[[y$Ident]]), function(x){grepl("_", x)})))
 
@@ -159,11 +159,11 @@ compute_comparison <- function(seuratObj, opt){
     optFindMarkers <- y$FindMarkers
     optFindMarkers$object <- seuratObj
     comparison <- do.call(FindMarkers, args = optFindMarkers)
-    # Save aggrexpression (used in the heatmap)
-    optAggregateExpression <- y$AggregateExpression
-    optAggregateExpression$object <- seuratObj
-    aggrexpression <- do.call(AggregateExpression, args = optAggregateExpression)
-    return(list(table = comparison, aggrexpression = aggrexpression))
+    # Save expression (used in the heatmap)
+    optPseudobulkExpression <- y$PseudobulkExpression
+    optPseudobulkExpression$object <- seuratObj
+    expression <- do.call(PseudobulkExpression, args = optPseudobulkExpression)
+    return(list(table = comparison, expression = expression))
   })
   names(res) <- sapply(opt, '[[', 'name')
   return(res)
@@ -173,8 +173,8 @@ compute_comparison <- function(seuratObj, opt){
 
 #' Populate TileDB-SOMA with marker or comparison tables
 #' @description Populate TileDB-SOMA with a new SOMACollection
-#' corresponding to marker or comparison result and aggrexpression tables
-#' @param res a list with result and aggrexpression tables
+#' corresponding to marker or comparison result and expression tables
+#' @param res a list with result and expression tables
 #' @param uri the TileDB-SOMA uri to add to
 #' @param name the name of the SOMACollection
 #' @param force whether to regenerate the SOMACollection if it already exists
@@ -226,16 +226,16 @@ populate_with_res <- function(res, uri, name, force = FALSE){
         name = 'result'
       )
     }
-    # Adding aggrexpression
-    if (!'aggrexpression' %in% experiment$get(name)$get(group)$names()){
+    # Adding expression
+    if (!'expression' %in% experiment$get(name)$get(group)$names()){
       experiment$get(name)$get(group)$set(
         object = write_soma(
-          x = res[[group]]$aggrexpression[[1]] %>% as.data.frame(), # Warning, only retrieve the first calculated assay
-          uri = 'aggrexpression',
+          x = res[[group]]$expression[[1]] %>% as.data.frame(), # Warning, only retrieve the first calculated assay
+          uri = 'expression',
           relative = TRUE,
           soma_parent = experiment$get(name)$get(group)
         ),
-        name = 'aggrexpression'
+        name = 'expression'
       )
     }
   }
@@ -291,21 +291,21 @@ validity_rds <- function(object){
     stop("Element 'markers' in object list must contain
          at least one element.")
   }
-  validity <- sapply(object$markers, FUN = function(x){all(c("table", "aggrexpression") %in%
+  validity <- sapply(object$markers, FUN = function(x){all(c("table", "expression") %in%
                                                              names(x))})
   if (!all(validity)){
     stop("Every elements of 'markers' in object list must contain
-         elements 'table' and 'aggrexpression'.")
+         elements 'table' and 'expression'.")
   }
   validity <- sapply(object$markers, FUN = function(x){nrow(x$table) > 1})
   if (!all(validity)){
     stop("Every 'table' in elements of 'markers' in object list must contain
          at least one row.")
   }
-  validity <- sapply(object$markers, FUN = function(x){nrow(x$aggrexpression[[1]]) ==
+  validity <- sapply(object$markers, FUN = function(x){nrow(x$expression[[1]]) ==
                                                        length(Features(object$seuratObj))})
   if (!all(validity)){
-    stop("Every 'aggrexpression' in elements of 'markers' in object list
+    stop("Every 'expression' in elements of 'markers' in object list
          must contain as many rows as 'seuratObj' Features().")
   }
 
@@ -314,21 +314,21 @@ validity_rds <- function(object){
     stop("Element 'comparison' in object list must contain
          at least one element.")
   }
-  validity <- sapply(object$comparison, FUN = function(x){all(c("table", "aggrexpression") %in%
+  validity <- sapply(object$comparison, FUN = function(x){all(c("table", "expression") %in%
                                                              names(x))})
   if (!all(validity)){
     stop("Every elements of 'comparison' in object list must contain
-         elements 'table' and 'aggrexpression'.")
+         elements 'table' and 'expression'.")
   }
   validity <- sapply(object$comparison, FUN = function(x){nrow(x$table) > 1})
   if (!all(validity)){
     stop("Every 'table' in elements of 'comparison' in object list must contain
          at least one row.")
   }
-  validity <- sapply(object$comparison, FUN = function(x){nrow(x$aggrexpression[[1]]) ==
+  validity <- sapply(object$comparison, FUN = function(x){nrow(x$expression[[1]]) ==
       length(Features(object$seuratObj))})
   if (!all(validity)){
-    stop("Every 'aggrexpression' in elements of 'comparison' in object list
+    stop("Every 'expression' in elements of 'comparison' in object list
          must contain as many rows as 'seuratObj' Features().")
   }
 

@@ -21,7 +21,7 @@ with elements:
 (except 'object', which is by default the Seurat object).
 The name of each element in the list is the name of parameters of the function,
 and its value is the value to give to the parameters.
-\item 'AggregateExpression', a list with \code{Seurat::AggregateExpression()}
+\item 'PseudobulkExpression', a list with \code{Seurat::PseudobulkExpression()}
 parameters (except 'object').
 The name of each element in the list is the name of parameters of the function,
 and its value is the value to give to the parameters.
@@ -32,7 +32,7 @@ a list of sub-lists (one for each individual marker table to compute).
 Each sub-list is named with the 'name' given as input, and contains the elements:
 \itemize{
 \item 'table', the output of \code{Seurat::FindMarkers()}
-\item 'aggrexpression', the output of \code{Seurat::AggregateExpression()}
+\item 'expression', the output of \code{Seurat::PseudobulkExpression()}
 }
 }
 \description{
@@ -49,7 +49,7 @@ list(
   ),
   Ident = "seurat_clusters",
   FindMarkers = list(ident.1 = 1),
-  AggregateExpression = list(assays = "RNA",
+  PseudobulkExpression = list(assays = "RNA",
                              slot = "scale.data",
                              group.by = c("seurat_clusters", "CellType")
   )

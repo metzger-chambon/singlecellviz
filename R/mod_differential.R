@@ -55,12 +55,12 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       return(comparison_table)
     }) %>% bindCache(c(input$comparison, COMMON_DATA$title))#, cache = "session")
 
-    aggrexpression_table <- reactive({
+    expression_table <- reactive({
       req(input$comparison)
       comparison <- remove_suffix(input$comparison, isolate(r$selected_study))
-      aggrexpression_table <- COMMON_DATA$experiment$get("comparison")$get(comparison)$get('aggrexpression')$read()$concat()$to_data_frame()
-      aggrexpression_table <- clean_aggrexpression(aggrexpression_table)
-      return(aggrexpression_table)
+      expression_table <- COMMON_DATA$experiment$get("comparison")$get(comparison)$get('expression')$read()$concat()$to_data_frame()
+      expression_table <- clean_expression(expression_table)
+      return(expression_table)
     }) %>% bindCache(c(input$comparison, COMMON_DATA$title))#, cache = "session")
 
     # Update cell_annotation_choices with study specificity
@@ -99,14 +99,14 @@ mod_differential_server <- function(id, COMMON_DATA, r){
     # inpiration: https://www.ebi.ac.uk/gxa/sc/experiments/E-MTAB-9954/results/marker-genes?plotType=umap&plotOption=3&geneId=ENSMUSG00000032554&colourBy=cell+type
     # Heatmap table creation
     heatmap_table <- reactive({
-      req(length(input$comparison_table_rows_all) > 0, input$top, comparison_table(), aggrexpression_table())
+      req(length(input$comparison_table_rows_all) > 0, input$top, comparison_table(), expression_table())
       # cat(length(input$markers_table_rows_all), '\n')
       comparison_table <- comparison_table()[input$comparison_table_rows_all,]
       comparison_table <- comparison_table %>%
         arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top)
 
-      data <- aggrexpression_table() %>%
+      data <- expression_table() %>%
         filter(.data$gene %in% comparison_table$gene) %>%
         # order genes by the cluster they correspond to
         mutate(gene = factor(.data$gene, levels = unique(comparison_table$gene))) %>%
@@ -115,9 +115,9 @@ mod_differential_server <- function(id, COMMON_DATA, r){
 
       # Split group column
       # Check if data can be split
-      aggregation_labels <- colnames(aggrexpression_table())[-1]
+      labels <- colnames(expression_table())[-1]
       # TRUE = you can split ; FALSE = you cannot split
-      condition <- all(sapply(c(aggregation_labels), FUN= function(x){grepl("_", x)}))
+      condition <- all(sapply(c(labels), FUN= function(x){grepl("_", x)}))
       split <- input$split & condition
       if (condition){
         data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_')%>%
