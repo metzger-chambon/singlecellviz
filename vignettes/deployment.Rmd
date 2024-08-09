@@ -51,6 +51,38 @@ Notably you can:
 - reload configuration of the server without interruption with `sudo systemctl reload shiny-server`
 - change the **configuration file** `shiny-server.conf` to host various apps within the same server, redirect to another locations etc...
 
+# Add user authentication to the app
+
+A basic user authentication is implemented. It is an option that can be set in `run_app(authr_file = "path/to/users.txt")`. 
+
+A example of file is provided in `inst/extdata/users.txt`. It has the following structure: 
+```
+user	password_hash	permissions	
+user1	$7$C6..../....lyPS/o.T5ONILgFaP.M7ZYktWRvJ6iHdcG3CiPjSiw9$xgztRbDuoYqiGrFqPCKypJ9VMRxx3SwNbeZyVNTrVr1	admin	
+user2	$7$C6..../....K7nP1S9ls1fRztMt5eFEx48bsIK98TMdm/IMjFSQcI9$auptOuD/EFWS/bJ3Ok2XdybMu.wKVjvj2l2GHFxIpe.	standard	
+```
+
+The password should not be stored in clear. To create a hashed the password, you must use `sodium::password_store()` and store the results. 
+In this example, the passwords are respectively `pass1` and `pass2`. 
+
+## Disclaimer
+
+We do not cannot guarantee this authentication procedure to be foolproof. 
+Do not expose any sensitive content.
+
+# Tracking user actions and session
+
+The app uses the package [shiny.telemetry](https://appsilon.github.io/shiny.telemetry/index.html) to track user actions and session. Only some actions (like changing the dataset, looking for certain genes etc...) are tracked. 
+
+By default the storage file for user tracking is `log/telemetry.txt`, and can be accessed as follows:
+
+```r
+library(shiny.telemetry)
+
+data_storage <- DataStorageLogFile$new("local_file.txt")
+analytics_app(data_storage = data_storage)
+```
+
 # Deploy a new version of the app
 
 In practice, here is how to update the app.

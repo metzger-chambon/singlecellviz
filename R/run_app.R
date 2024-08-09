@@ -12,10 +12,10 @@
 #' \code{vignette("database", package = "singlecellviz")} for more information.
 #' @param cache_path a path to the cache directory to use.
 #' If the folder already exists, make sure that the use has read and write access.
-#' @param log_path a path to the log directory, where a telemetry.txt file will
+#' @param log_path a path to the log directory, where a \code{telemetry.txt} file will
 #' be created. If the folder or file already exists, make sure that the use has read and write access.
 #' @param authr_file a path to the authr .txt file, where the columns
-#' user password_hash, and permissions are available. If the folder or file already exists, make sure that the use has read and write access.
+#' \code{user}, \code{password_hash}, and \code{permissions} are available. If the folder or file already exists, make sure that the use has read and write access.
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom cachem cache_disk

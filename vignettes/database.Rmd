@@ -159,7 +159,7 @@ This can be done easily like so:
 ```{r, eval = FALSE}
 # Create yaml
 yaml_content <- list("title" = "Study 1",
-     "description" = "Some description",
+     "description" = "Some <b>description</b>", # HTML is accepted
      "doi" = "Some doi",
      "date" = "DD/MM/YYYY")
 
@@ -172,7 +172,7 @@ Make sure that your list contains all elements needed in `config.yaml` (see sect
 
 The txt file summarizing all datasets can be easily updated with the code in `singlecellviz::update_summary()`. It is this file that can then be used as input to `run_app()`. 
 
-It automatically searches for all available `config.yaml`, `object.rds`and `tiledb/` in each subfolder of the given db_dir (e.g. `db/`). 
+It automatically searches for all available `config.yaml`, `object.rds`and `tiledb/` in each subfolder of the given db_dir (e.g. `db/`). Only subfolders with `config.yaml` are processed.  
 
 It summarizes mandatory elements (e.g. the title, description...) from the `config.yaml`, as well as retrieves the number of cells, features and samples. 
 By default, it will look for the equivalent of an `RNA` assay in the TileDB-SOMA database (if it does not exist it will take the first assay available). This retrieves the number of cells and features. 

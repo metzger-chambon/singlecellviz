@@ -11,6 +11,8 @@ run_app(
   uiPattern = "/",
   studies = NULL,
   cache_path = NULL,
+  log_path = "log",
+  authr_file = NULL,
   ...
 )
 }
@@ -42,8 +44,14 @@ By default the file read contains information about a very small subset
 of pbmc3k present in the package. Check out
 \code{vignette("database", package = "singlecellviz")} for more information.}
 
-\item{cache_path}{a file path to the cache directory to use.
+\item{cache_path}{a path to the cache directory to use.
 If the folder already exists, make sure that the use has read and write access.}
+
+\item{log_path}{a path to the log directory, where a \code{telemetry.txt} file will
+be created. If the folder or file already exists, make sure that the use has read and write access.}
+
+\item{authr_file}{a path to the authr .txt file, where the columns
+\code{user}, \code{password_hash}, and \code{permissions} are available. If the folder or file already exists, make sure that the use has read and write access.}
 
 \item{...}{arguments to pass to golem_opts.
 See `?golem::get_golem_options` for more details.}
