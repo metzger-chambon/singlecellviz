@@ -43,8 +43,8 @@ app_server <- function(input, output, session) {
 
   # A series of callModule() created with golem:add_module()
 
-  if (!is.null(get_golem_options("authr"))){
-    mod_authr_server("authr")
+  if (!is.null(get_golem_options("authr_file"))){
+    mod_authr_server("authr_file")
   }
 
   mod_dataset_server("dataset", COMMON_DATA, r)

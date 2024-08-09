@@ -42,8 +42,8 @@ test_that("clean_result works", {
 
 })
 
-test_that("clean_aggrexpression works", {
-  aggrexpression_table <- structure(list(soma_joinid = 0:5, `0` = c(4.27167876975651, 0,
+test_that("clean_expression works", {
+  expression_table <- structure(list(soma_joinid = 0:5, `0` = c(4.27167876975651, 0,
                                     5.1948051948052, 0, 13.325896188952, 346.731843220059), `1` = c(2.86286859433152,
                                     3.96353547364249, 0, 0, 11.9255031465829, 173.78893596259), `2` = c(23.3008240566137,
                                     5.22466039707419, 0, 5.04055778622253, 18.0179396173923, 130.81800067963
@@ -56,7 +56,7 @@ test_that("clean_aggrexpression works", {
                                   "RP11-206L10.9", "LINC00115", "NOC2L")), row.names = c(NA, -6L
                                    ), class = c("tbl_df", "tbl", "data.frame"))
 
-  cleaned <- clean_aggrexpression(aggrexpression_table)
+  cleaned <- clean_expression(expression_table)
 
   # Check if the returned object is of expected class
   expect_s3_class(cleaned, "tbl_df")

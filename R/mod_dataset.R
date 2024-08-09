@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @importFrom stats setNames
+
 mod_dataset_ui <- function(id){
   studies <- get_golem_options("studies")
 

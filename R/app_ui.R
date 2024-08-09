@@ -4,7 +4,6 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import shinydashboard
-#' @importFrom waiter autoWaiter
 #' @importFrom utils packageVersion
 #' @importFrom golem get_golem_options get_golem_version
 #' @noRd

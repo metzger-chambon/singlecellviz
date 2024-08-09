@@ -15,7 +15,7 @@ mod_authr_server <- function(id) {
     ns <- session$ns
 
     # To create new passwords use sodium::password_store() and store it
-    user_base <- read.table(get_golem_options("authr"),
+    user_base <- read.table(get_golem_options("authr_file"),
                             header = TRUE, sep = "\t")
 
     start_up_modal <- function(ns) {
@@ -29,8 +29,8 @@ mod_authr_server <- function(id) {
     credentials <- shinyauthr::loginServer(
       id = "login",
       data = user_base,
-      user_col = user,
-      pwd_col = password_hash,
+      user_col = "user",
+      pwd_col = "password_hash",
       sodium_hashed = TRUE,
       log_out = reactive(logout_init())
     )

@@ -10,9 +10,12 @@
 #' By default the file read contains information about a very small subset
 #' of pbmc3k present in the package. Check out
 #' \code{vignette("database", package = "singlecellviz")} for more information.
-#' @param cache_path a file path to the cache directory to use.
+#' @param cache_path a path to the cache directory to use.
 #' If the folder already exists, make sure that the use has read and write access.
-#' @param authr boolean, whether to use a password auth or not
+#' @param log_path a path to the log directory, where a telemetry.txt file will
+#' be created. If the folder or file already exists, make sure that the use has read and write access.
+#' @param authr_file a path to the authr .txt file, where the columns
+#' user password_hash, and permissions are available. If the folder or file already exists, make sure that the use has read and write access.
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom cachem cache_disk
@@ -26,7 +29,7 @@ run_app <- function(
   studies = NULL,
   cache_path = NULL,
   log_path = "log",
-  authr = NULL,
+  authr_file = NULL,
   ...
 ) {
 
@@ -65,7 +68,7 @@ run_app <- function(
     golem_opts = list(
       studies = studies,
       log_path = log_path,
-      authr = authr,
+      authr_file = authr_file,
       ...)
   )
 }
