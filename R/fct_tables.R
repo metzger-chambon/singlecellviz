@@ -9,9 +9,11 @@
 clean_findmarkers_result <- function(table){
   # If FindMarkers was run, the column gene does not exist (it is the rownames i.e. obs_id)
   if (!"gene" %in% colnames(table)){
-    table <- table %>% rename("gene" = "obs_id")
+    table <- table %>% rename("gene" = "obs_id") %>%
+      dplyr::arrange(.data$p_val, -abs(.data$avg_log2FC))
   } else { #If FindAllMarkers was run, "gene" column exist but "obs_id" is not usful
-    table <- table %>% select(-c( "obs_id"))
+    table <- table %>% select(-c( "obs_id")) %>%
+      dplyr::arrange(.data$cluster, .data$p_val, -abs(.data$avg_log2FC))
   }
   table <- table %>%
     select(-c("soma_joinid")) %>%

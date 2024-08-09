@@ -111,7 +111,7 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       # cat(length(input$markers_table_rows_all), '\n')
       markers_table <- markers_table()[input$markers_table_rows_all,]
       markers <- markers_table %>% group_by(.data$cluster) %>%
-        arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
+        #arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top) %>%
         select(.data$gene, .data$cluster, .data$marker_of)
 

@@ -103,7 +103,7 @@ mod_differential_server <- function(id, COMMON_DATA, r){
       # cat(length(input$markers_table_rows_all), '\n')
       comparison_table <- comparison_table()[input$comparison_table_rows_all,]
       comparison_table <- comparison_table %>%
-        arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
+        #arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top)
 
       data <- expression_table() %>%
