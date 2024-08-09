@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' add_suffix(c("aaaa", "bb", "c"), "1")
-add_suffix <- function(input, suffix, sep = ""){
+add_suffix <- function(input, suffix, sep = "_"){
   if (is.null(names(input))){
     names(input) <- input
   }
@@ -28,8 +28,8 @@ add_suffix <- function(input, suffix, sep = ""){
 #'
 #' @examples
 #' remove_suffix(c("aaaa1", "bb1", "c1"), "1")
-remove_suffix <- function(input, suffix, sep = ""){
-  n <- nchar(input) - nchar(suffix) + nchar(sep)
+remove_suffix <- function(input, suffix, sep = "_"){
+  n <- nchar(input) - nchar(suffix) - nchar(sep)
   input <- substr(input, start = 1, stop = n)
   return(input)
 }
