@@ -7,14 +7,14 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @importFrom stats setNames
+
 mod_dataset_ui <- function(id){
   studies <- get_golem_options("studies")
 
   ns <- NS(id)
   tagList(
     selectInput(ns("study"), "Select a dataset:",
-                choices = setNames(object = 1:nrow(studies), studies$title)
+                choices = studies$title
     )
   )
 }
@@ -30,7 +30,7 @@ mod_dataset_server <- function(id, COMMON_DATA, r){
     studies <- get_golem_options("studies")
 
     observeEvent(input$study, {
-      study <- studies[input$study,, drop = F]
+      study <- studies[which(studies$title == input$study),, drop = F]
       COMMON_DATA$output <- study$output
       COMMON_DATA$title <- study$title
 

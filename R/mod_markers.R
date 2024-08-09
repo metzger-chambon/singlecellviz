@@ -67,12 +67,12 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       return(markers_table)
     }) %>% bindCache(c(input$cell_annotation, COMMON_DATA$title))#, cache = "session")
 
-    aggrexpression_table <- reactive({
+    expression_table <- reactive({
       req(input$cell_annotation)
       cell_annotation <- remove_suffix(input$cell_annotation, isolate(r$selected_study))
-      aggrexpression_table <- COMMON_DATA$experiment$get("markers")$get(cell_annotation)$get('aggrexpression')$read()$concat()$to_data_frame()
-      aggrexpression_table <- clean_aggrexpression(aggrexpression_table)
-      return(aggrexpression_table)
+      expression_table <- COMMON_DATA$experiment$get("markers")$get(cell_annotation)$get('expression')$read()$concat()$to_data_frame()
+      expression_table <- clean_expression(expression_table)
+      return(expression_table)
     }) %>% bindCache(c(input$cell_annotation, COMMON_DATA$title))#, cache = "session")
 
     cell_annotation_choices <- reactive(
@@ -107,15 +107,15 @@ mod_markers_server <- function(id, COMMON_DATA, r){
 
     # Heatmap creation
     heatmap_table <- reactive({
-      req(length(input$markers_table_rows_all) > 0, input$top, markers_table(), aggrexpression_table())
+      req(length(input$markers_table_rows_all) > 0, input$top, markers_table(), expression_table())
       # cat(length(input$markers_table_rows_all), '\n')
       markers_table <- markers_table()[input$markers_table_rows_all,]
       markers <- markers_table %>% group_by(.data$cluster) %>%
-        arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
+        #arrange(.data$p_val, -abs(.data$avg_log2FC)) %>%
         slice_head(n = input$top) %>%
         select(.data$gene, .data$cluster, .data$marker_of)
 
-      data <- aggrexpression_table() %>%
+      data <- expression_table() %>%
         filter(.data$gene %in% markers$gene) %>%
         # order genes by the cluster they correspond to
         mutate(gene = factor(.data$gene, levels=unique(markers$gene))) %>%
@@ -128,9 +128,9 @@ mod_markers_server <- function(id, COMMON_DATA, r){
       # Split group column
       # Check if data can be split
       cluster_labels <- unique(markers$cluster)
-      aggregation_labels <- colnames(aggrexpression_table())[-1]
+      labels <- colnames(expression_table())[-1]
       # TRUE = you can split ; FALSE = you cannot split
-      condition <- !all(cluster_labels %in% aggregation_labels)
+      condition <- !all(cluster_labels %in% labels)
       split <- input$split & condition
       if (condition){
         data <- data %>% separate(.data$group, c('group', 'group2'), sep = '_') %>%

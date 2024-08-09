@@ -1,3 +1,19 @@
+# SingleCellViz 1.1.0
+
+**2024-08-09**
+
+## Implement 
+* Basic user / password authorization with shinyauthr
+* Track user activity with shiny.telemetry
+
+## Other
+* Modify UI of information tab and allow HTML text 
+* r$selected_study is now the title of the dataset
+
+## Debug
+* Use PseudobulkExpression instead of AggregateExpression for heatmaps
+* Fix update_summary() to only look in folders with a config.yaml file
+
 
 # SingleCellViz 1.0.1 
 

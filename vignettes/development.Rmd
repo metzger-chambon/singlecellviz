@@ -154,7 +154,7 @@ For more information about how this works, check out [golem doc](https://enginee
 Modules might have the `r` object as parameter. It is a global reactiveValues (see [Shiny](http://rstudio.github.io/shiny/reference/reactiveValues.html) and [golem](https://engineering-shiny.org/structuring-project.html?q=petit%20r#b.-the-strat%C3%A9gie-du-petit-r) doc). It is a special list with elements:
 
 -   `tabs`, the name of the current tab in use
--   `selected_study`, the number (positional value) of the current selected study
+-   `selected_study`, the title of the current selected study
 
 It is a way to share information across otherwise independent modules.
 The particularity of reactiveValues objects is that every time the object gets updated, the parts of code that are dependent on them get recomputed. So you might need to use: 

@@ -11,19 +11,20 @@
 mod_information_ui <- function(id) {
   ns <- NS(id)
   fluidRow(
-    box(
-      title = textOutput(ns("study_title")) %>% tagAppendAttributes(class = 'study-title'),
-      tagList(
-        textOutput(ns("study_description")) %>%
-          tagAppendAttributes(class = 'study-description', style = 'min-height:100px; max-height:200px'),
-      ),
-      footer = span(textOutput(ns("study_date")) %>% tagAppendAttributes(class = 'study-date'),
-                    htmlOutput(ns("study_doi")) %>% tagAppendAttributes(class = 'study-doi'))
-    ),
     div(
       infoBoxOutput(ns("ncells")),
       infoBoxOutput(ns("nfeatures")),
       infoBoxOutput(ns("nsamples"))
+    ),
+    box(
+      title = htmlOutput(ns("study_title")) %>% tagAppendAttributes(class = 'study-title'),
+      tagList(
+        htmlOutput(ns("study_description")) %>%
+          tagAppendAttributes(class = 'study-description', style = 'min-height:100px; max-height:200px'),
+      ),
+      footer = span(htmlOutput(ns("study_date")) %>% tagAppendAttributes(class = 'study-date'),
+                    htmlOutput(ns("study_doi")) %>% tagAppendAttributes(class = 'study-doi')),
+      width = 12
     )
   )
 }
@@ -34,18 +35,17 @@ mod_information_ui <- function(id) {
 mod_information_server <- function(id, COMMON_DATA, r) {
   moduleServer(id, function(input, output, session) {
     studies <- get_golem_options("studies")
-
     output$study_title <- renderText({
-      studies[r$selected_study,, drop = F]$title
+      HTML(studies[which(studies$title == r$selected_study),, drop = F]$title)
     })
     output$study_description <- renderText({
-      studies[r$selected_study,, drop = F]$description
+      HTML(studies[which(studies$title == r$selected_study),, drop = F]$description)
     })
     output$study_date <- renderText({
-      studies[r$selected_study,, drop = F]$date
+      HTML(studies[which(studies$title == r$selected_study),, drop = F]$date)
     })
     output$study_doi <-  renderText({
-      doi <- studies[r$selected_study,, drop = F]$doi
+      doi <- studies[which(studies$title == r$selected_study),, drop = F]$doi
       if (!is.null(doi) & doi != ""){
         url <- a(doi, href=paste0("https://doi.org/", doi), target="_blank", rel="noopener") #rel is for security reasons
         return(HTML(paste(HTML("<span style='font-weight:bold'>DOI: </span>"), url)))
@@ -54,7 +54,7 @@ mod_information_server <- function(id, COMMON_DATA, r) {
       }
     })
     output$ncells <- renderInfoBox({
-      ncells <- studies[r$selected_study,, drop = F]$ncells
+      ncells <- studies[which(studies$title == r$selected_study),, drop = F]$ncells
       infoBox(
         "Cells",
         ncells,
@@ -63,7 +63,7 @@ mod_information_server <- function(id, COMMON_DATA, r) {
       )
     })
     output$nfeatures <- renderInfoBox({
-      nfeatures <- studies[r$selected_study,, drop = F]$nfeatures
+      nfeatures <- studies[which(studies$title == r$selected_study),, drop = F]$nfeatures
       infoBox(
         "Features",
         nfeatures,
@@ -72,7 +72,7 @@ mod_information_server <- function(id, COMMON_DATA, r) {
       )
     })
     output$nsamples <- renderInfoBox({
-      nsamples <- studies[r$selected_study,, drop = F]$nsamples
+      nsamples <- studies[which(studies$title == r$selected_study),, drop = F]$nsamples
       infoBox(
         "Samples",
         nsamples,

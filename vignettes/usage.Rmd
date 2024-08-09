@@ -108,7 +108,7 @@ There are two elements to this tab:
 
 Filtering the table will update the heatmap automatically.
 
-The heatmap represents the **aggregated value of the gene in all cells from a (combination of) annotations**. When applicable, there is a possibility to split the heatmap with another (pre-chosen) annotation. 
+The heatmap represents the **average value of the gene in all cells from a (combination of) annotations**. When applicable, there is a possibility to split the heatmap with another (pre-chosen) annotation. 
 
 The plot is interactive, browsing the tile with the mouse will show more information, for example which annotation's label(s) the gene is a marker of. A gene is considered a marker of a label if the adjusted p-value is less than 0.05 for this label in the table result of `FindAllMarkers()`.
 

@@ -4,7 +4,6 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import shinydashboard
-#' @importFrom waiter autoWaiter
 #' @importFrom utils packageVersion
 #' @importFrom golem get_golem_options get_golem_version
 #' @noRd
@@ -21,6 +20,7 @@ app_ui <- function(request) {
       dashboardSidebar(
         sidebarMenu(
           id = "tabs",
+          shiny.telemetry::use_telemetry(),
           menuItem("Homepage", tabName = "homepage", icon = icon("house")), # must match the tabItem(tabName = "") in dashboardBody()
           mod_dataset_ui("dataset"),
           menuItem("General information", tabName = "information", icon = icon("list")),
@@ -59,7 +59,6 @@ app_ui <- function(request) {
                   mod_differential_ui("differential")
           )
         )
-
       )
     )
   )
