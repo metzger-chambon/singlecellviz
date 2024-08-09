@@ -1,10 +1,9 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   database: database.html
   deployment: deployment.html
   development: development.html
   usage: usage.html
-last_built: 2024-06-28T10:29Z
-
+last_built: 2024-08-09T15:16Z
