@@ -24,12 +24,16 @@ run_app <- function(
   uiPattern = "/",
   studies = NULL,
   cache_path = NULL,
+  log_path = "log",
   ...
 ) {
+
+  dir.create(log_path, showWarnings = FALSE)
 
   if (is.null(cache_path)){
     cache_path <- file.path(tempdir(), "singlecellviz-cache/")
   }
+
   shinyOptions(cache = cachem::cache_disk(cache_path))
   # shinyOptions(cache = cachem::cache_mem(max_size = 512 * 1024^2)) # 512 megabytes
 
@@ -58,6 +62,7 @@ run_app <- function(
     ),
     golem_opts = list(
       studies = studies,
+      log_path = log_path,
       ...)
   )
 }

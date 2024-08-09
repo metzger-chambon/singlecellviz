@@ -16,7 +16,7 @@ mod_download_ui <- function(id){
 #'
 #' @noRd
 
-mod_download_server <- function(id, COMMON_DATA, r){
+mod_download_server <- function(id, COMMON_DATA, r, telemetry){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     studies <- get_golem_options("studies")
@@ -31,7 +31,11 @@ mod_download_server <- function(id, COMMON_DATA, r){
           HTML('<i class="fas fa-spinner fa-spin"></i> Preparing file for downloading...'),
           style = "text-align: center;")
         , footer = NULL))
-
+        telemetry$log_custom_event(
+          "input",
+          details = list("id" = "downloadData",
+                         "value" = COMMON_DATA$title)
+        )
 
         file.copy(studies[which(studies$title == r$selected_study),, drop = F]$rds, file)
         on.exit(removeModal())

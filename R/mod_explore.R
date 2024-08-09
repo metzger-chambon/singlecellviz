@@ -66,7 +66,7 @@ mod_explore_ui <- function(id){
 
 #' explore Server Functions
 #' @noRd
-mod_explore_server <- function(id, COMMON_DATA, r){
+mod_explore_server <- function(id, COMMON_DATA, r, telemetry){
   moduleServer(id, function(input, output, session){
 
     # Calculate genes_choices options
@@ -125,6 +125,11 @@ mod_explore_server <- function(id, COMMON_DATA, r){
                  newValue <- validate_gene_annotation() + 1
                  validate_gene_annotation(newValue)
 
+                 telemetry$log_custom_event(
+                   "input",
+                   details = list("id" = "validate_gene_annotation",
+                                  "value" = input$gene_annotation)
+                 )
                  }
     )
 
