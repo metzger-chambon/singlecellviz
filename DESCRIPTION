@@ -1,6 +1,6 @@
 Package: singlecellviz
 Title: SingleCellViz
-Version: 1.0.1
+Version: 1.1.0
 Authors@R: 
     person("Valentine", "Gilbart", , "gilbartv@igbmc.fr", role = c("cre", "aut"))
 Description: Visualize scRNA-seq datasets.
