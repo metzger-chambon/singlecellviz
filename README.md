@@ -11,6 +11,7 @@ SingleCellViz is a RShiny app allowing an easy exploration of single cell datase
 You can install the singlecellviz package via:
 
 ```r
+install.packages("remotes")
 remotes::install_github("metzger-chambon/singlecellviz")
 ```
 
@@ -28,13 +29,15 @@ By default, the app will be run on a very small subset on pbmc3k.
 
 ### With your data
  
-If have your own database of tiledb in the correct format for the app (see [Database vignette](articles/database.html) for more info), you can run the app like so:
+If you have your own database of tiledb in the correct format for the app (see [Database vignette](articles/database.html) for more info), you can run the app like so:
 
 ```r
 singlecellviz::run_app(studies = "path/to/data_summary.txt")
 ```
 
 ### With user authentication
+
+To test the user authentication feature, run the following:
 
 ```r
 singlecellviz::run_app(authr_file = system.file("extdata", "users.txt",

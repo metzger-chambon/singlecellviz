@@ -245,7 +245,8 @@ Finally, with git:
 - describe changes in `NEWS.md`
 - follow [best practice](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/) for merging to the master branch
 - push your new release to github
-- give it a tag (`git tag -a X.X.X -m "version X.X.X"`)
-- push the tag (`git push origin tag`) 
+- give it a tag (`git tag -a X.X.X -m "X.X.X"`)
+- push the tag (`git push origin X.X.X`) 
+- merge the release tag to develop (`git merge develop X.X.X`)
 
 Golem doc provides some more [things to check checklist](https://engineering-shiny.org/appendix-a---use-case-building-an-app-from-start-to-finish.html?q=check#before-deployment-checklist-1).
