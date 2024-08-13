@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">singlecellviz</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,8 @@
 </h2>
 <p>You can install the singlecellviz package via:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"metzger-chambon/singlecellviz"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"metzger-chambon/singlecellviz"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="running-the-app">Running the app<a class="anchor" aria-label="anchor" href="#running-the-app"></a>
@@ -82,13 +83,14 @@
 <div class="section level3">
 <h3 id="with-your-data">With your data<a class="anchor" aria-label="anchor" href="#with-your-data"></a>
 </h3>
-<p>If have your own database of tiledb in the correct format for the app (see <a href="articles/database.html">Database vignette</a> for more info), you can run the app like so:</p>
+<p>If you have your own database of tiledb in the correct format for the app (see <a href="articles/database.html">Database vignette</a> for more info), you can run the app like so:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">singlecellviz</span><span class="fu">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span>studies <span class="op">=</span> <span class="st">"path/to/data_summary.txt"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="with-user-authentication">With user authentication<a class="anchor" aria-label="anchor" href="#with-user-authentication"></a>
 </h3>
+<p>To test the user authentication feature, run the following:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">singlecellviz</span><span class="fu">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span>authr_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"users.txt"</span>,</span>
 <span>                                      package <span class="op">=</span> <span class="st">"singlecellviz"</span>,</span>
