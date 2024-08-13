@@ -37,4 +37,4 @@ mystudy$rds <- file.path("../singlecelldatabase", mystudy$rds)
 run_dev(port,
         studies = mystudy,
         cache_path = "./cache",
-        authr = "inst/extdata/users.txt")
+        authr_file = "inst/extdata/users.txt")
