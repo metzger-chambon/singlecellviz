@@ -10,7 +10,7 @@
 #' authr Server Functions
 #'
 #' @noRd
-mod_authr_server <- function(id) {
+mod_authr_server <- function(id, telemetry) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -25,7 +25,6 @@ mod_authr_server <- function(id) {
     }
     showModal(start_up_modal(ns))
 
-
     credentials <- shinyauthr::loginServer(
       id = "login",
       data = user_base,
@@ -38,7 +37,6 @@ mod_authr_server <- function(id) {
     logout_init <- shinyauthr::logoutServer(id = "logout",
                                             active = reactive(credentials()$user_auth))
 
-
     user_info <- reactive({
       credentials()$info
     })
@@ -47,6 +45,10 @@ mod_authr_server <- function(id) {
       if (credentials()$user_auth) {
         removeModal()
         shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
+        telemetry$log_custom_event(
+          "username",
+          details = list("username" = user_info()$user)
+        )
         # TODO track user connections (use a db?)
         # cat(paste(user_info()$user, as.character(lubridate::now())))
       }
