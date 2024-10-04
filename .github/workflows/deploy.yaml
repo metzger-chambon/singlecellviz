@@ -55,12 +55,11 @@ jobs:
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          host: ${{ variables.HOST }}
+          username: ${{ variables.USERNAME }}
           key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
           script: |
-            cd /srv/shiny-server/${{ secrets.APPNAME }}
+            cd /srv/shiny-server/${{ variables.APPNAME }}
             #git pull
             echo "worked!" > succeed.txt
             #R -e 'renv::restore(prompt=FALSE)
