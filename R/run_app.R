@@ -4,10 +4,10 @@
 #' See `?golem::get_golem_options` for more details.
 #' @inheritParams shiny::shinyApp
 #'
-#' @param studies a file path to a summary of all available studies.
-#' The file should be a tab separated table, with the headers:
-#' \code{title  output  rds  description  doi  date  nsamples  nfeatures  ncells}.
-#' By default the file read contains information about a very small subset
+#' @param studies a data.frame summarizing of all available studies.
+#' The data.frame have as colnames:
+#' \code{c("title", "description", "doi", "date", "nsamples", "nfeatures", "ncells", "output", "rds")}.
+#' By default the app will be run on a very small subset
 #' of pbmc3k present in the package. Check out
 #' \code{vignette("database", package = "singlecellviz")} for more information.
 #' @param cache_path a path to the cache directory to use.
@@ -15,11 +15,16 @@
 #' @param log_path a path to the log directory, where a \code{telemetry.txt} file will
 #' be created. If the folder or file already exists, make sure that the use has read and write access.
 #' @param authr_file a path to the authr .txt file, where the columns
-#' \code{user}, \code{password_hash}, and \code{permissions} are available. If the folder or file already exists, make sure that the use has read and write access.
+#' \code{user}, \code{password_hash}, and \code{permissions} are available.
+#' If the folder or file already exists, make sure that the use has read and write access.
+#' @param tabs a list with names being tabs among
+#' \code{['homepage', 'information', 'explore', 'markers', 'differential', 'download']}
+#' and values being a boolean (TRUE to show the tab, FALSE otherwise). By default all tabs are shown
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom cachem cache_disk
 #' @importFrom golem with_golem_options
+#' @importFrom utils modifyList
 #' @importFrom utils read.table
 run_app <- function(
   onStart = NULL,
@@ -30,6 +35,7 @@ run_app <- function(
   cache_path = NULL,
   log_path = "log",
   authr_file = NULL,
+  tabs = list(),
   ...
 ) {
 
@@ -38,6 +44,15 @@ run_app <- function(
   if (is.null(cache_path)){
     cache_path <- file.path(tempdir(), "singlecellviz-cache/")
   }
+
+  tabs_default = list(homepage = TRUE,
+                      information = TRUE,
+                      explore = TRUE,
+                      markers = TRUE,
+                      differential = TRUE,
+                      download = TRUE)
+  tabs = modifyList(tabs_default, tabs)
+
 
   shinyOptions(cache = cachem::cache_disk(cache_path))
   # shinyOptions(cache = cachem::cache_mem(max_size = 512 * 1024^2)) # 512 megabytes
@@ -69,6 +84,7 @@ run_app <- function(
       studies = studies,
       log_path = log_path,
       authr_file = authr_file,
+      tabs = tabs,
       ...)
   )
 }

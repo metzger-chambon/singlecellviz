@@ -1,3 +1,10 @@
+# SingleCellViz 1.1.2
+
+**2025-02-05**
+
+## Implement 
+* Allow for choices of tab(s) to show with the `tabs` parameter in `run_app()`
+
 # SingleCellViz 1.1.1
 
 **2024-08-13**

@@ -22,7 +22,7 @@ The following gives some insights on how to deploy the app on a local machine.
 
 To deploy the app, you should have access to the local machine with **sudo rights** ("superuser do", i.e. allows a permitted user to execute a command as the superuser). Refer to a person in charge for the name of the machine and/or the IT department to have the sudo rights. 
 
-You need to connect to the server with by running the following in a bash Terminal:
+You need to connect to the server by running the following in a bash Terminal:
 ```bash
 ssh yourusername@server-adress
 ``` 
@@ -95,12 +95,12 @@ This version can then be retrieved from the server by running `git pull`. All th
 
 ## Update datasets via scp
 
-Heavy files should not be tracked with git. It is the case of datasets. Everything under `db/` has to be updated/added manually by using the command `scp`. 
+Heavy files should not be tracked with git. It is the case of datasets. The folder containing the datasets (e.g. a `database/` folder, containing a folder for each datasets, with inside the rds objects and tiledb data) has to be updated/added manually by using the command `scp`. 
 
 To correctly add a dataset to the app it needs to both:
 
-- have a row in the file `dataset_summary.txt`, which notably states its name and location in `db/`
-- have the dataset present under the said location in `db/`
+- have a row in the `studies` parameter of `run_app()` (that is in the file `dataset_summary.txt` if it is used to create the studies object), which notably states its name and location in `database/` 
+- have the dataset present under the said location in `database/`
 
 ## Update the R packages via renv 
 

@@ -33,7 +33,7 @@ git clone git@github.com:metzger-chambon/singlecellviz.git
 or alternatively create a new R project using the GUI of RStudio (by clicking on the top-right R icon in a blue box), which is the Project menu. Select the "Version Control" way of creating a project, then "Git", and finally type in the repository url: https://github.com/metzger-chambon/singlecellviz.git. 
 
 In either case, you will be working inside a R project. Check out the [doc about using R projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects). 
-An important thing to remember when developing is that you should always have the root of this R project as you working directory (`getwd()` and `setwd()`). Moreover, everything you refer to while developing should be relative to your working directory. 
+An important thing to remember when developing is that you should always have the root of this R project as your working directory (`getwd()` and `setwd()`). Moreover, everything you refer to while developing should be relative to your working directory. 
 
 ## R environment 
 
@@ -82,7 +82,7 @@ Here is the general structure of the repository:
 ├── app.R               # file with script to launch the app when deployed on the server (RShiny)
 ├── data                # folder containing datasets available in the package (R packages)
 ├── DESCRIPTION         # file with metadata (R packages)
-├── dev                 # folder with scripts to run when developping the app (golem)
+├── dev                 # folder with scripts to run when developing the app (golem)
 ├── inst                # folder with arbitrary additional files (R packages) 
 ├── LICENSE.md          # LICENSE of the app (R package)
 ├── man                 # folder with documentation of the package (R packages)
@@ -139,7 +139,7 @@ structure(list(title = "small example",
           class = "data.frame", row.names = c(NA, -1L))
 ```
 
-As you can notice, it has a similar structure than the file given as input of `run_app()` (described in [Database vignette](database.html)). This is because the input file given to `run_app()` is read, and saved in the variable `studies`.
+It is the object given as `studies` parameter of `run_app()` (described in [Database vignette](database.html)). 
 
 To get access to it in a module just add the line of code in your module:
 
@@ -155,12 +155,14 @@ Modules might have the `r` object as parameter. It is a global reactiveValues (s
 
 -   `tabs`, the name of the current tab in use
 -   `selected_study`, the title of the current selected study
+-   `user_info`, some information about the user (such as name and permission) if `authr_file` parameter is given to `run_app()`
 
 It is a way to share information across otherwise independent modules.
 The particularity of reactiveValues objects is that every time the object gets updated, the parts of code that are dependent on them get recomputed. So you might need to use: 
 
 - `r$selected_study` if the output of a function is dependent on the dataset
 - `r$tabs` if you only want to update an output when on a specific tab
+- `r$user_info` if you want some parts of the app to only be accessed by certain users
 
 ## COMMON_DATA variable
 
@@ -183,7 +185,7 @@ and the active methods:
 
 The particularity of a R6 object is that if it modified inside of a function, the modified value is kept outside the function when it is called. So if you develop a module and need some data to be passed to other modules, without the need for reactivity, you will likely have to use the `COMMON_DATA` object.
 
-# Good pratices 
+# Good practices 
 
 To develop the app efficiently, there are some good practice that **need** to be followed. They are presented in the following sections. 
 
@@ -211,7 +213,7 @@ When you locally make a change in a file and want to apply the changes on github
 -   `git commit -m $MESSAGE`: commit the changes
 -   `git push`: push commits on github (you must have the rights to do so on the repository)
 
-When doing a lot of changes, it is good practice to create a new branch (`git branch $BRANCHNAME`), and work on it (`git checkout $BRANCHNAME`). When all changes are made and working, you can merge the main and new branch (`git checkout master` then, `git merge $BRANCHNAME`). Read the following [good practice post on git branches](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/). 
+When doing a lot of changes, it is good practice to create a new branch (`git branch $BRANCHNAME`), and work on it (`git checkout $BRANCHNAME`). When all changes are made and working, you can merge the main and new branch (`git checkout master` then, `git merge $BRANCHNAME`). Read the following [good practice post on git branches](https://nvie.com/posts/a-successful-git-branching-model/). 
 
 Also, read the related [golem documentation](https://engineering-shiny.org/version-control.html?q=git#git-integration) on git. 
 
@@ -237,13 +239,13 @@ You've made changes to the app, and it should be released as a new version of th
 - run `devtools::check()`, and make sure you don't have any errors. One warning about the size of files in `singlecellviz/inst/extdata/small_example/tiledb/` is yet not resolved. It is not a problem as long as the package does not go on CRAN.
 - run `pkgdown::build_site()` to update the site with the new documentation, and check that looks ok
 
-Finally, with git:
+Finally, following [best practice](https://nvie.com/posts/a-successful-git-branching-model/):
 
 - add and commit your last changes
-- follow [best practice](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/) for merging to a release branch 
+- merge to a release branch 
 - run `golem::set_golem_version("X.X.X")` with your new version numbers
 - describe changes in `NEWS.md`
-- follow [best practice](https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/) for merging to the master branch
+- merge to the master branch
 - push your new release to github
 - give it a tag (`git tag -a X.X.X -m "X.X.X"`)
 - push the tag (`git push origin X.X.X`) 
