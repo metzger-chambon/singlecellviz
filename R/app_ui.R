@@ -21,13 +21,25 @@ app_ui <- function(request) {
         sidebarMenu(
           id = "tabs",
           shiny.telemetry::use_telemetry(),
-          menuItem("Homepage", tabName = "homepage", icon = icon("house")), # must match the tabItem(tabName = "") in dashboardBody()
+          if (get_golem_options("tabs")$homepage){
+            menuItem("Homepage", tabName = "homepage", icon = icon("house")) # must match the tabItem(tabName = "") in dashboardBody()
+          },
           mod_dataset_ui("dataset"),
-          menuItem("General information", tabName = "information", icon = icon("list")),
-          menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass")),
-          menuItem("Markers", tabName = "markers", icon = icon("tags")),
-          menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus")),
-          mod_download_ui("download"),
+          if (get_golem_options("tabs")$information){
+            menuItem("General information", tabName = "information", icon = icon("list"))
+          },
+          if (get_golem_options("tabs")$explore){
+            menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass"))
+          },
+          if (get_golem_options("tabs")$markers){
+          menuItem("Markers", tabName = "markers", icon = icon("tags"))
+          },
+          if (get_golem_options("tabs")$differential){
+            menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus"))
+          },
+          if (get_golem_options("tabs")$download){
+            mod_download_ui("download")
+          },
 
           div(style="margin-left: 14px; margin-top: 14px;",
               a(icon("github"),

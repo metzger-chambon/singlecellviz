@@ -15,6 +15,7 @@
 #' @param log_path a path to the log directory, where a \code{telemetry.txt} file will
 #' be created. If the folder or file already exists, make sure that the use has read and write access.
 #' @param authr_file a path to the authr .txt file, where the columns
+#' @param tabs a list with names being tabs amongst [''] and values being boolen (TRUE to show the tab, FALSE otherwise). By default all tabs are shown
 #' \code{user}, \code{password_hash}, and \code{permissions} are available. If the folder or file already exists, make sure that the use has read and write access.
 #' @export
 #' @importFrom shiny shinyApp
@@ -30,6 +31,7 @@ run_app <- function(
   cache_path = NULL,
   log_path = "log",
   authr_file = NULL,
+  tabs = list(),
   ...
 ) {
 
@@ -38,6 +40,15 @@ run_app <- function(
   if (is.null(cache_path)){
     cache_path <- file.path(tempdir(), "singlecellviz-cache/")
   }
+
+  tabs_default = list(homepage = TRUE,
+                      information = TRUE,
+                      explore = TRUE,
+                      markers = TRUE,
+                      differential = TRUE,
+                      download = TRUE)
+  tabs = modifyList(tabs_default, tabs)
+
 
   shinyOptions(cache = cachem::cache_disk(cache_path))
   # shinyOptions(cache = cachem::cache_mem(max_size = 512 * 1024^2)) # 512 megabytes
@@ -69,6 +80,7 @@ run_app <- function(
       studies = studies,
       log_path = log_path,
       authr_file = authr_file,
+      tabs = tabs,
       ...)
   )
 }
