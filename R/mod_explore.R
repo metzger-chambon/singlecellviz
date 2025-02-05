@@ -95,6 +95,10 @@ mod_explore_server <- function(id, COMMON_DATA, r, telemetry){
         # annotation_choices is the same when changing a study
         # This helps in reactivity and cache of annotation_choices dependent outputs
         annotation_choices <- experiment$obs$attrnames()
+        # As of tiledb 1.15.0, Writing v5 Assays adds metadata
+        # such as soma_ecosystem_seurat_assay...
+        # that needs to be removed from the annotation_choices
+        annotation_choices <- annotation_choices[!startsWith(annotation_choices, "soma_")]
         annotation_choices <- add_suffix(annotation_choices, isolate(r$selected_study))
         annotation_choices <- annotation_choices[which(names(annotation_choices) != "obs_id")]
         return(annotation_choices)
