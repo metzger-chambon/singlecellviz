@@ -1,3 +1,10 @@
+# SingleCellViz 1.1.3
+
+**2025-02-05**
+
+## Implement 
+* Remove any annotation name starting with "soma_" (due to tiledbsoma 1.15.* changes for Assay5 support, for more information read paragraph "Writing v5 Assays" of `tiledbsoma::write_soma.Seurat()`)
+
 # SingleCellViz 1.1.2
 
 **2025-02-05**
