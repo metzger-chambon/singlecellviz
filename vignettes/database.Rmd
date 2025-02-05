@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 By default, the app is run on a very small subset of pbmc3k dataset. 
 To visualize other datasets of interest, they need to be available within a folder in a TileDB-SOMA format (see [TileDB-SOMA]). 
 
-A txt file summarizing all available datasets should be created, it is the file given as input to `run_app()`.
+A txt file summarizing all available datasets should be created.
 The txt file is in the following format:
 
 ```{bash, eval = FALSE}
@@ -30,6 +30,20 @@ Study 1    /path/to/tiledb    path/to/rds    Some description    Some doi    DD/
 where each row is an available dataset, and the separators are tabs. 
 
 It can be automatically generated with `update_summary()` (see [Updating the summary]). 
+
+Finally, you have to generate a data.frame from the txt file and pass it as argument to `run_app()` like so: 
+
+```r
+mystudies <- read.table("path/to/data_summary.txt",
+                      header = TRUE,
+                      sep = "\t")
+## Optional: change the path of the output and rds if not in the same folder as the app
+# mystudies$output <- file.path("path/to/datasets/folder", mystudies$output)
+# mystudies$rds <- file.path("path/to/datasets/folder", mystudies$rds)
+
+singlecellviz::run_dev(studies = mystudies)
+        
+```
 
 ## Structure of the database
 
@@ -170,7 +184,7 @@ Make sure that your list contains all elements needed in `config.yaml` (see sect
 
 ### Updating the summary 
 
-The txt file summarizing all datasets can be easily updated with the code in `singlecellviz::update_summary()`. It is this file that can then be used as input to `run_app()`. 
+The txt file summarizing all datasets can be easily updated with the code in `singlecellviz::update_summary()`. It is this file that can be uploaded as data.frame, in order to pass the object as `study` parameter to `singlecellviz::run_app()`. 
 
 It automatically searches for all available `config.yaml`, `object.rds`and `tiledb/` in each subfolder of the given db_dir (e.g. `db/`). Only subfolders with `config.yaml` are processed.  
 

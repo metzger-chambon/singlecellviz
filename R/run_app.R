@@ -4,10 +4,10 @@
 #' See `?golem::get_golem_options` for more details.
 #' @inheritParams shiny::shinyApp
 #'
-#' @param studies a file path to a summary of all available studies.
-#' The file should be a tab separated table, with the headers:
-#' \code{title  output  rds  description  doi  date  nsamples  nfeatures  ncells}.
-#' By default the file read contains information about a very small subset
+#' @param studies a data.frame summarizing of all available studies.
+#' The data.frame have as colnames:
+#' \code{c("title", "description", "doi", "date", "nsamples", "nfeatures", "ncells", "output", "rds")}.
+#' By default the app will be run on a very small subset
 #' of pbmc3k present in the package. Check out
 #' \code{vignette("database", package = "singlecellviz")} for more information.
 #' @param cache_path a path to the cache directory to use.

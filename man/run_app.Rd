@@ -13,6 +13,7 @@ run_app(
   cache_path = NULL,
   log_path = "log",
   authr_file = NULL,
+  tabs = list(),
   ...
 )
 }
