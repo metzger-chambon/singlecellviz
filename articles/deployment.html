@@ -8,8 +8,8 @@
 <title>Deployment • singlecellviz</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Deployment">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">singlecellviz</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,8 +78,8 @@ machine.</p>
 user to execute a command as the superuser). Refer to a person in charge
 for the name of the machine and/or the IT department to have the sudo
 rights.</p>
-<p>You need to connect to the server with by running the following in a
-bash Terminal:</p>
+<p>You need to connect to the server by running the following in a bash
+Terminal:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">ssh</span> yourusername@server-adress</span></code></pre></div>
 <p>When working on the machine, if you run a command that require
 specific rights, you will have to add <code>sudo</code> just before the
@@ -172,15 +172,20 @@ is available, it should be pushed to the github repository
 <h3 id="update-datasets-via-scp">Update datasets via scp<a class="anchor" aria-label="anchor" href="#update-datasets-via-scp"></a>
 </h3>
 <p>Heavy files should not be tracked with git. It is the case of
-datasets. Everything under <code>db/</code> has to be updated/added
+datasets. The folder containing the datasets (e.g. a
+<code>database/</code> folder, containing a folder for each datasets,
+with inside the rds objects and tiledb data) has to be updated/added
 manually by using the command <code>scp</code>.</p>
 <p>To correctly add a dataset to the app it needs to both:</p>
 <ul>
-<li>have a row in the file <code>dataset_summary.txt</code>, which
-notably states its name and location in <code>db/</code>
+<li>have a row in the <code>studies</code> parameter of
+<code><a href="../reference/run_app.html">run_app()</a></code> (that is in the file
+<code>dataset_summary.txt</code> if it is used to create the studies
+object), which notably states its name and location in
+<code>database/</code>
 </li>
 <li>have the dataset present under the said location in
-<code>db/</code>
+<code>database/</code>
 </li>
 </ul>
 </div>
@@ -311,7 +316,7 @@ seconds) the <strong>memory and swap usage</strong> of the server</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

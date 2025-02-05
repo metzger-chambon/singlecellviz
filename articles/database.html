@@ -8,8 +8,8 @@
 <title>Database • singlecellviz</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Database">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">singlecellviz</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,15 +74,26 @@
 <p>By default, the app is run on a very small subset of pbmc3k dataset.
 To visualize other datasets of interest, they need to be available
 within a folder in a TileDB-SOMA format (see <a href="#tiledb-soma">TileDB-SOMA</a>).</p>
-<p>A txt file summarizing all available datasets should be created, it
-is the file given as input to <code><a href="../reference/run_app.html">run_app()</a></code>. The txt file is in
-the following format:</p>
+<p>A txt file summarizing all available datasets should be created. The
+txt file is in the following format:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">title</span>    output    rds    description    doi    date    nsamples    nfeatures    ncells</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">Study</span> 1    /path/to/tiledb    path/to/rds    Some description    Some doi    DD/MM/YYYY    number_of_samples    number_of_features    number_of_cells</span></code></pre></div>
 <p>where each row is an available dataset, and the separators are
 tabs.</p>
 <p>It can be automatically generated with <code><a href="../reference/update_summary.html">update_summary()</a></code>
 (see <a href="#updating-the-summary">Updating the summary</a>).</p>
+<p>Finally, you have to generate a data.frame from the txt file and pass
+it as argument to <code><a href="../reference/run_app.html">run_app()</a></code> like so:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mystudies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"path/to/data_summary.txt"</span>,</span>
+<span>                      header <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                      sep <span class="op">=</span> <span class="st">"\t"</span><span class="op">)</span></span>
+<span><span class="co">## Optional: change the path of the output and rds if not in the same folder as the app</span></span>
+<span><span class="co"># mystudies$output &lt;- file.path("path/to/datasets/folder", mystudies$output)</span></span>
+<span><span class="co"># mystudies$rds &lt;- file.path("path/to/datasets/folder", mystudies$rds)</span></span>
+<span></span>
+<span><span class="fu">singlecellviz</span><span class="fu">::</span><span class="fu">run_dev</span><span class="op">(</span>studies <span class="op">=</span> <span class="va">mystudies</span><span class="op">)</span></span>
+<span>        </span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="structure-of-the-database">Structure of the database<a class="anchor" aria-label="anchor" href="#structure-of-the-database"></a>
@@ -168,10 +179,10 @@ following elements:</p>
 <p>The <code>DATASET_NAME/config.yaml</code> will be used to create
 summary of all datasets (see section <a href="#updating-the-summary">Updating the summary</a>). It must have the
 following structure, and at least the following elements:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">title:</span> <span class="st">'Study 1'</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">description:</span> <span class="st">'Some description'</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="ex">doi:</span> <span class="st">'Some doi'</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="ex">date:</span> DD/MM/YYYY</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">title:</span> <span class="st">'Study 1'</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">description:</span> <span class="st">'Some description'</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="ex">doi:</span> <span class="st">'Some doi'</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="ex">date:</span> DD/MM/YYYY</span></code></pre></div>
 <p>See section <a href="#creating-config.yaml">Creating
 config.yaml</a>.</p>
 </div>
@@ -239,7 +250,7 @@ Check the help of each function for more information and examples.</p>
 </h3>
 <p>The <code>rds</code> object structure is described in <a href="#rds-object">rds object</a>. If you followed the previous
 sections, you only have to create a list and save it like so:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Don't forget to remove `scale.data` from the Assays left in the Seurat object!</span></span>
 <span><span class="va">rds_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seuratObj <span class="op">=</span> <span class="va">x</span>, </span>
 <span>                markers <span class="op">=</span> <span class="va">y</span>, </span>
@@ -270,7 +281,7 @@ dataset. It gives no output. It will look for the
 <code>object.rds</code> present in <code>dataset_dir</code>, and create
 the TileDB-SOMA database in a folder called <code>tildeb</code> inside
 of <code>dataset_dir</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/populate_tiledb.html">populate_tiledb</a></span><span class="op">(</span>dataset_dir <span class="op">=</span> <span class="st">"db/DATASET_NAME/"</span>,</span>
 <span>                force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -281,7 +292,7 @@ of <code>dataset_dir</code>.</p>
 <p>You should now create the <code>config.yaml</code> in this dataset
 folder.</p>
 <p>This can be done easily like so:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create yaml</span></span>
 <span><span class="va">yaml_content</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"title"</span> <span class="op">=</span> <span class="st">"Study 1"</span>,</span>
 <span>     <span class="st">"description"</span> <span class="op">=</span> <span class="st">"Some &lt;b&gt;description&lt;/b&gt;"</span>, <span class="co"># HTML is accepted</span></span>
@@ -297,7 +308,9 @@ folder.</p>
 </h3>
 <p>The txt file summarizing all datasets can be easily updated with the
 code in <code><a href="../reference/update_summary.html">singlecellviz::update_summary()</a></code>. It is this file
-that can then be used as input to <code><a href="../reference/run_app.html">run_app()</a></code>.</p>
+that can be uploaded as data.frame, in order to pass the object as
+<code>study</code> parameter to
+<code><a href="../reference/run_app.html">singlecellviz::run_app()</a></code>.</p>
 <p>It automatically searches for all available <code>config.yaml</code>,
 <code>object.rds</code>and <code>tiledb/</code> in each subfolder of the
 given db_dir (e.g. <code>db/</code>). Only subfolders with
@@ -341,7 +354,7 @@ available by querying each database.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

@@ -8,8 +8,8 @@
 <title>Development • singlecellviz</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Development">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">singlecellviz</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,7 @@ menu. Select the “Version Control” way of creating a project, then
 <a href="https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects" class="external-link">doc
 about using R projects</a>. An important thing to remember when
 developing is that you should always have the root of this R project as
-you working directory (<code><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd()</a></code> and <code><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd()</a></code>).
+your working directory (<code><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd()</a></code> and <code><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd()</a></code>).
 Moreover, everything you refer to while developing should be relative to
 your working directory.</p>
 <div class="section level3">
@@ -96,7 +96,7 @@ your working directory.</p>
 written at the very top of <code>renv.lock</code> file).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R.version.string</span></span>
-<span><span class="co">#&gt; [1] "R version 4.4.1 (2024-06-14)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "R version 4.4.2 (2024-10-31)"</span></span></code></pre></div>
 <p>You will need to install the required packages and their
 dependencies. This can easily be done using renv R package, by running
 the following:</p>
@@ -153,7 +153,7 @@ development doc</a>)</li>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">├──</span> app.R               <span class="co"># file with script to launch the app when deployed on the server (RShiny)</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">├──</span> data                <span class="co"># folder containing datasets available in the package (R packages)</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="ex">├──</span> DESCRIPTION         <span class="co"># file with metadata (R packages)</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ex">├──</span> dev                 <span class="co"># folder with scripts to run when developping the app (golem)</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ex">├──</span> dev                 <span class="co"># folder with scripts to run when developing the app (golem)</span></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">├──</span> inst                <span class="co"># folder with arbitrary additional files (R packages) </span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ex">├──</span> LICENSE.md          <span class="co"># LICENSE of the app (R package)</span></span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="ex">├──</span> man                 <span class="co"># folder with documentation of the package (R packages)</span></span>
@@ -234,10 +234,9 @@ structured like so:</p>
 <span>               nfeatures <span class="op">=</span> <span class="fl">100L</span>, </span>
 <span>               ncells <span class="op">=</span> <span class="fl">46L</span><span class="op">)</span>, </span>
 <span>          class <span class="op">=</span> <span class="st">"data.frame"</span>, row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="op">-</span><span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>As you can notice, it has a similar structure than the file given as
-input of <code><a href="../reference/run_app.html">run_app()</a></code> (described in <a href="database.html">Database vignette</a>). This is because the input
-file given to <code><a href="../reference/run_app.html">run_app()</a></code> is read, and saved in the variable
-<code>studies</code>.</p>
+<p>It is the object given as <code>studies</code> parameter of
+<code><a href="../reference/run_app.html">run_app()</a></code> (described in <a href="database.html">Database
+vignette</a>).</p>
 <p>To get access to it in a module just add the line of code in your
 module:</p>
 <pre><code><span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu">get_golem_options</span><span class="op">(</span><span class="st">"studies"</span><span class="op">)</span></span></code></pre>
@@ -257,6 +256,11 @@ doc). It is a special list with elements:</p>
 <li>
 <code>selected_study</code>, the title of the current selected
 study</li>
+<li>
+<code>user_info</code>, some information about the user (such as
+name and permission) if <code>authr_file</code> parameter is given to
+<code><a href="../reference/run_app.html">run_app()</a></code>
+</li>
 </ul>
 <p>It is a way to share information across otherwise independent
 modules. The particularity of reactiveValues objects is that every time
@@ -269,6 +273,9 @@ dependent on the dataset</li>
 <li>
 <code>r$tabs</code> if you only want to update an output when on a
 specific tab</li>
+<li>
+<code>r$user_info</code> if you want some parts of the app to only
+be accessed by certain users</li>
 </ul>
 </div>
 <div class="section level3">
@@ -313,7 +320,7 @@ use the <code>COMMON_DATA</code> object.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="good-pratices">Good pratices<a class="anchor" aria-label="anchor" href="#good-pratices"></a>
+<h2 id="good-practices">Good practices<a class="anchor" aria-label="anchor" href="#good-practices"></a>
 </h2>
 <p>To develop the app efficiently, there are some good practice that
 <strong>need</strong> to be followed. They are presented in the
@@ -361,7 +368,7 @@ branch (<code>git branch $BRANCHNAME</code>), and work on it
 (<code>git checkout $BRANCHNAME</code>). When all changes are made and
 working, you can merge the main and new branch
 (<code>git checkout master</code> then,
-<code>git merge $BRANCHNAME</code>). Read the following <a href="https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/" class="external-link">good
+<code>git merge $BRANCHNAME</code>). Read the following <a href="https://nvie.com/posts/a-successful-git-branching-model/" class="external-link">good
 practice post on git branches</a>.</p>
 <p>Also, read the related <a href="https://engineering-shiny.org/version-control.html?q=git#git-integration" class="external-link">golem
 documentation</a> on git.</p>
@@ -407,17 +414,16 @@ CRAN.</li>
 <li>run <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> to update the site with the
 new documentation, and check that looks ok</li>
 </ul>
-<p>Finally, with git:</p>
+<p>Finally, following <a href="https://nvie.com/posts/a-successful-git-branching-model/" class="external-link">best
+practice</a>:</p>
 <ul>
 <li>add and commit your last changes</li>
-<li>follow <a href="https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/" class="external-link">best
-practice</a> for merging to a release branch</li>
+<li>merge to a release branch</li>
 <li>run <code>golem::set_golem_version("X.X.X")</code> with your new
 version numbers</li>
 <li>describe changes in <code>NEWS.md</code>
 </li>
-<li>follow <a href="https://frank.taillandier.me/2014/12/14/un-modele-de-branches-git-efficace/" class="external-link">best
-practice</a> for merging to the master branch</li>
+<li>merge to the master branch</li>
 <li>push your new release to github</li>
 <li>give it a tag (<code>git tag -a X.X.X -m "X.X.X"</code>)</li>
 <li>push the tag (<code>git push origin X.X.X</code>)</li>
@@ -438,7 +444,7 @@ to check checklist</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
