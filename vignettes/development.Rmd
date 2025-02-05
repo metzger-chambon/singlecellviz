@@ -82,7 +82,7 @@ Here is the general structure of the repository:
 ├── app.R               # file with script to launch the app when deployed on the server (RShiny)
 ├── data                # folder containing datasets available in the package (R packages)
 ├── DESCRIPTION         # file with metadata (R packages)
-├── dev                 # folder with scripts to run when developping the app (golem)
+├── dev                 # folder with scripts to run when developing the app (golem)
 ├── inst                # folder with arbitrary additional files (R packages) 
 ├── LICENSE.md          # LICENSE of the app (R package)
 ├── man                 # folder with documentation of the package (R packages)
@@ -185,7 +185,7 @@ and the active methods:
 
 The particularity of a R6 object is that if it modified inside of a function, the modified value is kept outside the function when it is called. So if you develop a module and need some data to be passed to other modules, without the need for reactivity, you will likely have to use the `COMMON_DATA` object.
 
-# Good pratices 
+# Good practices 
 
 To develop the app efficiently, there are some good practice that **need** to be followed. They are presented in the following sections. 
 

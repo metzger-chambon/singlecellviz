@@ -9,3 +9,9 @@ studies <- read.table(system.file("extdata",
                       header = TRUE, sep = "\t")
 
 shinyOptions("golem_options" = list("studies" = studies))
+shinyOptions("golem_options" = list("tabs" = list(homepage = TRUE,
+                                                  information = TRUE,
+                                                  explore = TRUE,
+                                                  markers = TRUE,
+                                                  differential = TRUE,
+                                                  download = TRUE)))

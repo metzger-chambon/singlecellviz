@@ -15,12 +15,16 @@
 #' @param log_path a path to the log directory, where a \code{telemetry.txt} file will
 #' be created. If the folder or file already exists, make sure that the use has read and write access.
 #' @param authr_file a path to the authr .txt file, where the columns
-#' @param tabs a list with names being tabs amongst [''] and values being boolen (TRUE to show the tab, FALSE otherwise). By default all tabs are shown
-#' \code{user}, \code{password_hash}, and \code{permissions} are available. If the folder or file already exists, make sure that the use has read and write access.
+#' \code{user}, \code{password_hash}, and \code{permissions} are available.
+#' If the folder or file already exists, make sure that the use has read and write access.
+#' @param tabs a list with names being tabs among
+#' \code{['homepage', 'information', 'explore', 'markers', 'differential', 'download']}
+#' and values being a boolean (TRUE to show the tab, FALSE otherwise). By default all tabs are shown
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom cachem cache_disk
 #' @importFrom golem with_golem_options
+#' @importFrom utils modifyList
 #' @importFrom utils read.table
 run_app <- function(
   onStart = NULL,
