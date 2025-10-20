@@ -10,7 +10,7 @@
 #' authr Server Functions
 #'
 #' @noRd
-mod_authr_server <- function(id, telemetry) {
+mod_authr_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -45,12 +45,6 @@ mod_authr_server <- function(id, telemetry) {
       if (credentials()$user_auth) {
         removeModal()
         shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
-        telemetry$log_custom_event(
-          "username",
-          details = list("username" = user_info()$user)
-        )
-        # TODO track user connections (use a db?)
-        # cat(paste(user_info()$user, as.character(lubridate::now())))
       }
       else{
         shinyjs::addClass(selector = "body", class = "sidebar-collapse")

@@ -32,7 +32,7 @@ app_ui <- function(request) {
             menuItem("Explore", tabName = "explore", icon = icon("magnifying-glass"))
           },
           if (get_golem_options("tabs")$markers){
-          menuItem("Markers", tabName = "markers", icon = icon("tags"))
+            menuItem("Markers", tabName = "markers", icon = icon("tags"))
           },
           if (get_golem_options("tabs")$differential){
             menuItem("Differential expression", tabName = "differential", icon = icon("plus-minus"))
@@ -41,19 +41,42 @@ app_ui <- function(request) {
             mod_download_ui("download")
           },
 
-          div(style="margin-left: 14px; margin-top: 14px;",
-              a(icon("github"),
-                href = "https://github.com/metzger-chambon/singlecellviz",
-                target="_blank", rel="noopener"),
-              paste0("SingleCellViz v.", packageVersion("singlecellviz")))
-        )
+          div(
+            style = "margin-top: auto; padding: 20px 14px 14px 14px; font-size: 12px;",
+            # Separator line
+            tags$hr(style = "border-top: 1px solid #666; margin-bottom: 10px;"),
+            div(style="",
+                a(icon("github"),
+                  href = "https://github.com/metzger-chambon/singlecellviz",
+                  target="_blank", rel="noopener"),
+                paste0("SingleCellViz v.", packageVersion("singlecellviz"))),
+            div(style="margin-top: 10px;",
+                paste0("Provided by "),
+                a(paste0("vgilbart \U1F33B"),
+                  href = "https://github.com/vgilbart",
+                  target="_blank", rel="noopener"),
+            ),
+            div(
+              style = "margin-top: 10px; word-wrap: break-word; width: 100%; font-size: 10px;",
+              HTML(paste0("Anonymous usage statistics are collected <br>",
+                     "using ",
+                          a(paste0("shiny.telemetry"),
+                            href = "https://github.com/Appsilon/shiny.telemetry",
+                            target="_blank", rel="noopener"),
+                     " package. <br>",
+                     "No personal or identifying data is collected.<br>",
+                     "The data is used exclusively for internal analysis <br>",
+                     "of app usage, and stored locally."
+              )
+            ))
+        ))
       ),
       dashboardBody(
         tabItems(
           tabItem(tabName = "homepage", # must match the menuItem(tabName = "") in dashboardSidebar()
                   h2("Homepage"),
                   mod_homepage_ui()
-             ),
+          ),
           tabItem(tabName = "information",
                   h2("General information about the dataset"),
                   mod_information_ui("information")

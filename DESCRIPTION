@@ -1,6 +1,6 @@
 Package: singlecellviz
 Title: SingleCellViz
-Version: 1.1.3
+Version: 1.1.0
 Authors@R: 
     person("Valentine", "Gilbart", , "gilbartv@igbmc.fr", role = c("cre", "aut"))
 Description: Visualize scRNA-seq datasets.
@@ -24,22 +24,21 @@ Imports:
     Seurat,
     SeuratObject,
     shiny (>= 1.8.0),
+    shiny.telemetry,
+    shinyauthr,
     shinydashboard,
+    shinyjs,
     stats,
     stringr,
     tidyr,
-    shiny.telemetry,
     tiledbsoma,
     utils,
     yaml
 Suggests: 
     knitr,
     rmarkdown,
-    shinyauthr,
-    shinyjs,
     spelling,
-    testthat (>= 3.0.0),
-    waiter
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Additional_repositories: https://tiledb-inc.r-universe.dev
