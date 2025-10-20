@@ -19,7 +19,11 @@ app_server <- function(input, output, session) {
   )
 
   telemetry$start_session(track_values = TRUE,
-                          track_inputs = FALSE)
+                          track_inputs = FALSE,
+                          track_anonymous_user = TRUE,
+                          username = NULL,
+                          browser_version = FALSE
+                          )
   telemetry$log_input(c("dataset-study",
                         "markers-cell_annotation",
                         "differential-comparison"
@@ -44,7 +48,7 @@ app_server <- function(input, output, session) {
   # A series of callModule() created with golem:add_module()
 
   if (!is.null(get_golem_options("authr_file"))){
-    mod_authr_server("authr_file", telemetry)
+    mod_authr_server("authr_file")
   }
 
   mod_dataset_server("dataset", COMMON_DATA, r)

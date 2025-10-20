@@ -1,3 +1,11 @@
+# SingleCellViz 1.1.4
+
+**2025-10-20**
+
+## Other 
+* Modify telemetry to be anonymous even when acces through user and password
+* Add text about anonymous data collection and usage
+
 # SingleCellViz 1.1.3
 
 **2025-02-05**
